@@ -10,18 +10,15 @@ class Game:
 
     2. Check whether a given move is legal
 
-        end_position in board._player_valid_moves(color)[piece]
+        board.is_legal(piece, end_position)
 
     3. Obtain all valid moves of a piece:
 
-        if board._piece_valid_jumps(piece:
-            return board._piece_valid_jumps(piece
-        else:
-            return board._piece_valid_moves(piece)
+        board.piece_all_valid(piece)
 
     4. List of all possible moves a player can make
 
-        board._player_valid_moves(color)
+        board.player_valid_moves(color)
 
     5. Check whether there's a winner and who
 
@@ -70,19 +67,57 @@ class Game:
             None
         """
         raise NotImplementedError
+
+    def player_valid_moves(self, color):
+        """
+        Returns all the valid moves (jumps or non-jump moves) for all the
+        available specified colored pieces.
+
+        Parameters:
+            color (str): player's color
+
+        Returns:
+            dict{tuple(int, int): list[tuple(int, int)]}: dictionary of all the
+            valid jumps or moves the player of the given color can make
+        """
+        raise NotImplementedError
+
+    def piece_all_valid(self, piece):
+        """
+        Returns all the valid moves for the given piece.
+
+        Parameters:
+            piece (Piece): the given piece
+
+        Returns:
+            list[tuple(int, int)]: list of all the positions the given piece can
+            move to
+        """
+        raise NotImplementedError
         
-    def move(self, piece, end_position):
+    def move(self, start_position, end_position):
         """
         User inputs a position of a piece and a location to move the piece to.
         If the given move is valid, the move will be executed. Otherwise, the
         player wll be prompted to input a different move.
 
         Parameters:
-            piece (Piece): the piece to be moved
+            start_position: the position of piece to be moved
             end_position (tuple(int, int)): destination position
 
         Returns:
             None
+        """
+        raise NotImplementedError
+
+    def is_legal(self, piece, end_position):
+        """
+        Given a piece on the board and a location to move the piece to,
+        determines if the move is legal or not.
+
+        Parameters:
+            piece (Piece): piece to be moved
+            end_position (tuple(int, int)): destination position
         """
         raise NotImplementedError
 
@@ -126,11 +161,22 @@ class Game:
 
     # Private Methods
 
+    def _get(self, position):
+        """
+        Returns the piece at the given position on the board.
+
+        Parameters:
+            position (tuple(int, int)): position on the board
+
+        Returns:
+            Piece: Piece object at that location on the board
+        """
+
     def _piece_valid_jumps(self, piece):
         """
-        Given a position on the board, returns a list of positions the piece at
-        the given position can jump to. It will also take into consideration if
-        the piece is a king or not.
+        Given a piece on the board, returns a list of positions the piece at can
+        jump to. It will also take into consideration if the piece is a king or
+        not.
 
         Parameters: 
             piece (Piece): the given piece
@@ -143,11 +189,10 @@ class Game:
 
     def _piece_valid_moves(self, piece):
         """
-        Given a position on the board, returns a list of positions the piece at
-        the given position can non-jump move to. This does not include places
-        the piece can move to with a jump since that is in the _piece_valid_jump
-        method. It will also take into consideration if the piece is a king or
-        not.
+        Given a piece on the board, returns a list of positions the piece can
+        non-jump move to. This does not include places the piece can move to
+        with a jump since that is in the _piece_valid_jump method. It will also
+        take into consideration if the piece is a king or not.
 
         Parameters:
             piece (Piece): the given piece
@@ -155,20 +200,6 @@ class Game:
         Returns:
             list[tuple(int, int)]: all possible places the given piece can move
             to
-        """
-        raise NotImplementedError
-
-    def _player_valid_moves(self, color):
-        """
-        Returns all the valid moves (jumps or non-jump moves) for all the
-        available specified colored pieces.
-
-        Parameters:
-            color (str): player's color
-
-        Returns:
-            dict{piece: list[tuple(int, int)]}: dictionary of all the valid
-            jumps or moves the player of the given color can make
         """
         raise NotImplementedError
 
