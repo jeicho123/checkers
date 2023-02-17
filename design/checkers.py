@@ -10,7 +10,7 @@ class Game:
 
     2. Check whether a given move is legal
 
-        board.is_legal(piece, end_position)
+        board.is_valid(piece, end_position)
 
     3. Obtain all valid moves of a piece:
 
@@ -110,10 +110,10 @@ class Game:
         """
         raise NotImplementedError
 
-    def is_legal(self, piece, end_position):
+    def is_valid(self, piece, end_position):
         """
         Given a piece on the board and a location to move the piece to,
-        determines if the move is legal or not.
+        determines if the move is valid or not.
 
         Parameters:
             piece (Piece): piece to be moved
