@@ -171,6 +171,20 @@ class Game:
         Returns:
             Piece: Piece object at that location on the board
         """
+        raise NotImplementedError
+
+    def _require_jump(self, color):
+        """
+        Given a player color returns a boolean if the player must make a jump
+        with his or her turn. 
+
+        Parameters:
+            color (str): player color
+
+        Returns:
+            bool: if the player must make a jump with his or her turn
+        """
+        raise NotImplementedError
 
     def _piece_valid_jumps(self, piece):
         """
@@ -251,6 +265,7 @@ class Game:
         Returns:
             None
         """
+        raise NotImplementedError
 
 class Piece:
     """
