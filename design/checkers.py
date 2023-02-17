@@ -10,7 +10,7 @@ class Game:
 
     2. Check whether a given move is legal
 
-        board.move(start_position, end_position)
+        end_position in board._player_valid_moves(color)[start_position]
 
     3. Obtain all valid moves of a piece:
 
