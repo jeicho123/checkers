@@ -5,10 +5,11 @@ class Game:
 
     Examples:
     1. Create new Checkers Board
-    
+
         board = Game(rows)
 
     2. Check whether a given move is legal
+
         board.move(start_position, end_position)
 
     3. Obtain all valid moves of a piece:
@@ -210,8 +211,13 @@ class Piece:
             color (str): the color of the piece
             king (bool): if the piece is a king
         """
+        # tuple (int, int): coordinates of the piece
         self._coord = (row, col)
+
+        # str: color of the piece
         self._color = color
+
+        # bool: if the piece is a king
         self._king = king
 
     # Public methods
@@ -249,3 +255,4 @@ class Piece:
         Returns:
             bool: if the given piece is a king
         """
+        raise NotImplementedError
