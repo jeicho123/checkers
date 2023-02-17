@@ -11,16 +11,28 @@ class Game:
             rows (int): the number of rows of pieces each player begins the game
             with
         """
+        # int: number of rows of pieces each player begins with
+        self._rows = rows
 
-        self._rows = rows   # number of rows of pieces each player begins with
-        self._width = 2 * rows + 2  # width of the game board
-        self._height = 2 * rows + 2 # height of the game board
-        self._board = []    # 2D array for storing the pieces
-        self._red_pieces = []   # list of red pieces on the board
-        self._black_pieces = [] # list of black pieces on the board
-        self._create_new_board()
+        # int: width of the game board
+        self._width = 2 * rows + 2
 
-    def create_new_board(self):
+        # int: height of the game board
+        self._height = 2 * rows + 2
+
+        # list[list[Piece]]: 2-dimensional list for storing the pieces
+        self._board = []
+
+        # list[Piece]: list of red pieces on the board
+        self._red_pieces = []
+
+        # list[Piece]: list of black pieces on the board
+        self._black_pieces = []
+        self.reset_board()
+
+    # Public Methods
+
+    def reset_board(self):
         """
         Creates the board of the correct size and places the pieces on the
         correct squares of the board. Black pieces will be placed on the first n
@@ -33,7 +45,6 @@ class Game:
         Returns:
             None
         """
-
         raise NotImplementedError
         
     def move(self, start_position, end_position):
@@ -49,17 +60,90 @@ class Game:
         Returns:
             None
         """
-
         raise NotImplementedError
 
     def get_winner(self):
         """
         Find the winner of the game and the color won, if it exists.
 
-        Input:
+        Parameters:
             None
 
         Returns:
-            Optional[str]: If there is a winner, return the color. Otherwise,
+            str or None: If there is a winner, return the color. Otherwise,
             return None.
         """
+        raise NotImplementedError
+
+    # Private Methods
+
+    def _piece_valid_jumps(self, start_position):
+        """
+        Given a position on the board, returns a list of positions the piece at
+        the given position can jump to. It will also take into consideration if
+        the piece is a king or not.
+
+        Parameters: 
+            start_position (tuple(int, int)): the position of the given piece
+        
+        Returns:
+            list[tuple(int, int)]: all possible places the given piece can jump
+            to in one jump
+        """
+        raise NotImplementedError
+
+    def _piece_valid_moves(self, start_position):
+        """
+        Given a position on the board, returns a list of positions the piece at
+        the given position can non-jump move to. This does not include places
+        the piece can move to with a jump since that is in the _piece_valid_jump
+        method. It will also take into consideration if the piece is a king or
+        not.
+
+        Parameters:
+            start_position (tuple(int, int)): the position of the given piece
+
+        Returns:
+            list[tuple(int, int)]: all possible places the given piece can move
+            to
+        """
+        raise NotImplementedError
+
+    def _player_valid_moves(self, color):
+        """
+        Returns all the valid moves (jumps or non-jump moves) for all the
+        available specified colored pieces.
+
+        Parameters:
+            color (str): player's color
+
+        Returns:
+            dict{piece: list[tuple(int, int)]}: dictionary of all the valid
+            jumps or moves the player of the given color can make
+        """
+        raise NotImplementedError
+
+    def _remove(self, position):
+        """
+        Removes the piece at the given position.
+
+        Parameters:
+            position (tuple): the position of the given piece to be removed
+
+        Returns:
+            Piece: the piece that was removed
+        """
+        raise NotImplementedError
+
+    def _piece_move_to(self, start_position, end_position):
+        """
+        Moves the given piece and updates the piece's positon on the board.
+
+        Parameters:
+            start_position (tuple(int, int)): position of the piece to be moved
+            end_position(tuple(int, int)): position the peice is moving to
+
+        Returns:
+            None
+        """
+        raise NotImplementedError
