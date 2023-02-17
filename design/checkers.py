@@ -2,6 +2,29 @@
 class Game:
     """
     Class for representing the board and rules of the game.
+
+    Examples:
+    1. Create new Checkers Board
+    
+        board = Game(rows)
+
+    2. Check whether a given move is legal
+        board.move(start_position, end_position)
+
+    3. Obtain all valid moves of a piece:
+
+        if board._piece_valid_jumps(start_position, color):
+            return board._piece_valid_jumps(start_position, color)
+        else:
+            return board._piece_valid_moves(start_position, color)
+
+    4. List of all possible moves a player can make
+
+        board._player_valid_moves(color)
+
+    5. Check whether there's a winner and who
+
+        board.get_winner()
     """
     def __init__(self, rows):
         """
@@ -147,3 +170,82 @@ class Game:
             None
         """
         raise NotImplementedError
+
+    def _piece_jump_to(self, start_position, end_position):
+        """
+        Jumps with the given piece and updates the piece's positon on the board.
+
+        Parameters:
+            start_position (tuple(int, int)): position of the piece to be moved
+            end_position(tuple(int, int)): position the peice is moving to
+
+        Returns:
+            None
+        """
+        raise NotImplementedError
+
+    def _become_king(self, start_position):
+        """
+        Updates the Piece to become a king.
+
+        Parameters:
+            start_position (tuple(int, int)): position of the piece to become a
+            king
+
+        Returns:
+            None
+        """
+
+class Piece:
+    """
+    Class for representing a piece
+    """
+    def __init__(self, row, col, color, king=False):
+        """
+        Constructor
+
+        Parameters:
+            row (int): the row number of the piece
+            col (int): the column number of the piece
+            color (str): the color of the piece
+            king (bool): if the piece is a king
+        """
+        self._coord = (row, col)
+        self._color = color
+        self._king = king
+
+    # Public methods
+    def get_color(self):
+        """
+        Returns the color of the piece.
+
+        Parameters:
+            None
+
+        Returns:
+            str: color of the piece
+        """
+        raise NotImplementedError
+
+    def get_coord(self):
+        """
+        Returns the coordinates of the piece.
+
+        Parameters:
+            None
+
+        Returns
+            tuple(int, int): coordinates of the piece
+        """
+        raise NotImplementedError
+
+    def is_king(self):
+        """
+        Returns if the piece is a king.
+
+        Parameters:
+            None
+
+        Returns:
+            bool: if the given piece is a king
+        """
