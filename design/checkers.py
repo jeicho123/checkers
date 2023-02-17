@@ -10,14 +10,14 @@ class Game:
 
     2. Check whether a given move is legal
 
-        end_position in board._player_valid_moves(color)[start_position]
+        end_position in board._player_valid_moves(color)[piece]
 
     3. Obtain all valid moves of a piece:
 
-        if board._piece_valid_jumps(start_position, color):
-            return board._piece_valid_jumps(start_position, color)
+        if board._piece_valid_jumps(piece:
+            return board._piece_valid_jumps(piece
         else:
-            return board._piece_valid_moves(start_position, color)
+            return board._piece_valid_moves(piece)
 
     4. List of all possible moves a player can make
 
@@ -71,14 +71,14 @@ class Game:
         """
         raise NotImplementedError
         
-    def move(self, start_position, end_position):
+    def move(self, piece, end_position):
         """
         User inputs a position of a piece and a location to move the piece to.
         If the given move is valid, the move will be executed. Otherwise, the
         player wll be prompted to input a different move.
 
         Parameters:
-            start_position (tuple(int, int)): position of the piece to be moved
+            piece (Piece): the piece to be moved
             end_position (tuple(int, int)): destination position
 
         Returns:
@@ -126,14 +126,14 @@ class Game:
 
     # Private Methods
 
-    def _piece_valid_jumps(self, start_position):
+    def _piece_valid_jumps(self, piece):
         """
         Given a position on the board, returns a list of positions the piece at
         the given position can jump to. It will also take into consideration if
         the piece is a king or not.
 
         Parameters: 
-            start_position (tuple(int, int)): the position of the given piece
+            piece (Piece): the given piece
         
         Returns:
             list[tuple(int, int)]: all possible places the given piece can jump
@@ -141,7 +141,7 @@ class Game:
         """
         raise NotImplementedError
 
-    def _piece_valid_moves(self, start_position):
+    def _piece_valid_moves(self, piece):
         """
         Given a position on the board, returns a list of positions the piece at
         the given position can non-jump move to. This does not include places
@@ -150,7 +150,7 @@ class Game:
         not.
 
         Parameters:
-            start_position (tuple(int, int)): the position of the given piece
+            piece (Piece): the given piece
 
         Returns:
             list[tuple(int, int)]: all possible places the given piece can move
@@ -184,12 +184,12 @@ class Game:
         """
         raise NotImplementedError
 
-    def _piece_move_to(self, start_position, end_position):
+    def _piece_move_to(self, piece, end_position):
         """
         Moves the given piece and updates the piece's positon on the board.
 
         Parameters:
-            start_position (tuple(int, int)): position of the piece to be moved
+            piece (Piece): the piece to be moved
             end_position(tuple(int, int)): position the peice is moving to
 
         Returns:
@@ -197,12 +197,12 @@ class Game:
         """
         raise NotImplementedError
 
-    def _piece_jump_to(self, start_position, end_position):
+    def _piece_jump_to(self, piece, end_position):
         """
         Jumps with the given piece and updates the piece's positon on the board.
 
         Parameters:
-            start_position (tuple(int, int)): position of the piece to be moved
+            piece (Piece): the piece to be moved
             end_position(tuple(int, int)): position the peice is moving to
 
         Returns:
@@ -210,13 +210,12 @@ class Game:
         """
         raise NotImplementedError
 
-    def _become_king(self, start_position):
+    def _become_king(self, piece):
         """
         Updates the Piece to become a king.
 
         Parameters:
-            start_position (tuple(int, int)): position of the piece to become a
-            king
+            piece (Piece): the piece to become a king
 
         Returns:
             None
