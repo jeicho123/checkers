@@ -99,6 +99,30 @@ class Game:
         """
         raise NotImplementedError
 
+    def resign(self, color):
+        """
+        Player of the given color resigns; the other player is the winner.
+
+        Parameters:
+            color (str): color of the resigning player
+
+        Returns:
+            None
+        """
+        raise NotImplementedError
+
+    def offer_draw(self, color):
+        """
+        Player of the given color offers a draw. The other player can choose to
+        either accept or decline the draw.
+
+        Parameters:
+            color (str): color of the player offering a draw
+
+        Returns:
+            None
+        """
+
     # Private Methods
 
     def _piece_valid_jumps(self, start_position):
