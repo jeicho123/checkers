@@ -52,6 +52,16 @@ class Game:
 
     # Public Methods
 
+    def print(self):
+        for row in self._board:
+            text = ""
+            for s in row:
+                if s is None:
+                    text += " "
+                else:
+                    text += s.get_color()[0]
+            print(text)
+
     def reset_board(self):
         """
         Creates the board of the correct size and places the pieces on the
@@ -98,7 +108,16 @@ class Game:
             dict{tuple(int, int): list[tuple(int, int)]}: dictionary of all the
             valid jumps or moves the player of the given color can make
         """
-        raise NotImplementedError
+        all_moves = {}
+        if color == "BLACK":
+            player_pieces = self._black_pieces
+        else:
+            player_pieces = self._red_pieces
+
+        for piece in player_pieces:
+            all_moves[piece] = self.piece_all_valid(piece)
+        
+        return all_moves
 
     def piece_all_valid(self, piece):
         """
@@ -111,7 +130,10 @@ class Game:
             list[tuple(int, int)]: list of all the positions the given piece can
             move to
         """
-        raise NotImplementedError
+        if self._require_jump(piece.get_color()):
+            return self._piece_valid_jumps(piece)
+        else:
+            return self._piece_valid_moves(piece)
         
     def move(self, start_position, end_position):
         """
@@ -126,7 +148,14 @@ class Game:
         Returns:
             None
         """
-        raise NotImplementedError
+        piece = self._get(start_position)
+
+        if (piece in self.player_valid_moves(piece.get_color()) and
+                end_position in self.player_valid_moves(piece.get_color)[piece]):
+            if self._require_jump(piece.get_color()):
+                self._piece_jump_to(end_position)
+            else:
+                self._piece_move_to(end_position)
 
     def is_valid(self, piece, end_position):
         """
@@ -137,7 +166,7 @@ class Game:
             piece (Piece): piece to be moved
             end_position (tuple(int, int)): destination position
         """
-        raise NotImplementedError
+        return end_position in self.piece_all_valid(piece)
 
     def get_winner(self):
         """
@@ -203,7 +232,15 @@ class Game:
         Returns:
             bool: if the player must make a jump with his or her turn
         """
-        raise NotImplementedError
+        if color == "BLACK":
+            pieces = self._black_pieces
+        else:
+            pieces = self._red_pieces
+
+        for piece in pieces:
+            if self._piece_valid_jumps(piece) != []:
+                return True
+        return False
 
     def _piece_valid_jumps(self, piece):
         """
@@ -222,8 +259,75 @@ class Game:
         valid_jumps = []
 
         if piece.get_color() == "BLACK":
+            try:
+                if (self._get((row + 2, col + 2)) is None
+                        and self._get((row + 1, col + 1)) is not None
+                        and self._get((row + 1, col + 1)).get_color() == "RED"):
+                    valid_jumps.append((row + 2, col + 2))
+            except IndexError:
+                pass
 
+            try:
+                if (self._get((row + 2, col - 2)) is None
+                        and self._get((row + 1, col - 1)) is not None
+                        and self._get((row + 1, col - 1)).get_color() == "RED"):
+                    valid_jumps.append((row + 2, col - 2))
+            except IndexError:
+                pass
+
+            
+            if piece.is_king():
+                try:
+                    if (self._get((row - 2, col + 2)) is None
+                            and self._get((row - 1, col + 1)) is not None
+                            and self._get((row - 1, col + 1)).get_color() == "RED"):
+                        valid_jumps.append((row - 2, col + 2))
+                except IndexError:
+                    pass
+                
+                try:
+                    if (self._get((row - 2, col - 2)) is None
+                            and self._get((row - 1, col - 1)) is not None
+                            and self._get((row - 1, col - 1)).get_color() == "RED"):
+                        valid_jumps.append((row - 2, col - 2))
+                except IndexError:
+                    pass
+
+        if piece.get_color() == "RED":
+            try:
+                if (self._get((row - 2, col + 2)) is None
+                        and self._get((row + 1, col + 1)) is not None
+                        and self._get((row + 1, col + 1)).get_color() == "BLACK"):
+                    valid_jumps.append((row + 2, col + 2))
+            except IndexError:
+                pass
+
+            try:
+                if (self._get((row - 2, col - 2)) is None
+                        and self._get((row + 1, col - 1)) is not None
+                        and self._get((row + 1, col - 1)).get_color() == "BLACK"):
+                    valid_jumps.append((row + 2, col - 2))
+            except IndexError:
+                pass
+
+            if piece.is_king():
+                try:
+                    if (self._get((row + 2, col + 2)) is None
+                            and self._get((row - 1, col + 1)) is not None
+                            and self._get((row - 1, col + 1)).get_color() == "BLACK"):
+                        valid_jumps.append((row - 2, col + 2))
+                except IndexError:
+                    pass
+
+                try:
+                    if (self._get((row + 2, col - 2)) is None
+                            and self._get((row - 1, col - 1)) is not None
+                            and self._get((row - 1, col - 1)).get_color() == "BLACK"):
+                        valid_jumps.append((row - 2, col - 2))
+                except IndexError:
+                    pass
         
+        return valid_jumps
 
     def _piece_valid_moves(self, piece):
         """
@@ -239,7 +343,62 @@ class Game:
             list[tuple(int, int)]: all possible places the given piece can move
             to
         """
-        raise NotImplementedError
+        valid_moves = []
+        row, col = piece.get_coord()
+
+        if piece.get_color() == "BLACK":
+            try:
+                if self._get((row + 1, col + 1)) is None:
+                    valid_moves.append((row + 1, col + 1))
+            except IndexError:
+                pass
+
+            try:
+                if self._get((row + 1, col - 1)) is None:
+                    valid_moves.append((row + 1, col - 1))
+            except IndexError:
+                pass
+
+            if piece.is_king():
+                try:
+                    if self._get((row - 1, col + 1)) is None:
+                        valid_moves.append((row - 1, col + 1))
+                except IndexError:
+                    pass
+
+                try:
+                    if self._get((row - 1, col - 1)) is None:
+                        valid_moves.append((row - 1, col - 1))
+                except IndexError:
+                    pass
+
+        if piece.get_color() == "RED":
+            try:
+                if self._get((row - 1, col + 1)) is None:
+                    valid_moves.append((row + 1, col + 1))
+            except IndexError:
+                pass
+
+            try:
+                if self._get((row - 1, col - 1)) is None:
+                    valid_moves.append((row + 1, col - 1))
+            except IndexError:
+                pass
+
+            if piece.is_king():
+                try:
+                    if self._get((row + 1, col + 1)) is None:
+                        valid_moves.append((row - 1, col + 1))
+                except IndexError:
+                    pass
+
+                try:
+                    if self._get((row + 1, col - 1)) is None:
+                        valid_moves.append((row - 1, col - 1))
+                except IndexError:
+                    pass
+
+        return valid_moves
 
     def _remove(self, position):
         """
@@ -251,7 +410,7 @@ class Game:
         Returns:
             Piece: the piece that was removed
         """
-        row, col = positon
+        row, col = position
         assert isinstance(self._board[row][col], Piece)
 
         removed = self._get((row, col))
@@ -275,7 +434,8 @@ class Game:
         Returns:
             None
         """
-        raise NotImplementedError
+        row, col = piece.get_coord()
+
 
     def _piece_jump_to(self, piece, end_position):
         """
