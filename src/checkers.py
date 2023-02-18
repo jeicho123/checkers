@@ -220,6 +220,9 @@ class Game:
         """
         row, col = piece.get_coord()
         valid_jumps = []
+
+        if piece.get_color() == "BLACK":
+
         
 
     def _piece_valid_moves(self, piece):
@@ -248,7 +251,18 @@ class Game:
         Returns:
             Piece: the piece that was removed
         """
-        raise NotImplementedError
+        row, col = positon
+        assert isinstance(self._board[row][col], Piece)
+
+        removed = self._get((row, col))
+        self._board[row][col] = None
+        if removed.get_color() == "BLACK":
+            self._black_pieces.remove(removed)
+        else:
+            self._red_piece.remove(removed)
+
+        return removed
+        
 
     def _piece_move_to(self, piece, end_position):
         """
@@ -286,8 +300,7 @@ class Game:
         Returns:
             None
         """
-        row = 
-        piece._king = True
+        piece._king = True 
 
 class Piece:
     """
