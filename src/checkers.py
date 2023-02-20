@@ -447,9 +447,12 @@ class Game:
         Returns:
             None
         """
-        row, col = piece.get_coord()
-        
-        raise NotImplementedError
+        start_row, start_col = piece.get_coord()
+        end_row, end_col = end_position
+
+        self._board[start_row][start_col] = None
+        self._board[end_row][end_col] = piece
+        piece.set_coord(end_position)
 
 
     def _piece_jump_to(self, piece, end_position):
@@ -482,7 +485,8 @@ class Game:
         Returns:
             None
         """
-        piece._king = True 
+        piece._king = True
+        self._jumping = None
 
 class Piece:
     """
@@ -527,10 +531,22 @@ class Piece:
         Parameters:
             None
 
-        Returns
+        Returns:
             tuple(int, int): coordinates of the piece
         """
         return self._coord
+
+    def set_coord(self, new_coord):
+        """
+        Sets the coordinates of the piece to the new set of coordinates.
+
+        Parameters:
+            new_coord (tuple(int, int)): new coordinates of piece
+
+        Returns:
+            None
+        """
+        self._coord = new_coord
 
     def is_king(self):
         """
