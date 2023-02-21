@@ -57,8 +57,8 @@ class Game:
     # Public Methods
 
     def print(self):
-        for row in self._board:
-            text = ""
+        for r, row in enumerate(self._board):
+            text = str(r) + "\t"
             for s in row:
                 if s is None:
                     text += "_"
@@ -79,10 +79,14 @@ class Game:
         Returns:
             None
         """
+        # reset instance variables
         self._board = []
         self._red_pieces = []
         self._black_pieces = []
         self._jumping = None
+        self._winner = None
+
+        # reset game board
         for r in range(self._height):
             row = []
             for c in range(self._width):
@@ -175,29 +179,18 @@ class Game:
             raise ValueError
         current = piece.get_color()
 
-        if self.is_valid(piece, end_position):  # complete move
-            if self._require_jump(current): # jumping move
-                for move in self.player_valid_moves(current)[piece]:
-                    if move[-1] == end_position:
-                        for step in move:
-                            self._piece_jump_to(piece, step)
-                            self._jumping = None
-            else: # non-jumping move
-                self._piece_move_to(piece, end_position)
-            
-            row, _ = end_position
-            if current == "BLACK" and row == self._height - 1:
-                self._become_king(piece)
-            elif current == "RED" and row == 0:
-                self._become_king(piece)
-
-        else:   # incomplete jumping moves
+        if self._require_jump(current): # jump move
             for move in self.player_valid_moves(current)[piece]:
                 if end_position in move:
-                    for step in move[: move.index(end_position)+1]:
-                        if self._require_jump(current):
-                            self._piece_jump_to(piece, step)
-                            self._jumping = piece
+                    if end_position == move[-1]:    # complete jumping move
+                        self._jumping = None
+                    else:   # incomplete jumping move
+                        self._jumping = piece
+                    for step in move[: move.index(end_position) + 1]:
+                        self._piece_jump_to(piece, step)
+        else:
+            self._piece_move_to(piece, end_position)
+            self._jumping = None
 
     def turn_incomplete(self):
         return self._jumping is not None
@@ -304,7 +297,7 @@ class Game:
         Returns:
             bool: if the player must make a jump with his or her turn
         """
-        if self._jumping is not None:
+        if self._jumping is not None and self._jumping.get_color() == color:
             return True
 
         if color == "BLACK":
@@ -329,92 +322,74 @@ class Game:
         Returns:
             list(list(tuple(int, int))): list of paths the piece can take
         """
-        return self._get_jumps(piece.get_coord(), piece.get_color(), piece.is_king(), set())
+        return self._get_jumps(piece.get_coord(), piece.get_color(),
+                piece.is_king())
     
-    def _get_jumps(self, start_position, color, king, visited):
-        if self._single_jumps(start_position, color, king) == []:
+    def _get_jumps(self, start_position, color, king, jumped=set()):
+        if self._single_jumps(start_position, color, king, jumped) == {}:
             return []
         else:
             paths = []
-            visited.add(start_position)
-            for pos in self._single_jumps(start_position, color, king):
-                if pos not in visited:
-                    visited.add(pos)
-                    paths.append([pos] + self._get_jumps(pos, color, king, visited))
+            for pos, gap in self._single_jumps(start_position, color, king, jumped).items():
+                sub_paths = self._get_jumps(pos, color, king, jumped | gap)
+                if sub_paths == []:
+                    paths.append([pos])
+                else:
+                    for sub_path in sub_paths:
+                        if pos not in sub_path:
+                            paths.append([pos] + sub_path)
             return paths
 
-    def _single_jumps(self, start_position, color, king):
+    def _single_jumps(self, start_position, color, king, jumped):
         row, col = start_position
-        valid = []
+        valid = {}
 
-        if color == "BLACK":
+        if color == "BLACK" or king:
             try:
-                if (self._get((row + 2, col + 2)) is None
-                        and self._get((row + 1, col + 1)) is not None
-                        and self._get((row + 1, col + 1)).get_color() == "RED"):
-                    valid.append((row + 2, col + 2))
+                dest = (row + 2, col + 2)
+                jump_over = (row + 1, col + 1)
+                if (self._get(dest) is None
+                        and self._get(jump_over) is not None
+                        and self._get(jump_over).get_color() != color
+                        and (jump_over) not in jumped):
+                    valid[dest] = {jump_over}
             except IndexError:
                 pass
 
             try:
-                if (self._get((row + 2, col - 2)) is None
-                        and self._get((row + 1, col - 1)) is not None
-                        and self._get((row + 1, col - 1)).get_color() == "RED"):
-                    valid.append((row + 2, col - 2))
+                dest = (row + 2, col - 2)
+                jump_over = (row + 1, col - 1)
+                if (self._get(dest) is None
+                        and self._get(jump_over) is not None
+                        and self._get(jump_over).get_color() != color
+                        and (jump_over) not in jumped):
+                    valid[dest] = {jump_over}
             except IndexError:
                 pass
             
-            if king:
-                try:
-                    if (self._get((row - 2, col + 2)) is None
-                            and self._get((row - 1, col + 1)) is not None
-                            and self._get((row - 1, col + 1)).get_color() == "RED"):
-                        valid.append((row - 2, col + 2))
-                except IndexError:
-                    pass
+        if color == "RED" or king:
+            try:
+                dest = (row - 2, col + 2)
+                jump_over = (row - 1, col + 1)
+                if (self._get(dest) is None
+                        and self._get(jump_over) is not None
+                        and self._get(jump_over).get_color() != color
+                        and jump_over not in jumped):
+                    valid[dest] = {jump_over}
+            except IndexError:
+                pass
                 
-                try:
-                    if (self._get((row - 2, col - 2)) is None
-                            and self._get((row - 1, col - 1)) is not None
-                            and self._get((row - 1, col - 1)).get_color() == "RED"):
-                        valid.append((row - 2, col - 2))
-                except IndexError:
-                    pass
-
-        if color == "RED":
             try:
-                if (self._get((row - 2, col + 2)) is None
-                        and self._get((row - 1, col + 1)) is not None
-                        and self._get((row - 1, col + 1)).get_color() == "BLACK"):
-                    valid.append((row - 2, col + 2))
+                dest = (row - 2, col - 2)
+                jump_over = (row - 1, col - 1)
+                if (self._get(dest) is None
+                        and self._get(jump_over) is not None
+                        and self._get(jump_over).get_color() != color
+                        and jump_over not in jumped):
+                    valid[dest] = {jump_over}
             except IndexError:
                 pass
 
-            try:
-                if (self._get((row - 2, col - 2)) is None
-                        and self._get((row - 1, col - 1)) is not None
-                        and self._get((row - 1, col - 1)).get_color() == "BLACK"):
-                    valid.append((row - 2, col - 2))
-            except IndexError:
-                pass
-
-            if king:
-                try:
-                    if (self._get((row + 2, col + 2)) is None
-                            and self._get((row + 1, col + 1)) is not None
-                            and self._get((row + 1, col + 1)).get_color() == "BLACK"):
-                        valid.append((row + 2, col + 2))
-                except IndexError:
-                    pass
-
-                try:
-                    if (self._get((row + 2, col - 2)) is None
-                            and self._get((row + 1, col - 1)) is not None
-                            and self._get((row + 1, col - 1)).get_color() == "BLACK"):
-                        valid.append((row + 2, col - 2))
-                except IndexError:
-                    pass
-        
         return valid
 
     def _piece_valid_moves(self, piece):
@@ -434,7 +409,7 @@ class Game:
         valid_moves = []
         row, col = piece.get_coord()
 
-        if piece.get_color() == "BLACK":
+        if piece.get_color() == "BLACK" or piece.is_king():
             try:
                 if self._get((row + 1, col + 1)) is None:
                     valid_moves.append([(row + 1, col + 1)])
@@ -447,20 +422,7 @@ class Game:
             except IndexError:
                 pass
 
-            if piece.is_king():
-                try:
-                    if self._get((row - 1, col + 1)) is None:
-                        valid_moves.append([(row - 1, col + 1)])
-                except IndexError:
-                    pass
-
-                try:
-                    if self._get((row - 1, col - 1)) is None:
-                        valid_moves.append([(row - 1, col - 1)])
-                except IndexError:
-                    pass
-
-        if piece.get_color() == "RED":
+        if piece.get_color() == "RED" or piece.is_king():
             try:
                 if self._get((row - 1, col + 1)) is None:
                     valid_moves.append([(row - 1, col + 1)])
@@ -472,19 +434,6 @@ class Game:
                     valid_moves.append([(row - 1, col - 1)])
             except IndexError:
                 pass
-
-            if piece.is_king():
-                try:
-                    if self._get((row + 1, col + 1)) is None:
-                        valid_moves.append([(row + 1, col + 1)])
-                except IndexError:
-                    pass
-
-                try:
-                    if self._get((row + 1, col - 1)) is None:
-                        valid_moves.append([(row + 1, col - 1)])
-                except IndexError:
-                    pass
 
         return valid_moves
 
@@ -539,12 +488,13 @@ class Game:
         """
         start_row, start_col = piece.get_coord()
         end_row, end_col = end_position
-        captured_position = int((start_row + end_row) / 2), int((start_col  + end_col) / 2)
+        jump_over = (int((start_row + end_row) / 2), 
+                int((start_col  + end_col) / 2))
 
         self._board[start_row][start_col] = None
         self._board[end_row][end_col] = piece
         piece.set_coord(end_position)
-        self._remove(captured_position)
+        self._remove(jump_over)
 
     def _become_king(self, piece):
         """
