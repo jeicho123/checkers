@@ -57,8 +57,17 @@ class Game:
     # Public Methods
 
     def print(self):
-        for r, row in enumerate(self._board):
-            text = str(r) + "\t"
+        """
+        Prints out a basic text representation of the Game object's board.
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
+        for row in self._board:
+            text = ""
             for s in row:
                 if s is None:
                     text += "_"
@@ -110,15 +119,15 @@ class Game:
 
     def player_valid_moves(self, color):
         """
-        Returns all the valid moves (jumps or non-jump moves) for all the
-        available specified colored pieces.
+        Returns all the complete valid moves (jumps or non-jump moves) for all
+        the available specified colored pieces.
 
         Parameters:
             color (str): player's color
 
         Returns:
             dict{Piece: list[list[tuple(int, int)]]}: dictionary of all the
-            valid jumps or moves the player of the given color can make
+            complete valid moves the player of the given color can make
         """
         all_moves = {}
         if self._jumping is not None:
@@ -142,14 +151,14 @@ class Game:
 
     def piece_all_valid(self, piece):
         """
-        Returns all the valid moves for the given piece.
+        Returns all the complete valid moves for the given piece.
 
         Parameters:
             piece (Piece): the given piece
 
         Returns:
-            list[list[tuple(int, int)]]: list of all the possible moves the given piece can
-            move to
+            list[list[tuple(int, int)]]: list of all the possible moves the
+            given piece can move to
         """
         if self._piece_valid_jumps(piece):
             return self._piece_valid_jumps(piece)
@@ -192,10 +201,33 @@ class Game:
             self._piece_move_to(piece, end_position)
             self._jumping = None
 
+        self._become_king(piece)
+
     def turn_incomplete(self):
+        """
+        Boolean value for if the turn is incomplete, meaning the player has not
+        completed all possible successive jumps.
+
+        Parameters:
+            None
+
+        Returns:
+            bool: True if the turn is incomplete, otherwise returns False
+        """
         return self._jumping is not None
 
     def end_turn(self, color, cmd):
+        """
+        Method for ending a player's turn. The player can choose to resign,
+        offer a draw, or simply end their current turn.
+
+        Parameters:
+            color (str): current player's color
+            cmd (str): the player's command to end turn, resign, or offer draw
+
+        Returns:
+            None
+        """
         if cmd == "End Turn":
             if color == "BLACK" and self.player_valid_moves("RED") == {}:
                 self._winner == "BLACK"
@@ -204,7 +236,7 @@ class Game:
         elif cmd == "Resign":
             self.resign(color)
         elif cmd == "Offer Draw":
-            self.offer_draw(color)
+            self.offer_draw()
 
     def is_valid(self, piece, end_position):
         """
@@ -214,6 +246,9 @@ class Game:
         Parameters:
             piece (Piece): piece to be moved
             end_position (tuple(int, int)): destination position
+
+        Returns:
+            bool: returns True if the move is valid, otherwise, returns False
         """
         for moves in self.piece_all_valid(piece):
             if moves[-1] == end_position:
@@ -248,13 +283,13 @@ class Game:
         elif color == "RED":
             self._winner = "BLACK"
 
-    def offer_draw(self, color):
+    def offer_draw(self):
         """
-        Player of the given color offers a draw. The other player can choose to
-        either accept or decline the draw.
+        Player offers a draw. The other player can choose to either accept or
+        decline the draw.
 
         Parameters:
-            color (str): color of the player offering a draw
+            None
 
         Returns:
             None
@@ -262,6 +297,16 @@ class Game:
         self.draw_offered = True
 
     def accept_draw(self, cmd):
+        """
+        Method for player to either accept or decline a draw offered by the
+        other player.
+
+        Parameters:
+            cmd (str): command for accepting or declining a draw
+        
+        Returns:
+            None
+        """
         if cmd == "Accept":
             self._winner = "DRAW"
         elif cmd == "Decline":
@@ -320,27 +365,64 @@ class Game:
             piece (Piece): given peice
 
         Returns:
-            list(list(tuple(int, int))): list of paths the piece can take
+            list(list(tuple(int, int))): list of moves the piece can make
         """
         return self._get_jumps(piece.get_coord(), piece.get_color(),
                 piece.is_king())
     
     def _get_jumps(self, start_position, color, king, jumped=set()):
+        """
+        Given a position on the board, a color, king status, and a set of
+        locations that have already been jumped over, returns a list of all the
+        possible complete moves that can be made from the given starting
+        position.
+
+        Parameters:
+            start_position (tuple(int, int)): row and column information of the
+                starting position on the board
+            color (str): given color
+            king (bool): if the piece is a king (can move in both directions)
+            jumped (set(tuple(int, int))): set of locations that have already
+            been jumped over.
+
+        Returns:
+            list[list[tuple(int, int)]]: list of moves a piece with the given
+            details can make
+        """
         if self._single_jumps(start_position, color, king, jumped) == {}:
             return []
         else:
             paths = []
-            for pos, gap in self._single_jumps(start_position, color, king, jumped).items():
+            for pos, gap in self._single_jumps(start_position, color, king,
+                    jumped).items():
                 sub_paths = self._get_jumps(pos, color, king, jumped | gap)
                 if sub_paths == []:
                     paths.append([pos])
                 else:
                     for sub_path in sub_paths:
-                        if pos not in sub_path:
-                            paths.append([pos] + sub_path)
+                        paths.append([pos] + sub_path)
             return paths
 
     def _single_jumps(self, start_position, color, king, jumped):
+        """
+        Given a starting position on the board, a color, king status, and a set
+        of locations that have already been jumped over, returns a dictionary of
+        the possible single jumps a move with the given details can make. The
+        keys of the dictionary are the possible locations that can be jumped to
+        and the values of the dictionary are sets of locations that must be
+        jumped over to reach each destination.
+
+        Parameters:
+            start_position (tuple(int, int)): starting location on the board
+            color (str): given piece color
+            king (bool): king status of the given piece
+            jumped (set(tuple(int, int))): set of locations that have already
+            been jumped over
+
+        Returns:
+            dict{tuple(int, int): set(tuple(int, int))}: dictionary storing the
+            possible end locations and the locations being jumped over
+        """
         row, col = start_position
         valid = {}
 
@@ -403,8 +485,8 @@ class Game:
             piece (Piece): the given piece
 
         Returns:
-            list[tuple(int, int)]: all possible places the given piece can move
-            to
+            list[list[tuple(int, int)]]: all possible places the given piece can
+            non-jump move to
         """
         valid_moves = []
         row, col = piece.get_coord()
@@ -498,7 +580,7 @@ class Game:
 
     def _become_king(self, piece):
         """
-        Updates the Piece to become a king.
+        Checks if the given Piece must be promoted to a king.
 
         Parameters:
             piece (Piece): the piece to become a king
@@ -506,7 +588,13 @@ class Game:
         Returns:
             None
         """
-        piece._king = True
+        row, _ = piece.get_coord()
+        color = piece.get_color()
+        if row == 0 and color == "RED":
+            piece._king = True
+        elif row == self._height - 1 and color == "BLACK":
+            piece._king = True
+        self._jumping = None
 
 class Piece:
     """
