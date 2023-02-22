@@ -56,16 +56,17 @@ class Game:
 
     # Public Methods
 
-    def print(self):
+    def __str__(self):
         """
-        Prints out a basic text representation of the Game object's board.
+        Returns a basic text representation of the Game object's board.
 
         Parameters:
             None
 
         Returns:
-            None
+            str: basic text representation fo the Game object's board
         """
+        string = []
         for row in self._board:
             text = ""
             for s in row:
@@ -73,7 +74,8 @@ class Game:
                     text += "_"
                 else:
                     text += s.get_color()[0]
-            print(text)
+            string.append(text)
+        return "\n".join(string)
 
     def reset_board(self):
         """
