@@ -193,20 +193,22 @@ class Game:
         if not self.is_valid(piece, end_position):
             raise ValueError("Invalid move")
 
-        if self._require_jump(current): # jump move
+        if self._require_jump(current): # jumping move
             for move in self.player_valid_moves(current)[piece]:
                 if end_position in move:
                     if end_position == move[-1]:    # complete jumping move
                         self._jumping = None
                     else:   # incomplete jumping move
                         self._jumping = piece
+
                     for step in move[: move.index(end_position) + 1]:
                         self._piece_jump_to(piece, step)
+
         else:   #non-jump move
             self._piece_move_to(piece, end_position)
             self._jumping = None
         # check for promotion
-        self._become_king(piece)
+        self._check_promote(piece)
 
     def turn_incomplete(self):
         """
@@ -633,12 +635,10 @@ class Game:
         jump_over = (int((start_row + end_row) / 2), 
                 int((start_col  + end_col) / 2))
 
-        self._board[start_row][start_col] = None
-        self._board[end_row][end_col] = piece
-        piece.set_coord(end_position)
+        self._piece_move_to(piece, end_position)
         self._remove(jump_over)
 
-    def _become_king(self, piece):
+    def _check_promote(self, piece):
         """
         Checks if the given Piece must be promoted to a king.
 
@@ -654,7 +654,6 @@ class Game:
             piece._king = True
         elif row == self._height - 1 and color == "BLACK":
             piece._king = True
-        self._jumping = None
 
 class Piece:
     """
