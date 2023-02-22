@@ -9,11 +9,11 @@ class Game:
 
     2. Check whether a given move is legal
 
-        board.is_valid(piece, end_position)
+        board.is_valid(start_position, end_position)
 
     3. Obtain all valid moves of a piece:
 
-        board.piece_all_valid(piece)
+        board.piece_all_valid(position)
 
     4. List of all possible moves a player can make
 
@@ -143,15 +143,15 @@ class Game:
 
         if self._require_jump(color):   # player must jump
             for piece in player_pieces:
-                if self._piece_valid_jumps(piece):
-                    all_moves[piece] = self._piece_valid_jumps(piece)
+                if self._piece_valid_jumps(piece.get_coord()):
+                    all_moves[piece.get_coord()] = self._piece_valid_jumps(piece.get_coord())
         else:   # player cannot jump
             for piece in player_pieces:
-                if self._piece_valid_moves(piece):
-                    all_moves[piece] = self._piece_valid_moves(piece)
+                if self._piece_valid_moves(piece.get_coord()):
+                    all_moves[piece.get_coord()] = self._piece_valid_moves(piece.get_coord())
         return all_moves
 
-    def piece_all_valid(self, piece):
+    def piece_all_valid(self, start_position):
         """
         Returns all the complete valid moves for the given piece.
 
@@ -162,10 +162,10 @@ class Game:
             list[list[tuple(int, int)]]: list of all the possible moves the
             given piece can move to
         """
-        if self._piece_valid_jumps(piece):  # piece has valid jumps
-            return self._piece_valid_jumps(piece)
+        if self._piece_valid_jumps(start_position):  # piece has valid jumps
+            return self._piece_valid_jumps(start_position)
         else:   # piece has no valid jumps
-            return self._piece_valid_moves(piece)
+            return self._piece_valid_moves(start_position)
         
     def move(self, start_position, end_position):
         """
@@ -186,11 +186,11 @@ class Game:
         """
         piece = self._get(start_position)
         if (piece is None
-                or piece not in self.player_valid_moves(piece.get_color())):
+                or start_position not in self.player_valid_moves(piece.get_color())):
             raise ValueError("Invalid piece")
         current = piece.get_color()
 
-        if not self.is_valid(piece, end_position):
+        if not self.is_valid(start_position, end_position):
             raise ValueError("Invalid move")
 
         if self._require_jump(current): # jumping move
@@ -245,7 +245,7 @@ class Game:
         elif cmd == "Offer Draw":
             self.offer_draw()
 
-    def is_valid(self, piece, end_position):
+    def is_valid(self, start_position, end_position):
         """
         Given a piece on the board and a location to move the piece to,
         determines if the move is valid or not.
@@ -257,7 +257,7 @@ class Game:
         Returns:
             bool: returns True if the move is valid, otherwise, returns False
         """
-        for moves in self.piece_all_valid(piece):
+        for moves in self.piece_all_valid(start_position):
             if moves[-1] == end_position:   # end_position is the last move
                 return True
         return False
@@ -412,11 +412,11 @@ class Game:
             pieces = self._red_pieces
 
         for piece in pieces:
-            if self._piece_valid_jumps(piece):
+            if self._piece_valid_jumps(piece.get_coord()):
                 return True
         return False
 
-    def _piece_valid_jumps(self, piece):
+    def _piece_valid_jumps(self, start_position):
         """"
         Given a piece on the board, returns a list of all the possible complete
         jumps a piece can make where the coordinates of each sqaure the piece
@@ -428,7 +428,8 @@ class Game:
         Returns:
             list(list(tuple(int, int))): list of moves the piece can make
         """
-        return self._get_jumps(piece.get_coord(), piece.get_color(),
+        piece = self._get(start_position)
+        return self._get_jumps(start_position, piece.get_color(), 
                 piece.is_king())
     
     def _get_jumps(self, start_position, color, king, jumped=set()):
@@ -535,7 +536,7 @@ class Game:
 
         return valid
 
-    def _piece_valid_moves(self, piece):
+    def _piece_valid_moves(self, start_position):
         """
         Given a piece on the board, returns a list of positions the piece can
         non-jump move to. This does not include places the piece can move to
@@ -550,7 +551,8 @@ class Game:
             non-jump move to
         """
         valid_moves = []
-        row, col = piece.get_coord()
+        row, col = start_position
+        piece = self._get(start_position)
 
         if piece.get_color() == "BLACK" or piece.is_king():
             try:
