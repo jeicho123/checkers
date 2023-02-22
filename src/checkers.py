@@ -57,6 +57,15 @@ class Game:
     # Public Methods
 
     def print(self):
+        """
+        Prints out a basic text representation of the Game object's board.
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
         for row in self._board:
             text = ""
             for s in row:
@@ -79,10 +88,14 @@ class Game:
         Returns:
             None
         """
+        # reset instance variables
         self._board = []
         self._red_pieces = []
         self._black_pieces = []
         self._jumping = None
+        self._winner = None
+
+        # reset game board
         for r in range(self._height):
             row = []
             for c in range(self._width):
@@ -106,15 +119,15 @@ class Game:
 
     def player_valid_moves(self, color):
         """
-        Returns all the valid moves (jumps or non-jump moves) for all the
-        available specified colored pieces.
+        Returns all the complete valid moves (jumps or non-jump moves) for all
+        the available specified colored pieces.
 
         Parameters:
             color (str): player's color
 
         Returns:
             dict{Piece: list[list[tuple(int, int)]]}: dictionary of all the
-            valid jumps or moves the player of the given color can make
+            complete valid moves the player of the given color can make
         """
         all_moves = {}
         if self._jumping is not None:
@@ -138,14 +151,14 @@ class Game:
 
     def piece_all_valid(self, piece):
         """
-        Returns all the valid moves for the given piece.
+        Returns all the complete valid moves for the given piece.
 
         Parameters:
             piece (Piece): the given piece
 
         Returns:
-            list[list[tuple(int, int)]]: list of all the possible moves the given piece can
-            move to
+            list[list[tuple(int, int)]]: list of all the possible moves the
+            given piece can move to
         """
         if self._piece_valid_jumps(piece):
             return self._piece_valid_jumps(piece)
@@ -175,34 +188,46 @@ class Game:
             raise ValueError
         current = piece.get_color()
 
-        if self.is_valid(piece, end_position):  # complete move
-            if self._require_jump(current): # jumping move
-                for move in self.player_valid_moves(current)[piece]:
-                    if move[-1] == end_position:
-                        for step in move:
-                            self._piece_jump_to(piece, step)
-                            self._jumping = None
-            else: # non-jumping move
-                self._piece_move_to(piece, end_position)
-            
-            row, _ = end_position
-            if current == "BLACK" and row == self._height - 1:
-                self._become_king(piece)
-            elif current == "RED" and row == 0:
-                self._become_king(piece)
-
-        else:   # incomplete jumping moves
+        if self._require_jump(current): # jump move
             for move in self.player_valid_moves(current)[piece]:
                 if end_position in move:
-                    for step in move[: move.index(end_position)+1]:
-                        if self._require_jump(current):
-                            self._piece_jump_to(piece, step)
-                            self._jumping = piece
+                    if end_position == move[-1]:    # complete jumping move
+                        self._jumping = None
+                    else:   # incomplete jumping move
+                        self._jumping = piece
+                    for step in move[: move.index(end_position) + 1]:
+                        self._piece_jump_to(piece, step)
+        else:
+            self._piece_move_to(piece, end_position)
+            self._jumping = None
+
+        self._become_king(piece)
 
     def turn_incomplete(self):
+        """
+        Boolean value for if the turn is incomplete, meaning the player has not
+        completed all possible successive jumps.
+
+        Parameters:
+            None
+
+        Returns:
+            bool: True if the turn is incomplete, otherwise returns False
+        """
         return self._jumping is not None
 
     def end_turn(self, color, cmd):
+        """
+        Method for ending a player's turn. The player can choose to resign,
+        offer a draw, or simply end their current turn.
+
+        Parameters:
+            color (str): current player's color
+            cmd (str): the player's command to end turn, resign, or offer draw
+
+        Returns:
+            None
+        """
         if cmd == "End Turn":
             if color == "BLACK" and self.player_valid_moves("RED") == {}:
                 self._winner == "BLACK"
@@ -211,7 +236,7 @@ class Game:
         elif cmd == "Resign":
             self.resign(color)
         elif cmd == "Offer Draw":
-            self.offer_draw(color)
+            self.offer_draw()
 
     def is_valid(self, piece, end_position):
         """
@@ -221,6 +246,9 @@ class Game:
         Parameters:
             piece (Piece): piece to be moved
             end_position (tuple(int, int)): destination position
+
+        Returns:
+            bool: returns True if the move is valid, otherwise, returns False
         """
         for moves in self.piece_all_valid(piece):
             if moves[-1] == end_position:
@@ -255,13 +283,13 @@ class Game:
         elif color == "RED":
             self._winner = "BLACK"
 
-    def offer_draw(self, color):
+    def offer_draw(self):
         """
-        Player of the given color offers a draw. The other player can choose to
-        either accept or decline the draw.
+        Player offers a draw. The other player can choose to either accept or
+        decline the draw.
 
         Parameters:
-            color (str): color of the player offering a draw
+            None
 
         Returns:
             None
@@ -269,6 +297,16 @@ class Game:
         self.draw_offered = True
 
     def accept_draw(self, cmd):
+        """
+        Method for player to either accept or decline a draw offered by the
+        other player.
+
+        Parameters:
+            cmd (str): command for accepting or declining a draw
+        
+        Returns:
+            None
+        """
         if cmd == "Accept":
             self._winner = "DRAW"
         elif cmd == "Decline":
@@ -326,7 +364,7 @@ class Game:
         Returns:
             bool: if the player must make a jump with his or her turn
         """
-        if self._jumping is not None:
+        if self._jumping is not None and self._jumping.get_color() == color:
             return True
 
         if color == "BLACK":
@@ -349,94 +387,113 @@ class Game:
             piece (Piece): given peice
 
         Returns:
-            list(list(tuple(int, int))): list of paths the piece can take
+            list(list(tuple(int, int))): list of moves the piece can make
         """
-        return self._get_jumps(piece.get_coord(), piece.get_color(), piece.is_king(), set())
+        return self._get_jumps(piece.get_coord(), piece.get_color(),
+                piece.is_king())
     
-    def _get_jumps(self, start_position, color, king, visited):
-        if self._single_jumps(start_position, color, king) == []:
+    def _get_jumps(self, start_position, color, king, jumped=set()):
+        """
+        Given a position on the board, a color, king status, and a set of
+        locations that have already been jumped over, returns a list of all the
+        possible complete moves that can be made from the given starting
+        position.
+
+        Parameters:
+            start_position (tuple(int, int)): row and column information of the
+                starting position on the board
+            color (str): given color
+            king (bool): if the piece is a king (can move in both directions)
+            jumped (set(tuple(int, int))): set of locations that have already
+            been jumped over.
+
+        Returns:
+            list[list[tuple(int, int)]]: list of moves a piece with the given
+            details can make
+        """
+        if self._single_jumps(start_position, color, king, jumped) == {}:
             return []
         else:
             paths = []
-            visited.add(start_position)
-            for pos in self._single_jumps(start_position, color, king):
-                if pos not in visited:
-                    visited.add(pos)
-                    paths.append([pos] + self._get_jumps(pos, color, king, visited))
+            for pos, gap in self._single_jumps(start_position, color, king,
+                    jumped).items():
+                sub_paths = self._get_jumps(pos, color, king, jumped | gap)
+                if sub_paths == []:
+                    paths.append([pos])
+                else:
+                    for sub_path in sub_paths:
+                        paths.append([pos] + sub_path)
             return paths
 
-    def _single_jumps(self, start_position, color, king):
-        row, col = start_position
-        valid = []
+    def _single_jumps(self, start_position, color, king, jumped):
+        """
+        Given a starting position on the board, a color, king status, and a set
+        of locations that have already been jumped over, returns a dictionary of
+        the possible single jumps a move with the given details can make. The
+        keys of the dictionary are the possible locations that can be jumped to
+        and the values of the dictionary are sets of locations that must be
+        jumped over to reach each destination.
 
-        if color == "BLACK":
+        Parameters:
+            start_position (tuple(int, int)): starting location on the board
+            color (str): given piece color
+            king (bool): king status of the given piece
+            jumped (set(tuple(int, int))): set of locations that have already
+            been jumped over
+
+        Returns:
+            dict{tuple(int, int): set(tuple(int, int))}: dictionary storing the
+            possible end locations and the locations being jumped over
+        """
+        row, col = start_position
+        valid = {}
+
+        if color == "BLACK" or king:
             try:
-                if (self._get((row + 2, col + 2)) is None
-                        and self._get((row + 1, col + 1)) is not None
-                        and self._get((row + 1, col + 1)).get_color() == "RED"):
-                    valid.append((row + 2, col + 2))
+                dest = (row + 2, col + 2)
+                jump_over = (row + 1, col + 1)
+                if (self._get(dest) is None
+                        and self._get(jump_over) is not None
+                        and self._get(jump_over).get_color() != color
+                        and (jump_over) not in jumped):
+                    valid[dest] = {jump_over}
             except IndexError:
                 pass
 
             try:
-                if (self._get((row + 2, col - 2)) is None
-                        and self._get((row + 1, col - 1)) is not None
-                        and self._get((row + 1, col - 1)).get_color() == "RED"):
-                    valid.append((row + 2, col - 2))
+                dest = (row + 2, col - 2)
+                jump_over = (row + 1, col - 1)
+                if (self._get(dest) is None
+                        and self._get(jump_over) is not None
+                        and self._get(jump_over).get_color() != color
+                        and (jump_over) not in jumped):
+                    valid[dest] = {jump_over}
             except IndexError:
                 pass
             
-            if king:
-                try:
-                    if (self._get((row - 2, col + 2)) is None
-                            and self._get((row - 1, col + 1)) is not None
-                            and self._get((row - 1, col + 1)).get_color() == "RED"):
-                        valid.append((row - 2, col + 2))
-                except IndexError:
-                    pass
+        if color == "RED" or king:
+            try:
+                dest = (row - 2, col + 2)
+                jump_over = (row - 1, col + 1)
+                if (self._get(dest) is None
+                        and self._get(jump_over) is not None
+                        and self._get(jump_over).get_color() != color
+                        and jump_over not in jumped):
+                    valid[dest] = {jump_over}
+            except IndexError:
+                pass
                 
-                try:
-                    if (self._get((row - 2, col - 2)) is None
-                            and self._get((row - 1, col - 1)) is not None
-                            and self._get((row - 1, col - 1)).get_color() == "RED"):
-                        valid.append((row - 2, col - 2))
-                except IndexError:
-                    pass
-
-        if color == "RED":
             try:
-                if (self._get((row - 2, col + 2)) is None
-                        and self._get((row - 1, col + 1)) is not None
-                        and self._get((row - 1, col + 1)).get_color() == "BLACK"):
-                    valid.append((row - 2, col + 2))
+                dest = (row - 2, col - 2)
+                jump_over = (row - 1, col - 1)
+                if (self._get(dest) is None
+                        and self._get(jump_over) is not None
+                        and self._get(jump_over).get_color() != color
+                        and jump_over not in jumped):
+                    valid[dest] = {jump_over}
             except IndexError:
                 pass
 
-            try:
-                if (self._get((row - 2, col - 2)) is None
-                        and self._get((row - 1, col - 1)) is not None
-                        and self._get((row - 1, col - 1)).get_color() == "BLACK"):
-                    valid.append((row - 2, col - 2))
-            except IndexError:
-                pass
-
-            if king:
-                try:
-                    if (self._get((row + 2, col + 2)) is None
-                            and self._get((row + 1, col + 1)) is not None
-                            and self._get((row + 1, col + 1)).get_color() == "BLACK"):
-                        valid.append((row + 2, col + 2))
-                except IndexError:
-                    pass
-
-                try:
-                    if (self._get((row + 2, col - 2)) is None
-                            and self._get((row + 1, col - 1)) is not None
-                            and self._get((row + 1, col - 1)).get_color() == "BLACK"):
-                        valid.append((row + 2, col - 2))
-                except IndexError:
-                    pass
-        
         return valid
 
     def _piece_valid_moves(self, piece):
@@ -450,13 +507,13 @@ class Game:
             piece (Piece): the given piece
 
         Returns:
-            list[tuple(int, int)]: all possible places the given piece can move
-            to
+            list[list[tuple(int, int)]]: all possible places the given piece can
+            non-jump move to
         """
         valid_moves = []
         row, col = piece.get_coord()
 
-        if piece.get_color() == "BLACK":
+        if piece.get_color() == "BLACK" or piece.is_king():
             try:
                 if self._get((row + 1, col + 1)) is None:
                     valid_moves.append([(row + 1, col + 1)])
@@ -469,20 +526,7 @@ class Game:
             except IndexError:
                 pass
 
-            if piece.is_king():
-                try:
-                    if self._get((row - 1, col + 1)) is None:
-                        valid_moves.append([(row - 1, col + 1)])
-                except IndexError:
-                    pass
-
-                try:
-                    if self._get((row - 1, col - 1)) is None:
-                        valid_moves.append([(row - 1, col - 1)])
-                except IndexError:
-                    pass
-
-        if piece.get_color() == "RED":
+        if piece.get_color() == "RED" or piece.is_king():
             try:
                 if self._get((row - 1, col + 1)) is None:
                     valid_moves.append([(row - 1, col + 1)])
@@ -494,19 +538,6 @@ class Game:
                     valid_moves.append([(row - 1, col - 1)])
             except IndexError:
                 pass
-
-            if piece.is_king():
-                try:
-                    if self._get((row + 1, col + 1)) is None:
-                        valid_moves.append([(row + 1, col + 1)])
-                except IndexError:
-                    pass
-
-                try:
-                    if self._get((row + 1, col - 1)) is None:
-                        valid_moves.append([(row + 1, col - 1)])
-                except IndexError:
-                    pass
 
         return valid_moves
 
@@ -561,16 +592,17 @@ class Game:
         """
         start_row, start_col = piece.get_coord()
         end_row, end_col = end_position
-        captured_position = int((start_row + end_row) / 2), int((start_col  + end_col) / 2)
+        jump_over = (int((start_row + end_row) / 2), 
+                int((start_col  + end_col) / 2))
 
         self._board[start_row][start_col] = None
         self._board[end_row][end_col] = piece
         piece.set_coord(end_position)
-        self._remove(captured_position)
+        self._remove(jump_over)
 
     def _become_king(self, piece):
         """
-        Updates the Piece to become a king.
+        Checks if the given Piece must be promoted to a king.
 
         Parameters:
             piece (Piece): the piece to become a king
@@ -578,7 +610,13 @@ class Game:
         Returns:
             None
         """
-        piece._king = True
+        row, _ = piece.get_coord()
+        color = piece.get_color()
+        if row == 0 and color == "RED":
+            piece._king = True
+        elif row == self._height - 1 and color == "BLACK":
+            piece._king = True
+        self._jumping = None
 
 class Piece:
     """
