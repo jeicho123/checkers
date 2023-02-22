@@ -274,6 +274,28 @@ class Game:
         elif cmd == "Decline":
             self.draw_offered = False
 
+    def composition(self, color):
+        king, nonking = 0, 0
+        if color == "BLACK":
+            for piece in self._black_pieces:
+                if piece.is_king():
+                    king += 1
+                else:
+                    nonking += 1
+        elif color == "RED":
+            for piece in self._red_pieces:
+                if piece.is_king():
+                    king += 1
+                else:
+                    nonking += 1
+        return king, nonking
+    
+    def evaluate(self):
+        black_king, black_nonking = self.composition("BLACK")
+        red_king, red_nonking = self.composition("RED")
+        return (black_nonking - red_nonking) + (0.5 * black_king - 0.5 * red_king)
+
+
     # Private Methods
 
     def _get(self, position):
