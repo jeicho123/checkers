@@ -182,7 +182,7 @@ class Game:
 
         Raises:
             IndexError: if index is not on the board
-            ValueError: if there is no piece at that location
+            ValueError: selected move is invalid
         """
         piece = self._get(start_position)
         if (piece is None
@@ -235,8 +235,7 @@ class Game:
         Returns:
             None
         """
-        if cmd == "End Turn":
-            
+        if cmd == "End Turn":   
             if color == "BLACK" and self.player_valid_moves("RED") == {}:
                 self._winner == "BLACK"
             elif color == "RED" and self.player_valid_moves("BLACK")  == {}:
