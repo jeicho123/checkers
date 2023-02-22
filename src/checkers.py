@@ -339,6 +339,38 @@ class Game:
         red_king, red_nonking = self.composition("RED")
         return (black_nonking - red_nonking) + (0.5 * black_king - 0.5 * red_king)
 
+    def board_to_str(self):
+        """
+        Returns the board as a list of list of strings.
+
+        Parameters:
+            None
+
+        Returns:
+            list[list(str)]: A list of lists with the same dimensions as the
+            board. In each row, the values in the list will be " " (no piece),
+            "B" (black king piece), "b" (black non-king piece), "R" (red kings
+            piece), "r" (red non-king piece).
+        """
+        grid = []
+        for row in self._board:
+            new_row = []
+            for square in row:
+                if square is None:
+                    new_row.append(" ")
+                else:
+                    if square.get_color() == "BLACK":
+                        if square.is_king():
+                            new_row.append("B")
+                        else:
+                            new_row.append("b")
+                    else:
+                        if square.is_king():
+                            new_row.append("R")
+                        else:
+                            new_row.append("r")
+            grid.append(new_row)
+        return grid
 
     # Private Methods
 
