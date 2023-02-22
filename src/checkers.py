@@ -139,11 +139,11 @@ class Game:
         else:
             player_pieces = self._red_pieces
 
-        if self._require_jump(color):
+        if self._require_jump(color):   # player must jump
             for piece in player_pieces:
                 if self._piece_valid_jumps(piece):
                     all_moves[piece] = self._piece_valid_jumps(piece)
-        else:
+        else:   # player cannot jump
             for piece in player_pieces:
                 if self._piece_valid_moves(piece):
                     all_moves[piece] = self._piece_valid_moves(piece)
@@ -160,9 +160,9 @@ class Game:
             list[list[tuple(int, int)]]: list of all the possible moves the
             given piece can move to
         """
-        if self._piece_valid_jumps(piece):
+        if self._piece_valid_jumps(piece):  # piece has valid jumps
             return self._piece_valid_jumps(piece)
-        else:
+        else:   # piece has no valid jumps
             return self._piece_valid_moves(piece)
         
     def move(self, start_position, end_position):
@@ -185,8 +185,11 @@ class Game:
         piece = self._get(start_position)
         if (piece is None
                 or piece not in self.player_valid_moves(piece.get_color())):
-            raise ValueError
+            raise ValueError("Invalid piece")
         current = piece.get_color()
+
+        if not self.is_valid(piece, end_position):
+            raise ValueError("Invalid move")
 
         if self._require_jump(current): # jump move
             for move in self.player_valid_moves(current)[piece]:
@@ -197,10 +200,10 @@ class Game:
                         self._jumping = piece
                     for step in move[: move.index(end_position) + 1]:
                         self._piece_jump_to(piece, step)
-        else:
+        else:   #non-jump move
             self._piece_move_to(piece, end_position)
             self._jumping = None
-
+        # check for promotion
         self._become_king(piece)
 
     def turn_incomplete(self):
@@ -229,6 +232,7 @@ class Game:
             None
         """
         if cmd == "End Turn":
+            
             if color == "BLACK" and self.player_valid_moves("RED") == {}:
                 self._winner == "BLACK"
             elif color == "RED" and self.player_valid_moves("BLACK")  == {}:
@@ -251,7 +255,7 @@ class Game:
             bool: returns True if the move is valid, otherwise, returns False
         """
         for moves in self.piece_all_valid(piece):
-            if moves[-1] == end_position:
+            if moves[-1] == end_position:   # end_position is the last move
                 return True
         return False
 
