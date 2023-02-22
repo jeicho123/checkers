@@ -132,7 +132,7 @@ class Game:
             complete valid moves the player of the given color can make
         """
         all_moves = {}
-        if self._jumping is not None:
+        if self._jumping is not None and self._jumping.get_color() == color:
             all_moves[self._jumping] = self._piece_valid_jumps(self._jumping)
             return all_moves
 
@@ -185,11 +185,10 @@ class Game:
             ValueError: selected move is invalid
         """
         piece = self._get(start_position)
-        if (piece is None
-                or start_position not in self.player_valid_moves(piece.get_color())):
+        if (start_position not in self.player_valid_moves(piece.get_color())):
             raise ValueError("Invalid piece")
         current = piece.get_color()
-
+        
         if not self.is_valid(start_position, end_position):
             raise ValueError("Invalid move")
 
@@ -245,10 +244,28 @@ class Game:
         elif cmd == "Offer Draw":
             self.offer_draw()
 
+    def valid_move(self, color, start_position, end_position):
+        """
+        Determines if the move is a possible move at the given color's player's
+        current turn. 
+
+        Parameters:
+            color: color of the player
+            start_position: coordinates of the piece to be moved
+            end_position: coordinates of the destination location of the move
+
+        Returns:
+            bool: returns True if the given move is valid, otherwise, returns
+            False
+        """
+        if start_position not in self.player_valid_moves(color):
+            return False
+        return self.is_valid(start_position, end_position)
+
     def is_valid(self, start_position, end_position):
         """
         Given a piece on the board and a location to move the piece to,
-        determines if the move is valid or not.
+        determines if the move is valid or not, regardless of other pieces.
 
         Parameters:
             piece (Piece): piece to be moved
