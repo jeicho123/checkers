@@ -27,10 +27,10 @@ class smartBot():
         self._color = color
     
     def suggest_move(self):
-        move = self.minimax(self._board, 3, self._color)
+        move = self._minimax(self._board, 3, self._color)
         return move[:2]
 
-    def minimax(self, board, depth, color):
+    def _minimax(self, board, depth, color):
         if depth == 0 or board.get_winner(): 
             return None, None, board.evaluate()
         
@@ -40,11 +40,11 @@ class smartBot():
             best_move = None
             for piece, paths in board.player_valid_moves(color).items():
                 for path in paths:
-                    nxt_move = path[0]
+                    nxt_move = path[-1]
                     tmp_board = deepcopy(board)
                     pre_move = piece.get_coord()
                     tmp_board.move(pre_move, nxt_move)
-                    _, _, val = self.minimax(tmp_board, depth - 1, "RED")
+                    _, _, val = self._minimax(tmp_board, depth - 1, "RED")
                     if val > max_val:
                         max_val = val
                         start_coord = pre_move
@@ -57,11 +57,11 @@ class smartBot():
             best_move = None
             for piece, paths in board.player_valid_moves(color).items():
                 for path in paths:
-                    nxt_move = path[0]
+                    nxt_move = path[-1]
                     tmp_board = deepcopy(board)
                     pre_move = piece.get_coord()
                     tmp_board.move(pre_move, nxt_move)
-                    _, _, val = self.minimax(tmp_board, depth - 1, "BLACK")
+                    _, _, val = self._minimax(tmp_board, depth - 1, "BLACK")
                     if val < min_val:
                         min_val = val
                         start_coord = pre_move
