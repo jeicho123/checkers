@@ -258,9 +258,8 @@ class Game:
             bool: returns True if the given move is valid, otherwise, returns
             False
         """
-        if start_position not in self.player_valid_moves(color):
-            return False
-        return self.is_valid(start_position, end_position)
+        return (start_position in self.player_valid_moves(color) and
+                self.is_valid(start_position, end_position))
 
     def is_valid(self, start_position, end_position):
         """
