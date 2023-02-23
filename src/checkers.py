@@ -136,8 +136,11 @@ class Game:
             color (str): player's color
 
         Returns:
-            dict{Piece: list[list[tuple(int, int)]]}: dictionary of all the
-            complete valid moves the player of the given color can make
+            dict{tuple(int, int): list[list[tuple(int, int)]]}: dictionary of
+            all the complete valid moves the player of the given color can make
+            where the keys are the coordinates of a piece that can be moved and
+            the values are the list of complete valid moves the player can make
+            with each piece.
         """
         all_moves = {}
         if self._jumping is not None and self._jumping.get_color() == color:
@@ -164,7 +167,7 @@ class Game:
         Returns all the complete valid moves for the given piece.
 
         Parameters:
-            piece (Piece): the given piece
+            start_position (tuple(int, int)): position of the given piece
 
         Returns:
             list[list[tuple(int, int)]]: list of all the possible moves the
@@ -271,11 +274,12 @@ class Game:
 
     def is_valid(self, start_position, end_position):
         """
-        Given a piece on the board and a location to move the piece to,
-        determines if the move is valid or not, regardless of other pieces.
+        Given a location of a piece on the board and a location to move the
+        piece to, determines if the move is valid or not, regardless of other
+        pieces.
 
         Parameters:
-            piece (Piece): piece to be moved
+            start_position (tuple(int, int)): position of the piece
             end_position (tuple(int, int)): destination position
 
         Returns:
@@ -444,12 +448,12 @@ class Game:
 
     def _piece_valid_jumps(self, start_position):
         """"
-        Given a piece on the board, returns a list of all the possible complete
-        jumps a piece can make where the coordinates of each sqaure the piece
-        jumps to during the path is stored in a list. 
+        Given a location on the board, returns a list of all the possible
+        complete jumps the piece at that location can make where the coordinates
+        of each sqaure the piece jumps to during the path is stored in a list. 
 
         Parameters:
-            piece (Piece): given peice
+            start_position: position of the peice
 
         Returns:
             list(list(tuple(int, int))): list of moves the piece can make
@@ -570,7 +574,7 @@ class Game:
         take into consideration if the piece is a king or not.
 
         Parameters:
-            piece (Piece): the given piece
+            start_position (tuple(int, int)): location of the piece
 
         Returns:
             list[list[tuple(int, int)]]: all possible places the given piece can
