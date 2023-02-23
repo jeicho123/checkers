@@ -348,6 +348,18 @@ class Game:
             self.draw_offered = False
 
     def composition(self, color):
+        """
+        Given a player's color, returns the number of kings and nonking pieces
+        the player currently has on the board.
+
+        Parameters:
+            color (str): given player color
+
+        Returns:
+            tuple (int, int): tuple of two integers; the first integer is the
+            number of king pieces the player has, the second integer is the
+            number of nonking pieces the player has
+        """
         king, nonking = 0, 0
         if color == "BLACK":
             for piece in self._black_pieces:
@@ -364,6 +376,8 @@ class Game:
         return king, nonking
     
     def evaluate(self):
+        """
+        """
         black_king, black_nonking = self.composition("BLACK")
         red_king, red_nonking = self.composition("RED")
         return (black_nonking - red_nonking) + (0.5 * black_king - 0.5 * red_king)
