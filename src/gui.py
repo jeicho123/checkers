@@ -51,7 +51,7 @@ class GUIPlayer:
         self.board = board
         self.color = color
 
-    def create_board(surface: pygame.Surface(), board):
+    def create_board(surface: pygame.surface.Surface, board):
         """
         Creates and draws the board in its current state.
 
@@ -81,15 +81,24 @@ class GUIPlayer:
         # Drawing each piece
         for i, r in enumerate(board_grid):
             for j, piececolor in enumerate(r):
-                if piececolor == "RED":
+                if piececolor == "R":
+                    color = (139,0,0)
+                elif piececolor == "r":
                     color = RED
-                elif piececolor == "BLACK":
+                elif piececolor == "B":
+                    color = (128,128,128)
+                elif piececolor == "b":
                     color = BLACK
+                else:
+                    continue
 
                 center = ((j * cw) + (cw // 2), (i * rh) + (rh // 2))
                 radius = rh // 2 - 8
-                pygame.draw.circle(surface, color, 
-                center=center, radius=radius)
+                pygame.draw.circle(surface, color,
+                center, radius)
+
+    board = Game(3)
+    print(create_board(pygame.Surface((100,100)), board))
 
     def play_checkers(board, players, bot_delay):
         """
