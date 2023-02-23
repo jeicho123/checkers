@@ -51,7 +51,7 @@ class GUIPlayer:
         self.board = board
         self.color = color
 
-    def create_board(surface: pygame.surface.Surface, board):
+    def create_board(surface: pygame.Surface(), board):
         """
         Creates and draws the board in its current state.
 
@@ -62,7 +62,6 @@ class GUIPlayer:
         Returns: None
         """
         board_grid = board.board_to_str()
-        print(board_grid)
         rows = len(board_grid)
         cols = len(board_grid[0])
 
@@ -72,7 +71,6 @@ class GUIPlayer:
 
         # Fill entire surface window with red
         surface.fill(DARK_BROWN)
-
 
         # Drawing each square of the board
         for row in range(rows):
@@ -90,7 +88,7 @@ class GUIPlayer:
 
                 center = ((j * cw) + (cw // 2), (i * rh) + (rh // 2))
                 radius = rh // 2 - 8
-                pygame.draw.circle(surface, color=color, 
+                pygame.draw.circle(surface, color, 
                 center=center, radius=radius)
 
     def play_checkers(board, players, bot_delay):
