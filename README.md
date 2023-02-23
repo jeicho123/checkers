@@ -1,5 +1,5 @@
 # project-jeichen-ptlin-tiffanyjl-nmoon
-Game Logic: Patrick Lin\n
+Game Logic: Patrick Lin
 TUI:
 GUI:
 Bot:
