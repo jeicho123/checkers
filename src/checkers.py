@@ -34,8 +34,8 @@ class Game:
             Constructor
 
             Parameters: 
-                rows (int): the number of rows of pieces each player begins the game
-                with
+                rows (int): the number of rows of pieces each player begins the
+                game with
         """
         # int: number of rows of pieces each player begins with
         self._rows = rows
