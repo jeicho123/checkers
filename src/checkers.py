@@ -1,8 +1,8 @@
-class Game:
-    """
-    Class for representing the board and rules of the game.
+"""
+Classes for implementing a checkers game with varying board sizes
+(supports 6x6 up to 20x20).
 
-    Examples:
+Examples:
     1. Create new Checkers Board
 
         board = Game(rows)
@@ -22,14 +22,26 @@ class Game:
     5. Check whether there's a winner and who
 
         board.get_winner()
+"""
+from typing import Optional, List, Tuple, Set
+
+class Game:
     """
+    Class for representing the board and rules of the game.
+    """
+
+    #
+    # PRIVATE ATTRIBUTES
+    #
+
+    _rows
     def __init__(self, rows):
         """
             Constructor
 
-        Parameters: 
-            rows (int): the number of rows of pieces each player begins the game
-            with
+            Parameters: 
+                rows (int): the number of rows of pieces each player begins the game
+                with
         """
         # int: number of rows of pieces each player begins with
         self._rows = rows
@@ -473,7 +485,7 @@ class Game:
             paths = []
             for pos, gap in self._single_jumps(start_position, color, king,
                     jumped).items():
-                sub_paths = self._get_jumps(pos, color, king, jumped | gap)
+                sub_paths = self._get_jumps(pos, color, king, jumped | set(gap))
                 if sub_paths == []:
                     paths.append([pos])
                 else:
@@ -498,7 +510,7 @@ class Game:
             been jumped over
 
         Returns:
-            dict{tuple(int, int): set(tuple(int, int))}: dictionary storing the
+            dict{tuple(int, int): tuple(int, int)}: dictionary storing the
             possible end locations and the locations being jumped over
         """
         row, col = start_position
@@ -512,7 +524,7 @@ class Game:
                         and self._get(jump_over) is not None
                         and self._get(jump_over).get_color() != color
                         and (jump_over) not in jumped):
-                    valid[dest] = {jump_over}
+                    valid[dest] = jump_over
             except IndexError:
                 pass
 
@@ -523,7 +535,7 @@ class Game:
                         and self._get(jump_over) is not None
                         and self._get(jump_over).get_color() != color
                         and (jump_over) not in jumped):
-                    valid[dest] = {jump_over}
+                    valid[dest] = jump_over
             except IndexError:
                 pass
             
@@ -535,7 +547,7 @@ class Game:
                         and self._get(jump_over) is not None
                         and self._get(jump_over).get_color() != color
                         and jump_over not in jumped):
-                    valid[dest] = {jump_over}
+                    valid[dest] = jump_over
             except IndexError:
                 pass
                 
@@ -546,7 +558,7 @@ class Game:
                         and self._get(jump_over) is not None
                         and self._get(jump_over).get_color() != color
                         and jump_over not in jumped):
-                    valid[dest] = {jump_over}
+                    valid[dest] = jump_over
             except IndexError:
                 pass
 
