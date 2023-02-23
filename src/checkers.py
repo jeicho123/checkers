@@ -489,7 +489,7 @@ class Game:
             paths = []
             for pos, gap in self._single_jumps(start_position, color, king,
                     jumped).items():
-                sub_paths = self._get_jumps(pos, color, king, jumped | set(gap))
+                sub_paths = self._get_jumps(pos, color, king, jumped | {gap})
                 if sub_paths == []:
                     paths.append([pos])
                 else:
@@ -527,7 +527,7 @@ class Game:
                 if (self._get(dest) is None
                         and self._get(jump_over) is not None
                         and self._get(jump_over).get_color() != color
-                        and (jump_over) not in jumped):
+                        and jump_over not in jumped):
                     valid[dest] = jump_over
             except IndexError:
                 pass
@@ -538,7 +538,7 @@ class Game:
                 if (self._get(dest) is None
                         and self._get(jump_over) is not None
                         and self._get(jump_over).get_color() != color
-                        and (jump_over) not in jumped):
+                        and jump_over not in jumped):
                     valid[dest] = jump_over
             except IndexError:
                 pass
