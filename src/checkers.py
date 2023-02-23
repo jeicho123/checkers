@@ -182,13 +182,15 @@ class Game:
         else:   # piece has no valid jumps
             return self._piece_valid_moves(start_position)
         
-    def move(self, start_position, end_position):
+    def move(self, color, start_position, end_position):
         """
-        User inputs a position of a piece and a location to move the piece to.
-        If the given move is valid, the move will be executed. Otherwise, the
-        player wll be prompted to input a different move.
+        Player of the given color inputs a position of a piece and a location to
+        move the piece to. If the given move is valid, the move will be
+        executed. Otherwise, the player wll be prompted to input a different
+        move.
 
         Parameters:
+            color (str): player color
             start_position: the position of piece to be moved
             end_position (tuple(int, int)): destination position
 
@@ -199,16 +201,12 @@ class Game:
             IndexError: if index is not on the board
             ValueError: selected move is invalid
         """
+        if not self.valid_move(color, start_position, end_position):
+            raise ValueError
         piece = self._get(start_position)
-        if (start_position not in self.player_valid_moves(piece.get_color())):
-            raise ValueError("Invalid piece")
-        current = piece.get_color()
-        
-        if not self.is_valid(start_position, end_position):
-            raise ValueError("Invalid move")
 
-        if self._require_jump(current): # jumping move
-            for move in self.player_valid_moves(current)[piece]:
+        if self._require_jump(color): # jumping move
+            for move in self.piece_all_valid(start_position):
                 if end_position in move:
                     if end_position == move[-1]:    # complete jumping move
                         self._jumping = None
