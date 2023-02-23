@@ -97,9 +97,6 @@ class GUIPlayer:
                 pygame.draw.circle(surface, color,
                 center, radius)
 
-    board = Game(3)
-    print(create_board(pygame.Surface((100,100)), board))
-
     def play_checkers(board, players, bot_delay):
         """
         Plays a game of Checkers in Pygame.
