@@ -23,18 +23,12 @@ Examples:
 
         board.get_winner()
 """
-from typing import Optional, List, Tuple, Set
+from typing import Optional, List, Tuple
 
 class Game:
     """
     Class for representing the board and rules of the game.
     """
-
-    #
-    # PRIVATE ATTRIBUTES
-    #
-
-    _rows
     def __init__(self, rows):
         """
             Constructor
@@ -66,7 +60,9 @@ class Game:
         self._winner = None
         self.draw_offered = False
 
-    # Public Methods
+    #
+    # PUBLIC METHODS
+    #
 
     def __str__(self):
         """
@@ -401,7 +397,9 @@ class Game:
             grid.append(new_row)
         return grid
 
-    # Private Methods
+    #
+    # PRIVATE METHODS
+    #
 
     def _get(self, position):
         """
