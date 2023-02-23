@@ -23,7 +23,6 @@ Examples:
 
         board.get_winner()
 """
-from typing import Optional, List, Tuple
 
 class Game:
     """
@@ -40,25 +39,29 @@ class Game:
         # int: number of rows of pieces each player begins with
         self._rows = rows
 
-        # int: width of the game board
+        # int: width and height of the game board
         self._width = 2 * rows + 2
-
-        # int: height of the game board
         self._height = 2 * rows + 2
 
         # list[list[Piece]]: 2-dimensional list for storing the pieces
         self._board = []
 
-        # list[Piece]: list of red pieces on the board
+        # list[Piece]: lists of pieces on the board
         self._red_pieces = []
-
-        # list[Piece]: list of black pieces on the board
         self._black_pieces = []
+
+        # piece that is in the middle of a jump
+        self._jumping = None
+
+        # winner of the game if there is one
+        self._winner = None
+
+        # True if a draw has been offered, otherwise False
+        self.draw_offered = False
+
         self.reset_board()
 
-        self._jumping = None
-        self._winner = None
-        self.draw_offered = False
+        
 
     #
     # PUBLIC METHODS
@@ -104,6 +107,7 @@ class Game:
         self._black_pieces = []
         self._jumping = None
         self._winner = None
+        self.draw_offered = False
 
         # reset game board
         for r in range(self._height):
@@ -586,27 +590,31 @@ class Game:
 
         if piece.get_color() == "BLACK" or piece.is_king():
             try:
-                if self._get((row + 1, col + 1)) is None:
-                    valid_moves.append([(row + 1, col + 1)])
+                dest = (row + 1, col + 1)
+                if self._get(dest) is None:
+                    valid_moves.append([dest])
             except IndexError:
                 pass
 
             try:
-                if self._get((row + 1, col - 1)) is None:
-                    valid_moves.append([(row + 1, col - 1)])
+                dest = (row + 1, col - 1)
+                if self._get(dest) is None:
+                    valid_moves.append([dest])
             except IndexError:
                 pass
 
         if piece.get_color() == "RED" or piece.is_king():
             try:
-                if self._get((row - 1, col + 1)) is None:
-                    valid_moves.append([(row - 1, col + 1)])
+                dest = (row - 1, col + 1)
+                if self._get(dest) is None:
+                    valid_moves.append([dest])
             except IndexError:
                 pass
 
             try:
-                if self._get((row - 1, col - 1)) is None:
-                    valid_moves.append([(row - 1, col - 1)])
+                dest = (row - 1, col - 1)
+                if self._get(dest) is None:
+                    valid_moves.append([dest])
             except IndexError:
                 pass
 
