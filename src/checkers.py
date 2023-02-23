@@ -61,8 +61,6 @@ class Game:
 
         self.reset_board()
 
-        
-
     #
     # PUBLIC METHODS
     #
