@@ -16,7 +16,7 @@ class randomBot():
         """
         rand_piece = random.choice(list(self._board.player_valid_moves(self._color).items()))
         rand_path = random.choice(rand_piece[1])
-        return rand_piece[0].get_coord(), rand_path[0]
+        return rand_piece[0], rand_path[-1]
 
 class smartBot():
     """
@@ -38,34 +38,32 @@ class smartBot():
             max_val = -float('inf')
             start_coord = None
             best_move = None
-            for piece, paths in board.player_valid_moves(color).items():
+            for start, paths in board.player_valid_moves(color).items():
                 for path in paths:
-                    nxt_move = path[-1]
+                    end = path[-1]
                     tmp_board = deepcopy(board)
-                    pre_move = piece.get_coord()
-                    tmp_board.move(pre_move, nxt_move)
+                    tmp_board.move(color, start, end)
                     _, _, val = self._minimax(tmp_board, depth - 1, "RED")
                     if val > max_val:
                         max_val = val
-                        start_coord = pre_move
-                        best_move = nxt_move
+                        start_coord = start
+                        best_move = end
             return start_coord, best_move, max_val
 
         if color == "RED":
             min_val = float('inf')
             start_coord = None
             best_move = None
-            for piece, paths in board.player_valid_moves(color).items():
+            for start, paths in board.player_valid_moves(color).items():
                 for path in paths:
-                    nxt_move = path[-1]
+                    end = path[-1]
                     tmp_board = deepcopy(board)
-                    pre_move = piece.get_coord()
-                    tmp_board.move(pre_move, nxt_move)
+                    tmp_board.move(color, start, end)
                     _, _, val = self._minimax(tmp_board, depth - 1, "BLACK")
                     if val < min_val:
                         min_val = val
-                        start_coord = pre_move
-                        best_move = nxt_move
+                        start_coord = start
+                        best_move = end
             return start_coord, best_move, min_val
 
 # SIMULATION
@@ -82,7 +80,7 @@ while True:
         else:
             start_move, end_move = bot1.suggest_move()
             print(start_move, end_move, "BLACK")
-            board.move(start_move, end_move)
+            board.move("BLACK", start_move, end_move)
             flag = False
     else:
         if not board.player_valid_moves("RED"):
@@ -91,7 +89,7 @@ while True:
         else:
             start_move, end_move = bot2.suggest_move()
             print(start_move, end_move, "RED")
-            board.move(start_move, end_move)
+            board.move("RED", start_move, end_move)
             flag = True
 
 def simulate(n):
@@ -107,7 +105,7 @@ def simulate(n):
                     break
                 else:
                     start_move, end_move = bot1.suggest_move()
-                    board.move(start_move, end_move)
+                    board.move("BLACK", start_move, end_move)
                     flag = False
             else:
                 if not board.player_valid_moves("RED"):
@@ -115,7 +113,7 @@ def simulate(n):
                     break
                 else:
                     start_move, end_move = bot2.suggest_move()
-                    board.move(start_move, end_move)
+                    board.move("RED", start_move, end_move)
                     flag = True
     return (win//n * 100)
 
