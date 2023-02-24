@@ -147,26 +147,26 @@ def simulate(n, row, depth):
     win = 0
     for _ in range(n):
         board = Game(row)
-        bot1 = smartBot(board, "BLACK", depth)
-        bot2 = randomBot(board, "RED")
+        bot1 = smartBot(board, PieceColor.BLACK, depth)
+        bot2 = randomBot(board, PieceColor.RED)
         # Flag alternates to decide the turn of the bots
         flag = True
         while True:
             if flag:
                 # Game ends when bot has no more move to play
-                if not board.player_valid_moves("BLACK"):
+                if not board.player_valid_moves(PieceColor.BLACK):
                     break
                 else:
                     start_move, end_move = bot1.suggest_move()
-                    board.move("BLACK", start_move, end_move)
+                    board.move(PieceColor.BLACK, start_move, end_move)
                     flag = False
             else:
-                if not board.player_valid_moves("RED"):
+                if not board.player_valid_moves(PieceColor.RED):
                     win += 1
                     break
                 else:
                     start_move, end_move = bot2.suggest_move()
-                    board.move("RED", start_move, end_move)
+                    board.move(PieceColor.RED, start_move, end_move)
                     flag = True
     return (f"{win//n * 100}%")
 
