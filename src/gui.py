@@ -7,7 +7,7 @@ from typing import Union, Dict
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
-import click
+# import click
 
 from checkers import Game, Piece
 from bot import randomBot, smartBot
@@ -96,6 +96,7 @@ class GUIPlayer:
                 radius = rh // 2 - 8
                 pygame.draw.circle(surface, color,
                 center, radius)
+    
 
     def play_checkers(board, players, bot_delay):
         """
