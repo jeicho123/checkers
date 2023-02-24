@@ -1,5 +1,12 @@
-# project-jeichen-ptlin-tiffanyjl-nmoon
+# Checkers  
 Game Logic: Patrick Lin  
 TUI:  Nathan Moonesinghe  
-GUI: Tiffany Lee 
+GUI: Tiffany Lee  
 Bot: Jei Ho
+
+## Running the TUI  
+
+
+## Running the GUI  
+
+## Simulating a game with bots  

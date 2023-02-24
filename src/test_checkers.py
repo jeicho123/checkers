@@ -45,7 +45,8 @@ def test_move():
     g = Game(5)
     g.move(PieceColor.BLACK, (4, 1), (5, 0))
 
-    assert g._get((5, 0)) is not None
+    assert (g._get((5, 0)) is not None and
+            g._get((5, 0)).get_color() == PieceColor.BLACK)
 
 def test_single_jump():
     g = Game(5)
@@ -53,7 +54,8 @@ def test_single_jump():
     g.move(PieceColor.RED, (7, 2), (6, 1))
     g.move(PieceColor.BLACK, (5, 0), (7, 2))
 
-    assert g._get((7, 2)) is not None
+    assert (g._get((7, 2)) is not None and
+            g._get((7, 2)).get_color() == PieceColor.BLACK)
 
 def test_multijump():
     g = Game(5)
@@ -62,7 +64,8 @@ def test_multijump():
     g._remove((9, 0))
     g.move(PieceColor.BLACK, (5, 0), (9, 0))
 
-    assert g._get((9, 0)) is not None
+    assert (g._get((9, 0)) is not None and
+            g._get((9, 0)).get_color() == PieceColor.BLACK)
 
 def test_promote():
     g = Game(2)
