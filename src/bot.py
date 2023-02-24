@@ -67,6 +67,7 @@ class smartBot():
             return start_coord, best_move, min_val
 
 # SIMULATION
+
 board = Game(3)
 bot1 = smartBot(board, "BLACK")
 bot2 = randomBot(board, "RED")
@@ -115,5 +116,6 @@ def simulate(n):
                     board.move("RED", start_move, end_move)
                     flag = True
     return (win//n * 100)
+
 # print(simulate(10))
 
