@@ -52,7 +52,7 @@ class TUIPlayer:
         Output: coordinates of the piece that's selected tuple(int, int)
         """   
         while True:
-            user_input = input("Player " + str(self.name) + 
+            user_input = input(self.name + 
             ": Insert coordinates of a piece: ")
             row = int(user_input.split(",")[0])
             col = int(user_input.split(",")[1])
@@ -71,10 +71,13 @@ class TUIPlayer:
         the final coordinates.
 
         Input:
-            coords tuple(int, int): Takes in the starting coordinates of the piece
+            coords tuple(int, int): Takes in the starting coordinates of the 
+            piece
+
+        Output: The coordinates of the destination (tuple(int, int))
         """
         while True:
-            input_move = input("Player " + str(self.name) + 
+            input_move = input(self.name + 
             ": Insert desired coordinates: ")
             row = int(input_move.split(",")[0])
             col = int(input_move.split(",")[1])
@@ -97,10 +100,29 @@ def print_board(board):
         string = ""
         for c, col in enumerate(row):
             if r % 2 == c % 2:
-                string += "[L]"
+                if col == " ":
+                    string += Fore.WHITE + "[ ]"
+                elif col == "B":
+                    string += Fore.WHITE + "[B]"
+                elif col == "b":
+                    string += Fore.WHITE + "[b]"
+                elif col == "R":
+                    string += Fore.WHITE + "[R]"
+                elif col == "r":
+                    string += Fore.WHITE + "[r]"
             else:
-                string += "[B]"
+                if col == " ":
+                    string += Fore.BLACK + "[ ]"
+                elif col == "B":
+                    string += Fore.BLACK + "[B]"
+                elif col == "b":
+                    string += Fore.BLACK + "[b]"
+                elif col == "R":
+                    string += Fore.BLACK + "[R]"
+                elif col == "r":
+                    string += Fore.BLACK + "[r]"
         final.append(string)
+    print("\n".join(final))
     return "\n".join(final)
 
 
@@ -160,13 +182,14 @@ def play_checkers(board, players):
 
 @click.command(name = "Checkers-tui")
 @click.option('--player1',
-              type=click.Choice(['human', 'random-bot', 'smart-bot'], 
+              type = click.Choice(['human', 'random-bot', 'smart-bot'], 
               case_sensitive=False), default = "human")
 @click.option('--player2',
               type=click.Choice(['human', 'random-bot', 'smart-bot'], 
-              case_sensitive=False), default = "human")
-@click.option('--rows', type = click.Choice([2, 3, 4, 5, 6, 7, 8, 9]), 
-default = 2)
+              case_sensitive = False), default = "human")
+@click.option('--rows', required = True, prompt = True,
+type = click.Choice([2, 3, 4, 5, 6, 7, 8, 9]), )
+
 def cmd(rows, player1, player2):
     if rows == 2:
         board = Game(2)
@@ -185,13 +208,13 @@ def cmd(rows, player1, player2):
     elif rows == 9:
         board = Game(9)
     board = Game(2)
+
     player1 = TUIPlayer(1, "smart-bot", board, PieceColor.BLACK, PieceColor.RED, 2)
     player2 = TUIPlayer(2, "smart-bot", board, PieceColor.RED, PieceColor.BLACK, 3)
 
     players = {PieceColor.BLACK: player1, PieceColor.RED: player2}
 
     play_checkers(board, players)
-
 
 if __name__ == "__main__":
     cmd()
