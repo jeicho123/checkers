@@ -7,7 +7,7 @@ Bot: Jei Ho
 ## Running the TUI  
 To run the TUI, run the following from the root of the repository:
 
-python3 src/tui.py
+> python3 src/tui.py
 
 The TUI first asks for the number of rows of pieces in order to create the 
 correct board size. It then displays the state of the board. Starting with 
@@ -20,25 +20,17 @@ again.
 
 You can also play against a bot like this:
 
-python3 src/tui.py --player2 <bot>
+> python3 src/tui.py --player2 <bot>
 
 Where <bot> is either random-bot or smart-bot
 
 You can even have two bots play against each other:
 
-python3 src/tui.py --player1 <bot> --player2 <bot>
+> python3 src/tui.py --player1 <bot> --player2 <bot>
 
-There is no aftificial delay between each bot's move.
-## Running the GUI  
-To run the GUI, run the following from the root of the repository:
+There is no aftificial delay between each bot's move.  
 
-python3 src/gui.py
 
-The GUI displays the current state of the board. To move a piece, the current and selected piece's valid moves will be highlighted, and the player can select where they want to move (out of the valid moves).
-
-Like the TUI, you can play against a bot, or have two bots play against each other.
-
-## Bots  
 ## Running the GUI  
 To run the GUI, run the following from the root of the repository:
 
@@ -48,9 +40,9 @@ The GUI displays the current state of the board. To move a piece, the current an
 
 Like the TUI, you can play against a bot, or have two bots play against each other:
 
-python3 src./tui.py --player2 <bot>
+> python3 src./tui.py --player2 <bot>
 
-python3 src./tui.py --player1 <bot> --player2 <bot>
+> python3 src./tui.py --player1 <bot> --player2 <bot>
 
 The --bot delay <seconds> parameter is also supported.
 
