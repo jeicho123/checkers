@@ -1,6 +1,3 @@
-import time
-from typing import Union, Dict
-
 import click
 from colorama import Fore
 
@@ -20,10 +17,10 @@ class TUIPlayer:
             player_num (int): Player number (1 or 2)
             player (str): "human", "random-bot", or "smart-bot" 
             boar (board): Checker's board
-            color ()PieceColor: player's color 
+            color (PieceColor): player's color 
             opponent_color (PieceColor): opponent's color 
-            bot_delay (float): Artificial delay for a bot
-            depth (int): optional parameter that only applies to smart-bot
+            depth (int): optional parameter that only applies to smart-bot 
+            algorithm
         """
         self.color = color
         if player == "human":
@@ -46,12 +43,12 @@ class TUIPlayer:
         """
         Prompts the player for coordinates of the piece they want to select.
         If there is a movable piece at the given coordinates, it will print out
-        all the valid moves for that piece and return the coordinates of the 
-        given piece.
+        all the valid moves for that piece
 
         Input: None
 
-        Output: coordinates of the piece that's selected tuple(int, int)
+        Output: coordinates of the piece that's selected 
+        (list[list[(tuple(int, int))])
         """   
         while True:
             user_input = input(self.name + 
@@ -69,14 +66,14 @@ class TUIPlayer:
     def get_move(self, coords):
         """
         Prompt the player for the coordinates they want to move a piece to.
-        If the coordinates the player wants to move to are valid, will return 
-        the final coordinates.
+        If the coordinates the player wants to move to are valid, will move
+        the piece. 
 
         Input:
-            coords tuple(int, int): Takes in the starting coordinates of the 
+            coords (tuple(int, int)): Takes in the starting coordinates of the 
             piece
 
-        Output: The coordinates of the destination (tuple(int, int))
+        Output: None
         """
         while True:
             input_move = input(self.name + 
@@ -210,8 +207,8 @@ def cmd(board_rows, player1, player2):
     elif board_rows == "9":
         board = Game(9)
 
-    player1 = TUIPlayer(1, "smart-bot", board, PieceColor.BLACK, 
-    PieceColor.RED, 2)
+    player1 = TUIPlayer(1, player1, board, PieceColor.BLACK, 
+    PieceColor.RED)
     player2 = TUIPlayer(2, player2, board, PieceColor.RED, 
     PieceColor.BLACK)
 
