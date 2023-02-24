@@ -669,6 +669,9 @@ class Game:
 
         Returns:
             None
+
+        Raises:
+            ValueError: there is no Piece object at the given position
         """
         row, col = position
         if not isinstance(self._get(position), Piece):
