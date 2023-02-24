@@ -27,6 +27,11 @@ python3 src/gui.py
 
 The GUI displays the current state of the board. To move a piece, the current and selected piece's valid moves will be highlighted, and the player can select where they want to move (out of the valid moves).
 
-Like the TUI, you can play against a bot, or have two bots play against each other.
+Like the TUI, you can play against a bot, or have two bots play against each other:
+
+python3 src./tui.py --player2 <bot>
+python3 src./tui.py --player1 <bot> --player2 <bot>
+
+The --bot delay <seconds> parameter is also supported.
 
 ## Bots  
