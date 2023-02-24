@@ -215,7 +215,6 @@ class Game:
         if not self.valid_move(color, start_position, end_position):
             raise ValueError
         piece = self._get(start_position)
-
         if self._require_jump(color): # jumping move
             for move in self.piece_all_valid(start_position):
                 if end_position in move:
@@ -226,6 +225,7 @@ class Game:
 
                     for step in move[: move.index(end_position) + 1]:
                         self._piece_jump_to(piece, step)
+                    break
 
         else:   #non-jump move
             self._piece_move_to(piece, end_position)
