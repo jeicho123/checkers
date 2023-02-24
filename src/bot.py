@@ -4,15 +4,21 @@ import random
 
 class randomBot():
     """
-    Bot that makes random moves
+    Class for bot that suggests random moves
     """
     def __init__(self, board, color):
+        """
+            Constructor
+
+            board (Game obj): board that bot will play on
+            color (str): color of the pieces the bot will play with 
+        """
         self._board = board
         self._color = color
 
     def suggest_move(self):
         """
-        Returns suggested start and end move
+
         """
         rand_piece = random.choice(list(self._board.player_valid_moves(self._color).items()))
         rand_path = random.choice(rand_piece[1])
