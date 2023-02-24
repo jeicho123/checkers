@@ -23,6 +23,11 @@ Examples:
 
         board.get_winner()
 """
+from enum import Enum
+PieceColor = Enum("PieceColor", ["RED", "BLACK"])
+"""
+Enum type for representing piece colors.
+"""
 
 class Game:
     """
@@ -115,14 +120,14 @@ class Game:
                     if r % 2 == c % 2:
                         row.append(None)
                     else:
-                        piece = Piece(row=r, col=c, color="BLACK")
+                        piece = Piece(row=r, col=c, color=PieceColor.BLACK)
                         row.append(piece)
                         self._black_pieces.append(piece)
                 elif r >= self._height - self._rows:
                     if r % 2 == c % 2:
                         row.append(None)
                     else:
-                        piece = Piece(row=r, col=c,color="RED")
+                        piece = Piece(row=r, col=c,color=PieceColor.RED)
                         row.append(piece)
                         self._red_pieces.append(piece)
                 else:
@@ -149,7 +154,7 @@ class Game:
             all_moves[self._jumping] = self._piece_valid_jumps(self._jumping)
             return all_moves
 
-        if color == "BLACK":
+        if color == PieceColor.BLACK:
             player_pieces = self._black_pieces
         else:
             player_pieces = self._red_pieces
@@ -246,10 +251,10 @@ class Game:
             None
         """
         if cmd == "End Turn":   
-            if color == "BLACK" and self.player_valid_moves("RED") == {}:
-                self._winner == "BLACK"
-            elif color == "RED" and self.player_valid_moves("BLACK")  == {}:
-                self._winner = "RED"
+            if color == PieceColor.BLACK and self.player_valid_moves(PieceColor.RED) == {}:
+                self._winner == PieceColor.BLACK
+            elif color == PieceColor.RED and self.player_valid_moves(PieceColor.BLACK)  == {}:
+                self._winner = PieceColor.RED
         elif cmd == "Resign":
             self.resign(color)
         elif cmd == "Offer Draw":
@@ -313,10 +318,10 @@ class Game:
         Returns:
             None
         """
-        if color == "BLACK":
-            self._winner = "RED"
-        elif color == "RED":
-            self._winner = "BLACK"
+        if color == PieceColor.BLACK:
+            self._winner = PieceColor.RED
+        elif color == PieceColor.RED:
+            self._winner = PieceColor.BLACK
 
     def offer_draw(self):
         """
@@ -361,13 +366,13 @@ class Game:
             number of nonking pieces the player has
         """
         king, nonking = 0, 0
-        if color == "BLACK":
+        if color == PieceColor.BLACK:
             for piece in self._black_pieces:
                 if piece.is_king():
                     king += 1
                 else:
                     nonking += 1
-        elif color == "RED":
+        elif color == PieceColor.RED:
             for piece in self._red_pieces:
                 if piece.is_king():
                     king += 1
@@ -378,8 +383,8 @@ class Game:
     def evaluate(self):
         """
         """
-        black_king, black_nonking = self.composition("BLACK")
-        red_king, red_nonking = self.composition("RED")
+        black_king, black_nonking = self.composition(PieceColor.BLACK)
+        red_king, red_nonking = self.composition(PieceColor.RED)
         return (black_nonking - red_nonking) + (0.5 * black_king - 0.5 * red_king)
 
     def board_to_str(self):
@@ -402,7 +407,7 @@ class Game:
                 if square is None:
                     new_row.append(" ")
                 else:
-                    if square.get_color() == "BLACK":
+                    if square.get_color() == PieceColor.BLACK:
                         if square.is_king():
                             new_row.append("B")
                         else:
@@ -450,7 +455,7 @@ class Game:
         if self.turn_incomplete() and self._jumping.get_color() == color:
             return True
 
-        if color == "BLACK":
+        if color == PieceColor.BLACK:
             pieces = self._black_pieces
         else:
             pieces = self._red_pieces
@@ -532,7 +537,7 @@ class Game:
         row, col = start_position
         valid = {}
 
-        if color == "BLACK" or king:
+        if color == PieceColor.BLACK or king:
             try:
                 dest = (row + 2, col + 2)
                 jump_over = (row + 1, col + 1)
@@ -555,7 +560,7 @@ class Game:
             except IndexError:
                 pass
             
-        if color == "RED" or king:
+        if color == PieceColor.RED or king:
             try:
                 dest = (row - 2, col + 2)
                 jump_over = (row - 1, col + 1)
@@ -598,7 +603,7 @@ class Game:
         row, col = start_position
         piece = self._get(start_position)
 
-        if piece.get_color() == "BLACK" or piece.is_king():
+        if piece.get_color() == PieceColor.BLACK or piece.is_king():
             try:
                 dest = (row + 1, col + 1)
                 if self._get(dest) is None:
@@ -613,7 +618,7 @@ class Game:
             except IndexError:
                 pass
 
-        if piece.get_color() == "RED" or piece.is_king():
+        if piece.get_color() == PieceColor.RED or piece.is_king():
             try:
                 dest = (row - 1, col + 1)
                 if self._get(dest) is None:
@@ -646,7 +651,7 @@ class Game:
 
         removed = self._get(position)
         self._board[row][col] = None
-        if removed.get_color() == "BLACK":
+        if removed.get_color() == PieceColor.BLACK:
             self._black_pieces.remove(removed)
         else:
             self._red_pieces.remove(removed)
@@ -700,9 +705,9 @@ class Game:
         """
         row, _ = piece.get_coord()
         color = piece.get_color()
-        if row == 0 and color == "RED":
+        if row == 0 and color == PieceColor.RED:
             piece.promote()
-        elif row == self._height - 1 and color == "BLACK":
+        elif row == self._height - 1 and color == PieceColor.BLACK:
             piece.promote()
 
 class Piece:
