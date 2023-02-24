@@ -67,29 +67,6 @@ class smartBot():
             return start_coord, best_move, min_val
 
 # SIMULATION
-board = Game(3)
-bot1 = smartBot(board, "BLACK")
-bot2 = randomBot(board, "RED")
-flag = True
-while True:
-    if flag:
-        if not board.player_valid_moves("BLACK"):
-            print("Red wins!")
-            break
-        else:
-            start_move, end_move = bot1.suggest_move()
-            print(start_move, end_move, "BLACK")
-            board.move("BLACK", start_move, end_move)
-            flag = False
-    else:
-        if not board.player_valid_moves("RED"):
-            print("Black wins!")
-            break
-        else:
-            start_move, end_move = bot2.suggest_move()
-            print(start_move, end_move, "RED")
-            board.move("RED", start_move, end_move)
-            flag = True
 
 def simulate(n):
     win = 0
