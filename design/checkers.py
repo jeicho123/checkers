@@ -1,6 +1,4 @@
 # Milestone 1 - Design
-<<<<<<< HEAD
-=======
 class Game:
     """
     Class for representing the board and rules of the game.
@@ -328,4 +326,3 @@ class Piece:
             bool: if the given piece is a king
         """
         raise NotImplementedError
->>>>>>> 962213d7438b6c5205ffe6cf8c9626ba3bf287d5
