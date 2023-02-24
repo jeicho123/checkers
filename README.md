@@ -9,4 +9,4 @@ Bot: Jei Ho
 
 ## Running the GUI  
 
-## Simulating a game with bots  
+## Bots  
