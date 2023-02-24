@@ -319,7 +319,7 @@ class Game:
         Player of the given color resigns; the other player is the winner.
 
         Parameters:
-            color (str): color of the resigning player
+            color (PieceColor): color of the resigning player
 
         Returns:
             None
@@ -364,7 +364,7 @@ class Game:
         the player currently has on the board.
 
         Parameters:
-            color (str): given player color
+            color (PieceColor): given player color
 
         Returns:
             tuple (int, int): tuple of two integers; the first integer is the
@@ -464,7 +464,7 @@ class Game:
         with his or her turn. 
 
         Parameters:
-            color (str): player color
+            color (PieceColor): player color
 
         Returns:
             bool: if the player must make a jump with his or her turn
@@ -508,7 +508,7 @@ class Game:
         Parameters:
             start_position (tuple(int, int)): row and column information of the
                 starting position on the board
-            color (str): given color
+            color (PieceColor): given color
             king (bool): if the piece is a king (can move in both directions)
             jumped (set(tuple(int, int))): set of locations that have already
             been jumped over.
