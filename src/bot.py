@@ -1,6 +1,7 @@
 from checkers import Game, PieceColor
 from copy import deepcopy
 import random
+import click
 
 class randomBot():
     """
@@ -132,6 +133,10 @@ class smartBot():
 
 # SIMULATION
 
+@click.command()
+@click.option('-n', '--n',  type=click.INT, default=10)
+@click.option('-d', '--depth',  type=click.INT, default=3)
+@click.option('-r', '--row',  type=click.INT, default=3)
 def simulate(n, row, depth):
     """
         Test win rate of smartBot vs randomBot over the course of n games.
@@ -168,6 +173,8 @@ def simulate(n, row, depth):
                     start_move, end_move = bot2.suggest_move()
                     board.move(PieceColor.RED, start_move, end_move)
                     flag = True
-    return (f"{win//n * 100}%")
+    print (f"Win rate of smart bot: {win // n * 100}%")
 
 
+if __name__ == "__main__":
+    simulate()
