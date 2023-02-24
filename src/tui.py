@@ -25,19 +25,21 @@ class TUIPlayer:
             bot_delay (float): Artificial delay for a bot
             depth (int): optional parameter that only applies to smart-bot
         """
-        
+        self.color = color
         if player == "human":
-            self.name = "Player " + str(player_num)
+            self.name = ("Player " + str(player_num) + 
+            " (" + str(self.color) + ")")
             self.bot = None
         if player == "random-bot":
-            self.name = "Random Bot " + str(player_num)
+            self.name = ("Random Bot " + str(player_num) + 
+            " (" + str(self.color) + ")")
             self.bot = randomBot(board, color)
         elif player == "smart-bot":
-            self.name = "Smart Bot " + str(player_num)
+            self.name = ("Smart Bot " + str(player_num) + 
+            " (" + str(self.color) + ")")
             self.bot = smartBot(board, color, depth)
         
         self.board = board
-        self.color = color
         self.opponent_color = opponent_color
 
     def get_movable_pieces(self):
@@ -146,7 +148,7 @@ def play_checkers(board, players):
         print()
         print_board(board)
         print()
-        
+       
         if current.bot is not None:
             loc = current.bot.suggest_move()
             start = str(loc[0])
@@ -187,30 +189,31 @@ def play_checkers(board, players):
 @click.option('--player2',
               type=click.Choice(['human', 'random-bot', 'smart-bot'], 
               case_sensitive = False), default = "human")
-@click.option('--rows', required = True, prompt = True,
-type = click.Choice([2, 3, 4, 5, 6, 7, 8, 9]), )
+@click.option('--board_rows', required = True, prompt = True,
+type = click.Choice(["2", "3", "4", "5", "6", "7", "8", "9"]))
 
-def cmd(rows, player1, player2):
-    if rows == 2:
+def cmd(board_rows, player1, player2):
+    if board_rows == "2":
         board = Game(2)
-    elif rows == 3:
+    elif board_rows == "3":
         board = Game(3)
-    elif rows == 4:
+    elif board_rows == "4":
         board = Game(4)
-    elif rows == 5:
+    elif board_rows == "5":
         board = Game(5)
-    elif rows == 6:
+    elif board_rows == "6":
         board = Game(6)
-    elif rows == 7:
+    elif board_rows == "7":
         board = Game(7)
-    elif rows == 8:
+    elif board_rows == "8":
         board = Game(8)
-    elif rows == 9:
+    elif board_rows == "9":
         board = Game(9)
-    board = Game(2)
 
-    player1 = TUIPlayer(1, "smart-bot", board, PieceColor.BLACK, PieceColor.RED, 2)
-    player2 = TUIPlayer(2, "smart-bot", board, PieceColor.RED, PieceColor.BLACK, 3)
+    player1 = TUIPlayer(1, "smart-bot", board, PieceColor.BLACK, 
+    PieceColor.RED, 2)
+    player2 = TUIPlayer(2, player2, board, PieceColor.RED, 
+    PieceColor.BLACK)
 
     players = {PieceColor.BLACK: player1, PieceColor.RED: player2}
 
