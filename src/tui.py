@@ -81,7 +81,7 @@ class TUIPlayer:
             final_coord = (row, col)
             if self.board.valid_move(self.color, coords, final_coord):
                 return final_coord
-
+                
 def print_board(board):
     """
     Prints the board to the screen
@@ -97,30 +97,10 @@ def print_board(board):
         string = ""
         for c, col in enumerate(row):
             if r % 2 == c % 2:
-                if col == " ":
-                    string += Fore.WHITE + "[ ]"
-                elif col == "B":
-                    string += Fore.WHITE + "[B]"
-                elif col == "b":
-                    string += Fore.WHITE + "[b]"
-                elif col == "R":
-                    string += Fore.WHITE + "[R]"
-                elif col == "r":
-                    string += Fore.WHITE + "[r]"
+                string += "[L]"
             else:
-                if col == " ":
-                    string += Fore.BLACK + "[ ]"
-                elif col == "B":
-                    string += Fore.BLACK + "[B]"
-                elif col == "b":
-                    string += Fore.BLACK + "[b]"
-                elif col == "R":
-                    string += Fore.BLACK + "[R]"
-                elif col == "r":
-                    string += Fore.BLACK + "[r]"
+                string += "[B]"
         final.append(string)
-        
-    print("\n".join(final))
     return "\n".join(final)
 
 
