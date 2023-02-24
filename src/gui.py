@@ -8,8 +8,9 @@ import sys
 from typing import Union, Dict
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+os.environ["SDL_VIDEODRIVER"] = "dummy"
 import pygame
-# import click
+import click
 
 from checkers import Game, PieceColor
 from bot import randomBot, smartBot
@@ -99,7 +100,8 @@ def create_board(surface: pygame.surface.Surface, board):
             pygame.draw.circle(surface, color,
             center, radius)
 
-def play_checkers(board, surface, players):
+def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
+                  bot_delay):
     """
     Plays a game of Checkers in Pygame.
 
@@ -114,9 +116,12 @@ def play_checkers(board, surface, players):
     pygame.display.set_caption("Checkers")
 
     #starting player is a black piece
-    current_player = PieceColor.BLACK
+    current_player = players[PieceColor.BLACK]
 
-    size = len(board.board_to_str)
+    surface = pygame.display.set_mode((WIDTH, HEIGHT))
+    clock = pygame.time.Clock()
+
+    size = len(board.board_to_str())
 
     while board.get_winner() is None:
         events = pygame.event.get()
@@ -169,9 +174,40 @@ def play_checkers(board, surface, players):
                             end_row = None
                             end_col = None
 
+            if current_player.bot is not None:
+                pygame.time.wait(int(bot_delay * 1000))
+                end_col = current_player.bot.suggest_move()
+
+        create_board(surface, board)
+        pygame.display.update()
+        clock.tick(24)
+
     winner = board.get_winner()
     if winner is not None:
         print(f"The winner is {players[winner].name}!")
 
-    board = Game(3)
-    create_board(surface, board)
+
+@click.command(name="checkers-gui")
+@click.option('--mode',
+              type=click.Choice(['real'], case_sensitive=False),
+              default="real")
+@click.option('--player1',
+              type=click.Choice(['human', 'random-bot', 'smart-bot'], case_sensitive=False),
+              default="human")
+@click.option('--player2',
+              type=click.Choice(['human', 'random-bot', 'smart-bot'], case_sensitive=False),
+              default="human")
+@click.option('--bot-delay', type=click.FLOAT, default=0.5)
+
+def command(mode, player1, player2, bot_delay):
+    if mode == "real":
+        board = Game(3)
+
+    player1 = GUIPlayer(1, player1, board, PieceColor.BLACK, PieceColor.RED)
+    player2 = GUIPlayer(2, player2, board, PieceColor.RED, PieceColor.BLACK)
+    players = {PieceColor.BLACK: player1, PieceColor.RED: player2}
+
+    play_checkers(board, players, bot_delay)
+
+if __name__ == "__main__":
+    command()
