@@ -10,7 +10,7 @@ class TUIPlayer:
 
     The TUI player can either be a human or bot
     """
-    def __init__(self, player_num, player, board, color, opponent_color, 
+    def __init__(self, player_num, player, board, color, opponent_color,
     depth = 0):
         """
         Input:
@@ -148,8 +148,14 @@ def play_checkers(board, players):
        
         if current.bot is not None:
             loc = current.bot.suggest_move()
-            start = str(loc[0])
-            end = str(loc[1])
+            start_str = (str(loc[0]))
+            end_str = (str(loc[1]))
+            start_row_int = int(start_str[1])
+            start_col_int = int(start_str[4])
+            end_row_int = int(end_str[1])
+            end_col_int = int(end_str[4])
+            start = (start_row_int, start_col_int)
+            end = (end_row_int, end_col_int)
             board.move(current.color, start, end)
         else:
             coords = current.get_movable_pieces()
@@ -218,3 +224,4 @@ def cmd(board_rows, player1, player2):
 
 if __name__ == "__main__":
     cmd()
+
