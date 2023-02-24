@@ -9,7 +9,7 @@ from typing import Union, Dict
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
-import click
+# import click
 
 from checkers import Game, PieceColor
 from bot import randomBot, smartBot
@@ -71,7 +71,7 @@ def create_board(surface: pygame.surface.Surface, board):
     rh = HEIGHT // rows
     cw = WIDTH // cols
 
-    # Fill entire surface window with red
+    # Fill entire surface window with dark brown
     surface.fill(DARK_BROWN)
 
     # Drawing each square of the board
@@ -172,3 +172,6 @@ def play_checkers(board, surface, players):
     winner = board.get_winner()
     if winner is not None:
         print(f"The winner is {players[winner].name}!")
+
+    board = Game(3)
+    create_board(surface, board)
