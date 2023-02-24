@@ -1,9 +1,12 @@
-from checkers import Game, Piece, PieceColor
-from colorama import Fore, Style
-#from bot import randomBot, smartBot
-from typing import Union, Dict
 import time
+from typing import Union, Dict
+
 import click
+from colorama import Fore
+
+from checkers import Game, PieceColor, Piece
+
+#from bot import randomBot, smartBot
 
 
 class TUIPlayer:
@@ -12,23 +15,18 @@ class TUIPlayer:
 
     The TUI player can either be a human or bot
     """
-    name: str
-    #bot: Union[None, randomBot, smartBot]
-    board: Game
-    color: PieceColor
-    
-    def __init__(self, player_num: int, board: Game, color: PieceColor, opponent_color: PieceColor):
+    def __init__(self, player_num, board, color, opponent_color):
         """
         Input:
             player_num (int): Player number (1 or 2)
             player_type (str): "human", "random-bot", or "smart-bot" 
             boar (board): Checker's board
-            color (str): player's color 
-            opponent_color (str): opponent's color 
+            color (PieceColor): player's color 
+            opponent_color (PieceColor): opponent's color 
             bot_delay (float): Artificial delay for a bot
         """
         
-        self.name = f"Player {player_num}"
+        self.name = str(player_num)
         self.bot = None
         self.board = board
         self.color = color
@@ -46,9 +44,13 @@ class TUIPlayer:
         Output: coordinates of the piece that's selected tuple(int, int)
         """
         while True:
-            user_input = input(f"{self.name}" + 
+            user_input = input(str(self.name) + 
             " Insert coordinates of piece: ")
-            coord = user_input.split(",")
+            row = int(user_input.split(",")[0])
+            col = int(user_input.split(",")[1])
+            coord = (row, col)
+            print(self.color)
+            print(self.board.player_valid_moves(self.color))
             if coord in self.board.player_valid_moves(self.color):
                 for move in self.board.piece_all_valid(coord):
                     print(move) 
@@ -57,12 +59,18 @@ class TUIPlayer:
     def get_move(self, coords):
         """
         Prompt the player for the coordinates they want to move a piece to.
-        If the coordinates the player wants to move to are 
+        If the coordinates the player wants to move to are valid, will return 
+        the final coordinates.
+
+        Input:
+            coords tuple(int, int): Takes in the starting coordinates of the piece
         """
         while True:
-            input_move = input(f"{self.name}" + "Insert desired coordinates: ")
-            final_coord = input_move.split(",")
-            if self.board.valid_move(coords, final_coord):
+            input_move = input(str(self.name) + "Insert desired coordinates: ")
+            row = int(input_move.split(",")[0])
+            col = int(input_move.split(",")[1])
+            final_coord = (row, col)
+            if self.board.valid_move(self.color, coords, final_coord):
                 return final_coord
 
 def print_board(board):
@@ -107,13 +115,14 @@ def print_board(board):
     return "\n".join(final)
 
 
-def play_checkers(board: Game, players: Dict[PieceColor, TUIPlayer]):
+def play_checkers(board, players):
     """
     Plays a game of Checkers on the terminal
 
     Inputs:
-        board: board to play on
-        players: A dictionary mapping piece colors to TUIPlayer objects
+        board (Game): board to play on
+        players (Dict[PieceColor, TUIPlayer]): A dictionary mapping 
+        piece colors to TUIPlayer objects
 
     Output: None
     """
@@ -121,24 +130,24 @@ def play_checkers(board: Game, players: Dict[PieceColor, TUIPlayer]):
     current = players[PieceColor.BLACK]
 
     #keep playing until there's a winner:
-    while board.get_winner is None():
+    while board.get_winner() is None:
         #prints the board
         print()
         print_board(board)
         print()
 
-        coords = current.get_piece()
+        coords = current.get_movable_pieces()
         dest = current.get_move(coords)
 
         board.move(current.color, coords, dest)
 
-
+        #Update the player
         if not board.turn_incomplete():
             board.end_turn(current.color, "End Turn")
             if current.color == PieceColor.BLACK:
                 current = players[PieceColor.RED]
             elif current.color == PieceColor.RED:
-                current = PieceColor.RED
+                current = players[PieceColor.BLACK]
 
     print()
     print_board(board)
@@ -147,16 +156,39 @@ def play_checkers(board: Game, players: Dict[PieceColor, TUIPlayer]):
     if winner == "DRAW":
         print("It's a tie!")
     elif winner is not None:
-        print(f"The winner is {players[winner].name}!")
+        print("The winner is " + str(players[winner].name) + " !")
 
 
-def cmd(player1, player2):
-    board = Game(2)
+@click.command(name = "Checkers-tui")
+@click.option('--player1',
+              type = str, default = "human")
+@click.option('--player2',
+              type = str, default = "human")
+@click.option('--rows', type = click.Choice([2, 3, 4, 5, 6, 7, 8, 9]), 
+default = 2)
+def cmd(rows, player1, player2):
+    if rows == 2:
+        board = Game(2)
+    elif rows == 3:
+        board = Game(3)
+    elif rows == 4:
+        board = Game(4)
+    elif rows == 5:
+        board = Game(5)
+    elif rows == 6:
+        board = Game(6)
+    elif rows == 7:
+        board = Game(7)
+    elif rows == 8:
+        board = Game(8)
+    elif rows == 9:
+        board = Game(9)
+    board = Game(5)
+    player1 = TUIPlayer(1, board, "BLACK", "RED")
+    player2 = TUIPlayer(2, board, "RED", "BLACK")
+    
 
-    player1 = TUIPlayer(1, player1, board, "BLACK", "RED")
-    player2 = TUIPlayer(2, player2, board, "RED", "BLACK")
-
-    players = {"BLACK": player1, "RED": player2}
+    players = {PieceColor.BLACK: player1, PieceColor.RED: player2}
 
     play_checkers(board, players)
 
