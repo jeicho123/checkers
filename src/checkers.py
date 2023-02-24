@@ -212,13 +212,7 @@ class Game:
             IndexError: if index is not on the board
             ValueError: selected move is invalid
         """
-        print()
-        print(self)
-        print(color, start_position, end_position)
-        print()
         if not self.valid_move(color, start_position, end_position):
-            
-            print(color, start_position, end_position)
             raise ValueError
         piece = self._get(start_position)
 
@@ -246,9 +240,6 @@ class Game:
         elif color == PieceColor.RED and self.player_valid_moves(
                 PieceColor.BLACK)  == {}:
             self._winner = PieceColor.RED
-        print()
-        print(self)
-        print()
 
     def turn_incomplete(self):
         """
