@@ -85,7 +85,7 @@ class smartBot():
             evaluation of the board
         """
         # Base case --> leaf of tree or game recognizes a winner
-        if depth == 0 or board.get_winner(): 
+        if depth == 0: 
             return None, None, board.evaluate()
         
         if color == PieceColor.BLACK:
