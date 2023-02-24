@@ -171,30 +171,3 @@ def simulate(n, row, depth):
     return (f"{win//n * 100}%")
 
 
-
-for _ in range(10):
-    board = Game(3)
-    bot1 = smartBot(board, PieceColor.BLACK, 3)
-    bot2 = randomBot(board, PieceColor.RED)
-    # Flag alternates to decide the turn of the bots
-    flag = True
-    while True:
-        if flag:
-            # Game ends when bot has no more move to play
-            if not board.player_valid_moves(PieceColor.BLACK):
-                print('red win')
-                break
-            else:
-                start_move, end_move = bot1.suggest_move()
-                print(start_move, end_move)
-                board.move(PieceColor.BLACK, start_move, end_move)
-                flag = False
-        else:
-            if not board.player_valid_moves(PieceColor.RED):
-                print('black win')
-                break
-            else:
-                start_move, end_move = bot2.suggest_move()
-                print(start_move, end_move)
-                board.move(PieceColor.RED, start_move, end_move)
-                flag = True
