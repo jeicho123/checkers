@@ -145,7 +145,7 @@ class Game:
             with each piece.
         """
         all_moves = {}
-        if self._jumping is not None and self._jumping.get_color() == color:
+        if self.turn_incomplete() and self._jumping.get_color() == color:
             all_moves[self._jumping] = self._piece_valid_jumps(self._jumping)
             return all_moves
 
@@ -348,6 +348,18 @@ class Game:
             self.draw_offered = False
 
     def composition(self, color):
+        """
+        Given a player's color, returns the number of kings and nonking pieces
+        the player currently has on the board.
+
+        Parameters:
+            color (str): given player color
+
+        Returns:
+            tuple (int, int): tuple of two integers; the first integer is the
+            number of king pieces the player has, the second integer is the
+            number of nonking pieces the player has
+        """
         king, nonking = 0, 0
         if color == "BLACK":
             for piece in self._black_pieces:
@@ -364,9 +376,22 @@ class Game:
         return king, nonking
     
     def evaluate(self):
+        """
+        Evaluates the value of the current position. The more positive the value
+        the more favorable the position is for player with the black pieces. The
+        more negative the value, the more favorable the position is for player 
+        with the red pieces. 
+
+        Parameters:
+            None
+
+        Returns:
+            value (int): value of current position
+        """
         black_king, black_nonking = self.composition("BLACK")
         red_king, red_nonking = self.composition("RED")
-        return (black_nonking - red_nonking) + (0.5 * black_king - 0.5 * red_king)
+        value = (black_nonking - red_nonking) + (0.5 * black_king - 0.5 * red_king)
+        return value
 
     def board_to_str(self):
         """
@@ -433,7 +458,7 @@ class Game:
         Returns:
             bool: if the player must make a jump with his or her turn
         """
-        if self._jumping is not None and self._jumping.get_color() == color:
+        if self.turn_incomplete() and self._jumping.get_color() == color:
             return True
 
         if color == "BLACK":
@@ -627,7 +652,8 @@ class Game:
             None
         """
         row, col = position
-        assert isinstance(self._get(position), Piece)
+        if not isinstance(self._get(position), Piece):
+            raise ValueError
 
         removed = self._get(position)
         self._board[row][col] = None
@@ -686,9 +712,9 @@ class Game:
         row, _ = piece.get_coord()
         color = piece.get_color()
         if row == 0 and color == "RED":
-            piece._king = True
+            piece.promote()
         elif row == self._height - 1 and color == "BLACK":
-            piece._king = True
+            piece.promote()
 
 class Piece:
     """
@@ -749,6 +775,18 @@ class Piece:
             None
         """
         self._coord = new_coord
+
+    def promote(self):
+        """
+        Promotes the given piece to become a king.
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
+        self._king = True
 
     def is_king(self):
         """

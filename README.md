@@ -2,4 +2,4 @@
 Game Logic: Patrick Lin  
 TUI:  
 GUI:  
-Bot:  
+Bot: Jei Ho
