@@ -168,11 +168,13 @@ class Game:
         if self._require_jump(color):   # player must jump
             for piece in player_pieces:
                 if self._piece_valid_jumps(piece.get_coord()):
-                    all_moves[piece.get_coord()] = self._piece_valid_jumps(piece.get_coord())
+                    all_moves[piece.get_coord()] = self._piece_valid_jumps(
+                            piece.get_coord())
         else:   # player cannot jump
             for piece in player_pieces:
                 if self._piece_valid_moves(piece.get_coord()):
-                    all_moves[piece.get_coord()] = self._piece_valid_moves(piece.get_coord())
+                    all_moves[piece.get_coord()] = self._piece_valid_moves(
+                            piece.get_coord())
         return all_moves
 
     def piece_all_valid(self, start_position):
@@ -257,9 +259,11 @@ class Game:
             None
         """
         if cmd == "End Turn":   
-            if color == PieceColor.BLACK and self.player_valid_moves(PieceColor.RED) == {}:
+            if color == PieceColor.BLACK and self.player_valid_moves(
+                        PieceColor.RED) == {}:
                 self._winner == PieceColor.BLACK
-            elif color == PieceColor.RED and self.player_valid_moves(PieceColor.BLACK)  == {}:
+            elif color == PieceColor.RED and self.player_valid_moves(
+                        PieceColor.BLACK)  == {}:
                 self._winner = PieceColor.RED
         elif cmd == "Resign":
             self.resign(color)
@@ -401,7 +405,8 @@ class Game:
         """
         black_king, black_nonking = self.composition(PieceColor.BLACK)
         red_king, red_nonking = self.composition(PieceColor.RED)
-        value = (black_nonking - red_nonking) + (0.5 * black_king - 0.5 * red_king)
+        value = (black_nonking - red_nonking) + (0.5 * black_king - 
+                                                0.5 * red_king)
         return value
 
     def board_to_str(self):
