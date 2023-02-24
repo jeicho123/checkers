@@ -1,4 +1,4 @@
-# project-jeichen-ptlin-tiffanyjl-nmoon
+# Checkers  
 Game Logic: Patrick Lin  
 TUI:  Nathan Moonesinghe  
 GUI: Tiffany Lee 
