@@ -7,7 +7,7 @@ Bot: Jei Ho
 ## Running the TUI  
 To run the TUI, run the following from the root of the repository:
 
-python3 src/tui.py
+> python3 src/tui.py
 
 The TUI first asks for the number of rows of pieces in order to create the 
 correct board size. It then displays the state of the board. Starting with 
@@ -23,7 +23,7 @@ Therefore, you can't currently play against a bot.
 ## Running the GUI  
 To run the GUI, run the following from the root of the repository:
 
-python3 src/gui.py
+> python3 src/gui.py
 
 The GUI displays the current state of the board. To move a piece, the current and selected piece's valid moves will be highlighted, and the player can select where they want to move (out of the valid moves).
 
