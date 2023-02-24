@@ -36,3 +36,11 @@ python3 src./tui.py --player1 <bot> --player2 <bot>
 The --bot delay <seconds> parameter is also supported.
 
 ## Bots  
+To simulate a random bot playing with a smart bot that uses minimax algorithm, run:
+
+> python3 src/bot.py
+
+If you like to change the depth (-d) of the minimax algorithm, the row (-r) of the board, the number (-n) of simulated games, you can run (as an example)
+
+> python3 src/bot.py -n 20 -d 4 -r 4
+
