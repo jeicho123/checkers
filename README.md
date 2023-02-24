@@ -36,7 +36,7 @@ python3 src./tui.py --player1 <bot> --player2 <bot>
 The --bot delay <seconds> parameter is also supported.
 
 ## Bots  
-To simulate a random bot playing with a smart bot that uses minimax algorithm, run:
+To simulate a random bot playing with a smart bot that uses minimax algorithm and display the win percentage of the smart bot, run:
 
 > python3 src/bot.py
 
