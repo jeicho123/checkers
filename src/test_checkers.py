@@ -5,11 +5,11 @@ def test_create_board():
     g = Game(2)
     assert len(g._black_pieces) == len(g._red_pieces) == 6
 
-def test_valid_moves1():
+def test_valid_move_1():
     g = Game(3)
     assert g.is_valid((5, 0), (4, 1))
 
-def test_valid_moves2():
+def test_valid_moves_2():
     g = Game(3)
     assert g.is_valid((5, 0), (10, 1)) is False
 
