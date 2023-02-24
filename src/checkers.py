@@ -377,10 +377,21 @@ class Game:
     
     def evaluate(self):
         """
+        Evaluates the value of the current position. The more positive the value
+        the more favorable the position is for player with the black pieces. The
+        more negative the value, the more favorable the position is for player 
+        with the red pieces. 
+
+        Parameters:
+            None
+
+        Returns:
+            value (int): value of current position
         """
         black_king, black_nonking = self.composition("BLACK")
         red_king, red_nonking = self.composition("RED")
-        return (black_nonking - red_nonking) + (0.5 * black_king - 0.5 * red_king)
+        value = (black_nonking - red_nonking) + (0.5 * black_king - 0.5 * red_king)
+        return value
 
     def board_to_str(self):
         """
