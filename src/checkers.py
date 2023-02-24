@@ -86,8 +86,15 @@ class Game:
             for s in row:
                 if s is None:
                     text += "_"
+                elif s.get_color() == PieceColor.RED and s.is_king():
+                    text += "R"
+                elif s.get_color() == PieceColor.RED and not s.is_king():
+                    text += "r"
+                elif s.get_color() == PieceColor.BLACK and s.is_king():
+                    text += "B"
                 else:
-                    text += s.get_color()[0]
+                    print(s.get_color(), s.is_king())
+                    text += "b"
             string.append(text)
         return "\n".join(string)
 
