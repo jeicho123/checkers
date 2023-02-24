@@ -18,7 +18,16 @@ class randomBot():
 
     def suggest_move(self):
         """
+        Randomly selects a piece and randomly selects out of the viable paths
+        from the piece can choose to take.
 
+        Parameters:
+            None
+
+        Returns:
+            tuple(tuple, tuple): first tuple represents starting coordinates of 
+            the random piece, second tuple represents end coordinates of the 
+            random path
         """
         rand_piece = random.choice(list(self._board.player_valid_moves(self._color).items()))
         rand_path = random.choice(rand_piece[1])
@@ -26,29 +35,74 @@ class randomBot():
 
 class smartBot():
     """
-    Bot that uses Minimax algo to suggest move based on curent position
+    Class for bot that uses Minimax algorithm to suggest moves
     """
-    def __init__(self, board, color):
+    def __init__(self, board, color, depth):
+        """
+            Constructor
+
+            board (Game obj): board that bot will play on
+            color (str): color of the pieces the bot will play with 
+            depth (int): depth of the Minimax algorithm
+        """
         self._board = board
         self._color = color
+        self._depth = depth
     
     def suggest_move(self):
-        move = self._minimax(self._board, 3, self._color)
+        """
+        Calls the private method _minimax() to return the coordinates of the 
+        piece that should be moved and where it should be moved to.
+
+        Parameters:
+            None
+
+        Returns:
+            tuple(tuple): first tuple represents starting coordinates of Minimax
+            chosen piece, second tuple represents end coordinates of Minimax 
+            chosen path
+        """
+        move = self._minimax(self._board, self._depth, self._color)
         return move[:2]
 
     def _minimax(self, board, depth, color):
+        """
+        Minimax algorithm that traverses a tree of paths given a starting 
+        position and bottoms up to the root, returning the next best move for 
+        the bot. At each node, depending on the color, the algorithm will
+        maximize/minimize the values of the level of nodes below it and obtain
+        the move needed to reach that minimal/maximal position. 
+
+        Parameters:
+            board (Game obj): board that bot will play on
+            depth (int): the number of moves that the bot thinks ahead
+            color (str): color of the pieces the bot will play with 
+
+        Returns:
+            tuple(tuple, tuple, int): first tuple represents starting 
+            coordinates of Minimax chosen piece, second tuple represents end 
+            coordinates of Minimax chosen path, third tuple represents 
+            evaluation of the board
+        """
+        # Base case --> leaf of tree or game recognizes a winner
         if depth == 0 or board.get_winner(): 
             return None, None, board.evaluate()
         
         if color == "BLACK":
+            # Maximize eval value for "BLACK"
             max_val = -float('inf')
             start_coord = None
             best_move = None
+            # Consider all paths for a given position
             for start, paths in board.player_valid_moves(color).items():
                 for path in paths:
                     end = path[-1]
+                    # Use deepycopy so original board is not affected when a 
+                    # move is made
                     tmp_board = deepcopy(board)
                     tmp_board.move(color, start, end)
+                    # Recurses a level below. "BLACK" will try to maximize the
+                    # values of the nodes in this level
                     _, _, val = self._minimax(tmp_board, depth - 1, "RED")
                     if val > max_val:
                         max_val = val
@@ -57,6 +111,7 @@ class smartBot():
             return start_coord, best_move, max_val
 
         if color == "RED":
+            # Minimize eval value for "RED"
             min_val = float('inf')
             start_coord = None
             best_move = None
@@ -65,6 +120,8 @@ class smartBot():
                     end = path[-1]
                     tmp_board = deepcopy(board)
                     tmp_board.move(color, start, end)
+                    # Recurses a level below. "RED" will try to minimize the
+                    # values of the nodes in this level
                     _, _, val = self._minimax(tmp_board, depth - 1, "BLACK")
                     if val < min_val:
                         min_val = val
@@ -72,17 +129,31 @@ class smartBot():
                         best_move = end
             return start_coord, best_move, min_val
 
+
 # SIMULATION
 
-def simulate(n):
+def simulate(n, row, depth):
+    """
+        Test win rate of smartBot vs randomBot over the course of n games.
+
+        Parameters:
+            n (int): number of games
+            row (int): row of pieces for board
+            depth (int): depth for smartBot
+
+        Returns:
+            str: win-rate percentage
+        """
     win = 0
     for _ in range(n):
-        board = Game(3)
-        bot1 = smartBot(board, "BLACK")
+        board = Game(row)
+        bot1 = smartBot(board, "BLACK", depth)
         bot2 = randomBot(board, "RED")
+        # Flag alternates to decide the turn of the bots
         flag = True
         while True:
             if flag:
+                # Game ends when bot has no more move to play
                 if not board.player_valid_moves("BLACK"):
                     break
                 else:
@@ -97,6 +168,33 @@ def simulate(n):
                     start_move, end_move = bot2.suggest_move()
                     board.move("RED", start_move, end_move)
                     flag = True
-    return (win//n * 100)
-# print(simulate(10))
+    return (f"{win//n * 100}%")
 
+
+
+for _ in range(10):
+    board = Game(3)
+    bot1 = smartBot(board, "BLACK", 3)
+    bot2 = randomBot(board, "RED")
+    # Flag alternates to decide the turn of the bots
+    flag = True
+    while True:
+        if flag:
+            # Game ends when bot has no more move to play
+            if not board.player_valid_moves("BLACK"):
+                print('red win')
+                break
+            else:
+                start_move, end_move = bot1.suggest_move()
+                print(start_move, end_move)
+                board.move("BLACK", start_move, end_move)
+                flag = False
+        else:
+            if not board.player_valid_moves("RED"):
+                print('black win')
+                break
+            else:
+                start_move, end_move = bot2.suggest_move()
+                print(start_move, end_move)
+                board.move("RED", start_move, end_move)
+                flag = True
