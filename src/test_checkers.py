@@ -39,7 +39,6 @@ def test_block_win():
     g.move(PieceColor.RED, (5, 4), (4, 5))
     g.move(PieceColor.RED, (4, 5), (3, 4))
 
-    g.end_turn(PieceColor.RED, "End Turn")
     assert g.get_winner() == PieceColor.RED
 
 def test_move():

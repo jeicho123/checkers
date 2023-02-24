@@ -233,6 +233,14 @@ class Game:
         # check for promotion
         self._check_promote(piece)
 
+        # update winner
+        if color == PieceColor.BLACK and self.player_valid_moves(
+                PieceColor.RED) == {}:
+            self._winner == PieceColor.BLACK
+        elif color == PieceColor.RED and self.player_valid_moves(
+                PieceColor.BLACK)  == {}:
+            self._winner = PieceColor.RED
+
     def turn_incomplete(self):
         """
         Boolean value for if the turn is incomplete, meaning the player has not
@@ -259,12 +267,7 @@ class Game:
             None
         """
         if cmd == "End Turn":   
-            if color == PieceColor.BLACK and self.player_valid_moves(
-                        PieceColor.RED) == {}:
-                self._winner == PieceColor.BLACK
-            elif color == PieceColor.RED and self.player_valid_moves(
-                        PieceColor.BLACK)  == {}:
-                self._winner = PieceColor.RED
+            pass
         elif cmd == "Resign":
             self.resign(color)
         elif cmd == "Offer Draw":
