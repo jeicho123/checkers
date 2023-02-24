@@ -24,7 +24,6 @@ Examples:
         board.get_winner()
 """
 from enum import Enum
-
 PieceColor = Enum("PieceColor", ["RED", "BLACK"])
 """
 Enum type for representing piece colors.
@@ -87,8 +86,14 @@ class Game:
             for s in row:
                 if s is None:
                     text += "_"
+                elif s.get_color() == PieceColor.RED and s.is_king():
+                    text += "R"
+                elif s.get_color() == PieceColor.RED and not s.is_king():
+                    text += "r"
+                elif s.get_color() == PieceColor.BLACK and s.is_king():
+                    text += "B"
                 else:
-                    text += s.get_color()[0]
+                    text += "b"
             string.append(text)
         return "\n".join(string)
 
@@ -141,7 +146,7 @@ class Game:
         the available specified colored pieces.
 
         Parameters:
-            color (str): player's color
+            color (PieceColor): player's color
 
         Returns:
             dict{tuple(int, int): list[list[tuple(int, int)]]}: dictionary of
@@ -163,11 +168,13 @@ class Game:
         if self._require_jump(color):   # player must jump
             for piece in player_pieces:
                 if self._piece_valid_jumps(piece.get_coord()):
-                    all_moves[piece.get_coord()] = self._piece_valid_jumps(piece.get_coord())
+                    all_moves[piece.get_coord()] = self._piece_valid_jumps(
+                            piece.get_coord())
         else:   # player cannot jump
             for piece in player_pieces:
                 if self._piece_valid_moves(piece.get_coord()):
-                    all_moves[piece.get_coord()] = self._piece_valid_moves(piece.get_coord())
+                    all_moves[piece.get_coord()] = self._piece_valid_moves(
+                            piece.get_coord())
         return all_moves
 
     def piece_all_valid(self, start_position):
@@ -194,7 +201,7 @@ class Game:
         move.
 
         Parameters:
-            color (str): player color
+            color (PieceColor): player color
             start_position: the position of piece to be moved
             end_position (tuple(int, int)): destination position
 
@@ -226,6 +233,14 @@ class Game:
         # check for promotion
         self._check_promote(piece)
 
+        # update winner
+        if color == PieceColor.BLACK and self.player_valid_moves(
+                PieceColor.RED) == {}:
+            self._winner == PieceColor.BLACK
+        elif color == PieceColor.RED and self.player_valid_moves(
+                PieceColor.BLACK)  == {}:
+            self._winner = PieceColor.RED
+
     def turn_incomplete(self):
         """
         Boolean value for if the turn is incomplete, meaning the player has not
@@ -245,17 +260,14 @@ class Game:
         offer a draw, or simply end their current turn.
 
         Parameters:
-            color (str): current player's color
+            color (PieceColor): current player's color
             cmd (str): the player's command to end turn, resign, or offer draw
 
         Returns:
             None
         """
         if cmd == "End Turn":   
-            if color == PieceColor.BLACK and self.player_valid_moves(PieceColor.RED) == {}:
-                self._winner == PieceColor.BLACK
-            elif color == PieceColor.RED and self.player_valid_moves(PieceColor.BLACK)  == {}:
-                self._winner = PieceColor.RED
+            pass
         elif cmd == "Resign":
             self.resign(color)
         elif cmd == "Offer Draw":
@@ -304,8 +316,8 @@ class Game:
             None
 
         Returns:
-            str or None: If there is a winner, return the color. Otherwise,
-            return None.
+            Piece or str or None: If there is a winner, return the color. If it
+            is a tie, returns the string "DRAW". Otherwise, return None.
         """
         return self._winner
 
@@ -314,7 +326,7 @@ class Game:
         Player of the given color resigns; the other player is the winner.
 
         Parameters:
-            color (str): color of the resigning player
+            color (PieceColor): color of the resigning player
 
         Returns:
             None
@@ -359,7 +371,7 @@ class Game:
         the player currently has on the board.
 
         Parameters:
-            color (str): given player color
+            color (PieceColor): given player color
 
         Returns:
             tuple (int, int): tuple of two integers; the first integer is the
@@ -396,7 +408,8 @@ class Game:
         """
         black_king, black_nonking = self.composition(PieceColor.BLACK)
         red_king, red_nonking = self.composition(PieceColor.RED)
-        value = (black_nonking - red_nonking) + (0.5 * black_king - 0.5 * red_king)
+        value = (black_nonking - red_nonking) + (0.5 * black_king - 
+                                                0.5 * red_king)
         return value
 
     def board_to_str(self):
@@ -459,7 +472,7 @@ class Game:
         with his or her turn. 
 
         Parameters:
-            color (str): player color
+            color (PieceColor): player color
 
         Returns:
             bool: if the player must make a jump with his or her turn
@@ -503,7 +516,7 @@ class Game:
         Parameters:
             start_position (tuple(int, int)): row and column information of the
                 starting position on the board
-            color (str): given color
+            color (PieceColor): given color
             king (bool): if the piece is a king (can move in both directions)
             jumped (set(tuple(int, int))): set of locations that have already
             been jumped over.
@@ -537,7 +550,7 @@ class Game:
 
         Parameters:
             start_position (tuple(int, int)): starting location on the board
-            color (str): given piece color
+            color (PieceColor): given piece color
             king (bool): king status of the given piece
             jumped (set(tuple(int, int))): set of locations that have already
             been jumped over
@@ -733,13 +746,13 @@ class Piece:
         Parameters:
             row (int): the row number of the piece
             col (int): the column number of the piece
-            color (str): the color of the piece
+            color (PieceColor): the color of the piece
             king (bool): if the piece is a king
         """
         # tuple (int, int): coordinates of the piece
         self._coord = (row, col)
 
-        # str: color of the piece
+        # PieceColor: color of the piece
         self._color = color
 
         # bool: if the piece is a king
@@ -754,7 +767,7 @@ class Piece:
             None
 
         Returns:
-            str: color of the piece
+            PieceColor: color of the piece
         """
         return self._color
 

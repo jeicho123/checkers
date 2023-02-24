@@ -1,5 +1,5 @@
 # project-jeichen-ptlin-tiffanyjl-nmoon
 Game Logic: Patrick Lin  
-TUI:  
+TUI:  Nathan Moonesinghe  
 GUI: Tiffany Lee 
 Bot: Jei Ho
