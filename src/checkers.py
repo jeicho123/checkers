@@ -669,6 +669,7 @@ class Game:
         """
         row, col = position
         if not isinstance(self._get(position), Piece):
+            print(position)
             raise ValueError
 
         removed = self._get(position)
