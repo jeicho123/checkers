@@ -83,7 +83,26 @@ class TUIPlayer:
             final_coord = (row, col)
             if self.board.valid_move(self.color, coords, final_coord):
                 return final_coord
-                
+    
+
+    def get_bot_move(self):
+        """
+        If the player is a bot, asks the bot to suggest a move, and 
+        moves the bot to the suggested place.
+        """
+        if self.bot is not None:
+            loc = self.bot.suggest_move()
+            start_str = (str(loc[0]))
+            end_str = (str(loc[1]))
+            start_row_int = int(start_str[1])
+            start_col_int = int(start_str[4])
+            end_row_int = int(end_str[1])
+            end_col_int = int(end_str[4])
+            start = (start_row_int, start_col_int)
+            end = (end_row_int, end_col_int)
+            self.board.move(self.color, start, end)
+
+
 def print_board(board):
     """
     Prints the board to the screen
@@ -145,18 +164,9 @@ def play_checkers(board, players):
         print()
         print_board(board)
         print()
-       
+        
         if current.bot is not None:
-            loc = current.bot.suggest_move()
-            start_str = (str(loc[0]))
-            end_str = (str(loc[1]))
-            start_row_int = int(start_str[1])
-            start_col_int = int(start_str[4])
-            end_row_int = int(end_str[1])
-            end_col_int = int(end_str[4])
-            start = (start_row_int, start_col_int)
-            end = (end_row_int, end_col_int)
-            board.move(current.color, start, end)
+            current.get_bot_move()
         else:
             coords = current.get_movable_pieces()
             dest = current.get_move(coords)
