@@ -1,19 +1,20 @@
-import checkers
+from checkers import Game
+from checkers import PieceColor
 
 def test_create_board():
-    g = checkers.Game(2)
+    g = Game(2)
     assert len(g._black_pieces) == len(g._red_pieces) == 6
 
 def test_valid_moves1():
-    g = checkers.Game(3)
+    g = Game(3)
     assert g.is_valid((5, 0), (4, 1))
 
 def test_valid_moves2():
-    g = checkers.Game(3)
+    g = Game(3)
     assert g.is_valid((5, 0), (10, 1)) is False
 
 def test_player_valid_moves():
-    g = checkers.Game(2)
+    g = Game(2)
     g._remove((0, 1))
     g._remove((0, 3))
     g._remove((0, 5))
@@ -24,7 +25,7 @@ def test_player_valid_moves():
     assert g.player_valid_moves("BLACK") == {}
 
 def test_block_win():
-    g = checkers.Game(2)
+    g = Game(2)
     g.move("RED", (4, 1), (3, 0))
     g.move("RED", (3, 0), (2, 1))
     g.move("RED", (4, 3), (3, 2))
@@ -42,13 +43,13 @@ def test_block_win():
     assert g.get_winner() == "RED"
 
 def test_move():
-    g = checkers.Game(5)
+    g = Game(5)
     g.move("BLACK", (4, 1), (5, 0))
 
     assert g._get((5, 0)) is not None
 
 def test_single_jump():
-    g = checkers.Game(5)
+    g = Game(5)
     g.move("BLACK", (4, 1), (5, 0))
     g.move("RED", (7, 2), (6, 1))
     g.move("BLACK", (5, 0), (7, 2))
@@ -56,7 +57,7 @@ def test_single_jump():
     assert g._get((7, 2)) is not None
 
 def test_multijump():
-    g = checkers.Game(5)
+    g = Game(5)
     g.move("BLACK", (4, 1), (5, 0))
     g.move("RED", (7, 2), (6, 1))
     g._remove((9, 0))
@@ -65,7 +66,7 @@ def test_multijump():
     assert g._get((9, 0)) is not None
 
 def test_promote():
-    g = checkers.Game(2)
+    g = Game(2)
     g.move("BLACK", (1, 0), (2, 1))
     g.move("BLACK", (2, 1), (3, 2))
     g._remove((0, 3))
