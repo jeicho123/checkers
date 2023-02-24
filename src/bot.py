@@ -1,4 +1,4 @@
-from checkers import Game
+from checkers import Game, PieceColor
 from copy import deepcopy
 import random
 
@@ -11,7 +11,7 @@ class randomBot():
             Constructor
 
             board (Game obj): board that bot will play on
-            color (str): color of the pieces the bot will play with 
+            color (PieceColor obj): color of the pieces the bot will play with 
         """
         self._board = board
         self._color = color
@@ -42,7 +42,7 @@ class smartBot():
             Constructor
 
             board (Game obj): board that bot will play on
-            color (str): color of the pieces the bot will play with 
+            color (PieceColor obj): color of the pieces the bot will play with 
             depth (int): depth of the Minimax algorithm
         """
         self._board = board
@@ -76,7 +76,7 @@ class smartBot():
         Parameters:
             board (Game obj): board that bot will play on
             depth (int): the number of moves that the bot thinks ahead
-            color (str): color of the pieces the bot will play with 
+            color (PieceColor obj): color of the pieces the bot will play with 
 
         Returns:
             tuple(tuple, tuple, int): first tuple represents starting 
@@ -88,7 +88,7 @@ class smartBot():
         if depth == 0 or board.get_winner(): 
             return None, None, board.evaluate()
         
-        if color == "BLACK":
+        if color == PieceColor.BLACK:
             # Maximize eval value for "BLACK"
             max_val = -float('inf')
             start_coord = None
@@ -103,14 +103,14 @@ class smartBot():
                     tmp_board.move(color, start, end)
                     # Recurses a level below. "BLACK" will try to maximize the
                     # values of the nodes in this level
-                    _, _, val = self._minimax(tmp_board, depth - 1, "RED")
+                    _, _, val = self._minimax(tmp_board, depth - 1, PieceColor.RED)
                     if val > max_val:
                         max_val = val
                         start_coord = start
                         best_move = end
             return start_coord, best_move, max_val
 
-        if color == "RED":
+        if color == PieceColor.RED:
             # Minimize eval value for "RED"
             min_val = float('inf')
             start_coord = None
@@ -122,7 +122,7 @@ class smartBot():
                     tmp_board.move(color, start, end)
                     # Recurses a level below. "RED" will try to minimize the
                     # values of the nodes in this level
-                    _, _, val = self._minimax(tmp_board, depth - 1, "BLACK")
+                    _, _, val = self._minimax(tmp_board, depth - 1, PieceColor.BLACK)
                     if val < min_val:
                         min_val = val
                         start_coord = start
@@ -174,27 +174,27 @@ def simulate(n, row, depth):
 
 for _ in range(10):
     board = Game(3)
-    bot1 = smartBot(board, "BLACK", 3)
-    bot2 = randomBot(board, "RED")
+    bot1 = smartBot(board, PieceColor.BLACK, 3)
+    bot2 = randomBot(board, PieceColor.RED)
     # Flag alternates to decide the turn of the bots
     flag = True
     while True:
         if flag:
             # Game ends when bot has no more move to play
-            if not board.player_valid_moves("BLACK"):
+            if not board.player_valid_moves(PieceColor.BLACK):
                 print('red win')
                 break
             else:
                 start_move, end_move = bot1.suggest_move()
                 print(start_move, end_move)
-                board.move("BLACK", start_move, end_move)
+                board.move(PieceColor.BLACK, start_move, end_move)
                 flag = False
         else:
-            if not board.player_valid_moves("RED"):
+            if not board.player_valid_moves(PieceColor.RED):
                 print('black win')
                 break
             else:
                 start_move, end_move = bot2.suggest_move()
                 print(start_move, end_move)
-                board.move("RED", start_move, end_move)
+                board.move(PieceColor.RED, start_move, end_move)
                 flag = True
