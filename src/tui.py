@@ -192,25 +192,25 @@ def play_checkers(board, players):
 @click.option('--player2',
               type=click.Choice(['human', 'random-bot', 'smart-bot'], 
               case_sensitive = False), default = "human")
-@click.option('--board_rows', required = True, prompt = True,
+@click.option('--piece_rows', required = True, prompt = True,
 type = click.Choice(["2", "3", "4", "5", "6", "7", "8", "9"]))
 
-def cmd(board_rows, player1, player2):
-    if board_rows == "2":
+def cmd(piece_rows, player1, player2):
+    if piece_rows == "2":
         board = Game(2)
-    elif board_rows == "3":
+    elif piece_rows == "3":
         board = Game(3)
-    elif board_rows == "4":
+    elif piece_rows == "4":
         board = Game(4)
-    elif board_rows == "5":
+    elif piece_rows == "5":
         board = Game(5)
-    elif board_rows == "6":
+    elif piece_rows == "6":
         board = Game(6)
-    elif board_rows == "7":
+    elif piece_rows == "7":
         board = Game(7)
-    elif board_rows == "8":
+    elif piece_rows == "8":
         board = Game(8)
-    elif board_rows == "9":
+    elif piece_rows == "9":
         board = Game(9)
 
     player1 = TUIPlayer(1, player1, board, PieceColor.BLACK, 
