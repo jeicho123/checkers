@@ -93,7 +93,6 @@ class Game:
                 elif s.get_color() == PieceColor.BLACK and s.is_king():
                     text += "B"
                 else:
-                    print(s.get_color(), s.is_king())
                     text += "b"
             string.append(text)
         return "\n".join(string)
