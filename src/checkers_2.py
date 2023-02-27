@@ -116,7 +116,10 @@ class CheckersGame:
     def turn_incomplete(self):
         raise NotImplementedError
 
-    def end_turn(self, cmd):
+    def end_turn(self, color, cmd):
+        raise NotImplementedError
+    
+    def accept_draw(self, cmd):
         raise NotImplementedError
 
     def get_winner(self):
@@ -127,6 +130,24 @@ class CheckersGame:
 
     def evaluate():
         raise NotImplementedError
+    
+    #
+    # PRIVATE METHODS
+    #
+    
+    def _piece_move_to(self, start, end):
+        piece = self._board.get(start)
+        self._board.remove(start)
+        self._board.set(end, piece)
+    
+    def _piece_jump_to(self, start, end):
+        start_row, start_col = start
+        end_row, end_col = end
+        jump_over = (int((start_row + end_row) / 2), 
+                int((start_col  + end_col) / 2))
+        
+        self._piece_move_to(self, start, end)
+        self._borad.remove(jump_over)
     
     def _get_jumps(self, start):
         piece = self._board.get(start)
@@ -252,17 +273,3 @@ class CheckersGame:
 
     def _check_promote():
         raise NotImplementedError
-    
-    def _piece_move_to(self, start, end):
-        piece = self._board.get(start)
-        self._board.remove(start)
-        self._board.set(end, piece)
-    
-    def _piece_jump_to(self, start, end):
-        start_row, start_col = start
-        end_row, end_col = end
-        jump_over = (int((start_row + end_row) / 2), 
-                int((start_col  + end_col) / 2))
-        
-        self._piece_move_to(self, start, end)
-        self._borad.remove(jump_over)
