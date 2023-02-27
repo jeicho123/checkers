@@ -1,3 +1,28 @@
+"""
+Classes for implementing a checkers game with varying board size (supports 6x6
+up to 20x20).
+
+Examples:
+    1. Create new Checkers Board
+
+        game = CheckersGame(nrows)
+
+    2. Check whether a given move is legal
+
+        game.is_valid_move(start, end)
+
+    3. Obtain all valid moves of a piece:
+
+        game.piece_valid_moves(coords)
+
+    4. List of all possible moves a player can make
+
+        game.player_valid_moves(color)
+
+    5. Check whether there's a winner and who
+
+        game.get_winner()
+"""
 from typing import Optional, List, Tuple, Dict, Set
 from enum import Enum
 PieceColor = Enum("PieceColor", ["RED", "BLACK"])
