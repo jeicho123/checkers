@@ -97,3 +97,82 @@ class CheckersGame:
                     self._red_pieces.append((r, c))
                 else:
                     self._board.set((r, c), None)
+
+    def player_valid_moves():
+        raise NotImplementedError
+
+    def piece_valid_moves():
+        raise NotImplementedError
+
+    def is_valid_move():
+        raise NotImplementedError
+
+    def is_valid_dest():
+        raise NotImplementedError
+
+    def move():
+        raise NotImplementedError
+
+    def turn_incomplete():
+        raise NotImplementedError
+
+    def end_turn():
+        raise NotImplementedError
+
+    def get_winner():
+        raise NotImplementedError
+
+    def composition():
+        raise NotImplementedError
+
+    def evaluate():
+        raise NotImplementedError
+
+    def _get_complete_jumps():
+        raise NotImplementedError
+
+    def _get_single_jumps():
+        raise NotImplementedError
+
+    def _get_non_jumps(self, start_position):
+        valid_moves = []
+        row, col = start_position
+        piece = self._get(start_position)
+
+        if piece.get_color() == PieceColor.BLACK or piece.is_king():
+            try:
+                dest = (row + 1, col + 1)
+                if self._get(dest) is None:
+                    valid_moves.append([dest])
+            except IndexError:
+                pass
+
+            try:
+                dest = (row + 1, col - 1)
+                if self._get(dest) is None:
+                    valid_moves.append([dest])
+            except IndexError:
+                pass
+
+        if piece.get_color() == PieceColor.RED or piece.is_king():
+            try:
+                dest = (row - 1, col + 1)
+                if self._get(dest) is None:
+                    valid_moves.append([dest])
+            except IndexError:
+                pass
+
+            try:
+                dest = (row - 1, col - 1)
+                if self._get(dest) is None:
+                    valid_moves.append([dest])
+            except IndexError:
+                pass
+
+        return valid_moves
+
+    def _require_jump():
+        raise NotImplementedError
+
+    def _check_promote():
+        raise NotImplementedError
