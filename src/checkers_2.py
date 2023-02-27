@@ -69,7 +69,7 @@ class Piece:
         Returns:
             PieceColor: color of the given piece
         """
-        raise NotImplementedError
+        return self._color
 
     def is_king(self) -> bool:
         """
@@ -81,7 +81,7 @@ class Piece:
         Returns:
             bool: returns True if the piece is a king, otherwise, returns False
         """
-        raise NotImplementedError
+        return self._king
     
     def promote(self) -> None:
         """
@@ -93,7 +93,7 @@ class Piece:
         Returns:
             None
         """
-        raise NotImplementedError
+        self._king = True
 
 class Board:
     """
@@ -140,7 +140,11 @@ class Board:
         Returns:
             Optional[Piece]: the piece at the location if there is one
         """
-        raise NotImplementedError
+        row, col = coord
+        if not 0 <= row < self._nrows or not 0 <= col < self._ncols:
+            raise ValueError("Invalid coordinates")
+        
+        return self._grid[row][col]
 
     def set(self, coord: Tuple[int, int], piece: Piece) -> None:
         """
@@ -157,7 +161,11 @@ class Board:
         Returns:
             None
         """
-        raise NotImplementedError
+        if self.get(coord) is not None:
+            raise ValueError("Location not empty")
+        
+        row, col = coord
+        self._grid[row][col] = piece
     
     def remove(self, coord: Tuple[int, int]) -> None:
         """
@@ -173,7 +181,10 @@ class Board:
         Returns:
             None
         """
-        raise NotImplementedError
+        if self.get(coord) is None:
+            raise ValueError("No piece to remove at this coordinate")
+        
+        self.set(coord, None)
 
     def move(self, start: Tuple[int, int], end: Tuple[int, int]) -> None:
         """
@@ -182,10 +193,20 @@ class Board:
         Parameters:
             start (tuple (int, int)): initial location of piece to be moved
             end (tuple (int, int)): final location of the piece
+
+        Raises:
+            ValueError: If there is no piece at the starting location or there
+            is already a piece at the final location
     
         Returns:
             None
         """
+        if self.get(start) is None:
+            raise ValueError("No piece at the starting position")
+        
+        piece = self.get(start)
+        self.remove(start)
+        self.set(end, piece)
         raise NotImplementedError
 
     def board_to_str(self) -> List[List[str]]:
@@ -201,7 +222,26 @@ class Board:
             (no piece), "B" (black king piece), "b" (black non-king piece), "R"
             (red king piece), "r" (red non-king piece).
         """
-        raise NotImplementedError
+        str_grid = []
+        for row in self._grid:
+            new_row = []
+            for square in row:
+                if square is None:
+                    new_row.append(" ")
+                elif (square.get_color() == PieceColor.BLACK and
+                      square.is_king()):
+                    new_row.append("B")
+                elif (square.get_color() == PieceColor.BLACK and
+                      not square.is_king()):
+                    new_row.append("b")
+                elif (square.get_color() == PieceColor.RED and
+                      square.is_king()):
+                    new_row.append("R")
+                elif (square.get_color() == PieceColor.RED and
+                      not square.is_king()):
+                    new_row.append("r")
+            str_grid.append(new_row)
+        return str_grid
 
     def get_num_rows(self) -> int:
         """
@@ -213,7 +253,7 @@ class Board:
         Returns:
             int: number of rows
         """
-        raise NotImplementedError
+        return self._nrows
 
     def get_num_cols(self) -> int:
         """
@@ -225,7 +265,7 @@ class Board:
         Returns:
             int: number of cols
         """
-        raise NotImplementedError
+        return self._ncols
 
 class CheckersGame:
     """
