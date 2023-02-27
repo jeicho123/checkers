@@ -113,6 +113,3 @@ class CheckersGame:
 
     def _require_jump(self, color):
         raise NotImplementedError
-
-    def _check_promote():
-        raise NotImplementedError
