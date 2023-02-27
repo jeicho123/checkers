@@ -1,3 +1,4 @@
+from Typing import Optional, List
 from enum import Enum
 PieceColor = Enum("PieceColor", ["RED", "BLACK"])
 """
@@ -5,33 +6,151 @@ Enum type for representing piece colors.
 """
 
 class Piece:
-    def __init__(self, color, king=False):
-        self._color = color
-        self._king = king
+    """
+    Class for representing a piece.
+    """
 
-    def get_color(self):
+    #
+    # PRIVATE ATTRIBUTES
+    #
+        
+    # color of the piece        
+    _color: PieceColor
+
+    # if the piece is a king
+    _king: PieceColor
+
+    #
+    # PUBLIC METHODS
+    #
+    
+    def __init__(self, color: PieceColor):
+        """
+        Constructor
+    
+        Parameters:
+            color (PieceColor): color of the piece
+
+        Returns:
+            None
+        """
+        self._color = color
+        self._king = False
+
+    def get_color(self) -> PieceColor:
+        """
+        Gets the color of the piece.
+    
+        Parameters:
+            None
+
+        Returns:
+            PieceColor: color of the given piece
+        """
         raise NotImplementedError
 
-    def is_king(self):
+    def is_king(self) -> bool:
+        """
+        Returns if the piece is a king or not.
+    
+        Parameters:
+            None
+    
+        Returns:
+            bool: returns True if the piece is a king, otherwise, returns False
+        """
         raise NotImplementedError
     
-    def promote(self):
+    def promote(self) -> None:
+        """
+        Promotes the piece to a king.
+    
+        Parameters:
+            None
+    
+        Returns:
+            None
+        """
         raise NotImplementedError
 
 class Board:
-    def __init__(self, n):
-        self._grid = [[None] * n for _ in range(n)]
+    """
+    Class for representing a rectangular board.
+    """
 
-    def get(self, coord):
+    #
+    # PRIVATE ATTRIBUTES
+    #
+        
+    # the board itself
+    _grid: List[List[Optional[Piece]]]
+        
+    #
+    # PUBLIC METHODS
+    #
+
+    def __init__(self, nrows: int, ncols: int):
+        """
+        Constructor
+
+        Parameters:
+            nrows (int): number of rows
+            ncols (int): number of columns
+        
+        Returns:
+            None
+        """
+        self._grid = [[None] * ncols for _ in range(nrows)]
+
+    def get(self, coord: Tuple[int, int]) -> Optional[Piece]:
+        """
+        Gets the piece at the given location if there is one.
+    
+        Parameters:
+            coord (tuple(int, int)): location on the board
+        
+        Raises:
+            ValueError: If the given location is not valid
+        
+        Returns:
+            Optional[Piece]: the piece at the location if there is one
+        """
         raise NotImplementedError
 
-    def set(self, coord, item):
+    def set(self, coord: Tuple[int, int], piece: Piece) -> None:
+        """
+        Sets the location on the board to the given piece.
+
+        Parameters:
+            coord (tuple (int, int)): location on the board
+            piece (Piece): given piece to be set
+
+        Raises:
+            ValueError: If the given location is invalid or there is alreay a
+            piece at the given location
+    
+        Returns:
+            None
+        """
         raise NotImplementedError
     
-    def remove(self, coord):
+    def remove(self, coord: Tuple[int, int]) -> None:
+        """
+        Removes the piece at the given location.
+
+        Paramters:
+            coord (tuple (int, int)): location on the board
+    
+        Raises:
+            ValueError: If the given location is invalid or if there is not a
+            piece at the given location
+    
+        Returns:
+            None
+        """
         raise NotImplementedError
 
-    def move(self, start, end):
+    def move(self, start: Tuple[int, int], end: Tuple[int, int]) -> None:
         raise NotImplementedError
 
     def board_to_str(self):
