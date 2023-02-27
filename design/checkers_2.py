@@ -1,4 +1,4 @@
-from Typing import Optional, List
+from Typing import Optional, List, Tuple
 from enum import Enum
 PieceColor = Enum("PieceColor", ["RED", "BLACK"])
 """
@@ -84,6 +84,10 @@ class Board:
         
     # the board itself
     _grid: List[List[Optional[Piece]]]
+
+    # number of rows and columns
+    _nrows: int
+    _ncols: int
         
     #
     # PUBLIC METHODS
@@ -101,6 +105,8 @@ class Board:
             None
         """
         self._grid = [[None] * ncols for _ in range(nrows)]
+        self._nrows = nrows
+        self._ncols = ncols
 
     def get(self, coord: Tuple[int, int]) -> Optional[Piece]:
         """
@@ -151,20 +157,75 @@ class Board:
         raise NotImplementedError
 
     def move(self, start: Tuple[int, int], end: Tuple[int, int]) -> None:
+        """
+        Moves the pieces at the start location to the end location.
+    
+        Parameters:
+            start (tuple (int, int)): initial location of piece to be moved
+            end (tuple (int, int)): final location of the piece
+    
+        Returns:
+            None
+        """
         raise NotImplementedError
 
-    def board_to_str(self):
+    def board_to_str(self) -> List[List[str]]:
+        """
+        Returns the board as a list of list of strings.
+
+        Parameters:
+            None
+        
+        Returns:
+            list[list[str]]: a list of list of strings with the same dimensions
+            as the board. In each row, the values in the list will be " " 
+            (no piece), "B" (black king piece), "b" (black non-king piece), "R"
+            (red king piece), "r" (red non-king piece).
+        """
+        raise NotImplementedError
+
+    def get_num_rows(self) -> int:
+        """
+        Returns the number of rows in the board.
+
+        Parameters:
+            None
+        
+        Returns:
+            int: number of rows
+        """
+        raise NotImplementedError
+
+    def get_num_cols(self) -> int:
+        """
+        Returns the number of columns in the board.
+
+        Parameters:
+            None
+        
+        Returns:
+            int: number of cols
+        """
         raise NotImplementedError
 
 class CheckersGame:
+    """
+    Class for representing a game of checkers.    
+    """
+
+    #
+    # PRIVATE ATTRIBUTES
+    #
+    
+    
     def __init__(self, nrows):
-        self._board = []
+        self._board = Board(2 * nrows + 2, 2 * nrows * 2)
         self._black_pieces = []
         self._red_pieces = []
         self._jumping = None
         self._winner = None
         self._draw_offered = False
-        self._reset(nrows)
+        self._reset()
 
     def __str__(self):
         raise NotImplementedError
