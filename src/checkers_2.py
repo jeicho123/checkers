@@ -142,14 +142,14 @@ class CheckersGame:
         if piece.get_color() == PieceColor.BLACK or piece.is_king():
             try:
                 dest = (row + 1, col + 1)
-                if self._get(dest) is None:
+                if self.board.get(dest) is None:
                     valid_moves.append([dest])
             except IndexError:
                 pass
 
             try:
                 dest = (row + 1, col - 1)
-                if self._get(dest) is None:
+                if self._board.get(dest) is None:
                     valid_moves.append([dest])
             except IndexError:
                 pass
@@ -157,14 +157,14 @@ class CheckersGame:
         if piece.get_color() == PieceColor.RED or piece.is_king():
             try:
                 dest = (row - 1, col + 1)
-                if self._get(dest) is None:
+                if self.board.get(dest) is None:
                     valid_moves.append([dest])
             except IndexError:
                 pass
 
             try:
                 dest = (row - 1, col - 1)
-                if self._get(dest) is None:
+                if self.board.get(dest) is None:
                     valid_moves.append([dest])
             except IndexError:
                 pass
