@@ -98,51 +98,116 @@ class CheckersGame:
                 else:
                     self._board.set((r, c), None)
 
-    def player_valid_moves():
+    def player_valid_moves(self, color):
         raise NotImplementedError
 
-    def piece_valid_moves():
+    def piece_valid_moves(self, coord):
         raise NotImplementedError
 
-    def is_valid_move():
+    def is_valid_move(self, color, start, end):
         raise NotImplementedError
 
-    def is_valid_dest():
+    def is_valid_dest(self, start, end):
         raise NotImplementedError
 
-    def move():
+    def move(self, start, end):
         raise NotImplementedError
 
-    def turn_incomplete():
+    def turn_incomplete(self):
         raise NotImplementedError
 
-    def end_turn():
+    def end_turn(self, cmd):
         raise NotImplementedError
 
-    def get_winner():
-        raise NotImplementedError
+    def get_winner(self):
+        return self._winner()
 
     def composition():
         raise NotImplementedError
 
     def evaluate():
         raise NotImplementedError
+    
+    def _get_jumps(self, start):
+        piece = self._board.get(start)
+        return self._get_complete_jumps(start, piece.get_color(), piece.is_king())
 
-    def _get_complete_jumps():
-        raise NotImplementedError
+    def _get_complete_jumps(self, start, color, king, jumped=set()):
+        if self._get_single_jumps(start, color, king, jumped) == {}:
+            return []
+        else:
+            paths = []
+            for pos, gap in self._get_single_jumps(start, color, king,
+                    jumped).items():
+                sub_paths = self._get_complete_jumps(pos, color, king, jumped | {gap})
+                if sub_paths == []:
+                    paths.append([pos])
+                else:
+                    for sub_path in sub_paths:
+                        paths.append([pos] + sub_path)
+            return paths
 
-    def _get_single_jumps():
-        raise NotImplementedError
+    def _get_single_jumps(self, start, color, king, jumped):
+        row, col = start
+        valid = {}
 
-    def _get_non_jumps(self, start_position):
+        if color == PieceColor.BLACK or king:
+            try:
+                dest = (row + 2, col + 2)
+                jump_over = (row + 1, col + 1)
+                if (self._get(dest) is None
+                        and self._get(jump_over) is not None
+                        and self._get(jump_over).get_color() != color
+                        and jump_over not in jumped):
+                    valid[dest] = jump_over
+            except IndexError:
+                pass
+
+            try:
+                dest = (row + 2, col - 2)
+                jump_over = (row + 1, col - 1)
+                if (self._get(dest) is None
+                        and self._get(jump_over) is not None
+                        and self._get(jump_over).get_color() != color
+                        and jump_over not in jumped):
+                    valid[dest] = jump_over
+            except IndexError:
+                pass
+            
+        if color == PieceColor.RED or king:
+            try:
+                dest = (row - 2, col + 2)
+                jump_over = (row - 1, col + 1)
+                if (self._get(dest) is None
+                        and self._get(jump_over) is not None
+                        and self._get(jump_over).get_color() != color
+                        and jump_over not in jumped):
+                    valid[dest] = jump_over
+            except IndexError:
+                pass
+                
+            try:
+                dest = (row - 2, col - 2)
+                jump_over = (row - 1, col - 1)
+                if (self._get(dest) is None
+                        and self._get(jump_over) is not None
+                        and self._get(jump_over).get_color() != color
+                        and jump_over not in jumped):
+                    valid[dest] = jump_over
+            except IndexError:
+                pass
+
+        return valid
+
+    def _get_non_jumps(self, start):
         valid_moves = []
-        row, col = start_position
-        piece = self._get(start_position)
+        row, col = start
+        piece = self._board.get(start)
 
         if piece.get_color() == PieceColor.BLACK or piece.is_king():
             try:
                 dest = (row + 1, col + 1)
-                if self.board.get(dest) is None:
+                if self._board.get(dest) is None:
                     valid_moves.append([dest])
             except IndexError:
                 pass
@@ -157,22 +222,47 @@ class CheckersGame:
         if piece.get_color() == PieceColor.RED or piece.is_king():
             try:
                 dest = (row - 1, col + 1)
-                if self.board.get(dest) is None:
+                if self._board.get(dest) is None:
                     valid_moves.append([dest])
             except IndexError:
                 pass
 
             try:
                 dest = (row - 1, col - 1)
-                if self.board.get(dest) is None:
+                if self._board.get(dest) is None:
                     valid_moves.append([dest])
             except IndexError:
                 pass
 
         return valid_moves
 
-    def _require_jump():
-        raise NotImplementedError
+    def _require_jump(self, color):
+        if self.turn_incomplete() and self._jumping.get_color() == color:
+            return True
+
+        if color == PieceColor.BLACK:
+            pieces = self._black_pieces
+        else:
+            pieces = self._red_pieces
+
+        for piece in pieces:
+            if self._piece_valid_jumps(piece.get_coord()):
+                return True
+        return False
 
     def _check_promote():
         raise NotImplementedError
+    
+    def _piece_move_to(self, start, end):
+        piece = self._board.get(start)
+        self._board.remove(start)
+        self._board.set(end, piece)
+    
+    def _piece_jump_to(self, start, end):
+        start_row, start_col = start
+        end_row, end_col = end
+        jump_over = (int((start_row + end_row) / 2), 
+                int((start_col  + end_col) / 2))
+        
+        self._piece_move_to(self, start, end)
+        self._borad.remove(jump_over)
