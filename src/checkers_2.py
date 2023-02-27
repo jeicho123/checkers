@@ -19,8 +19,8 @@ class Piece:
         self._king = True
 
 class Board:
-    def __init__(self, n):
-        self._grid = [[None] * n for _ in range(n)]
+    def __init__(self, nrows, ncols):
+        self._grid = [[None] * width for _ in range(nrows)]
 
     def get(self, coord):
         row, col = coord
@@ -78,7 +78,7 @@ class CheckersGame:
         return self._board.board_to_str()
 
     def _reset(self, nrows):
-        self._board = Board(2 * nrows + 2)
+        self._board = Board(2 * nrows + 2, 2 * nrows + 2)
         self._red_pieces = []
         self._black_pieces = []
         self._jumping = None
