@@ -270,6 +270,3 @@ class CheckersGame:
             if self._piece_valid_jumps(piece.get_coord()):
                 return True
         return False
-
-    def _check_promote():
-        raise NotImplementedError
