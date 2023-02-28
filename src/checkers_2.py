@@ -155,16 +155,15 @@ class Board:
             piece (Piece): given piece to be set
 
         Raises:
-            ValueError: If the given location is invalid or there is alreay a
-            piece at the given location
+            ValueError: If the given location is invalid
     
         Returns:
             None
         """
-        if self.get(coord) is not None:
-            raise ValueError("Location not empty")
-        
         row, col = coord
+        if not 0 <= row < self._nrows or not 0 <= col < self._ncols:
+            raise ValueError("Invalid coordinates")
+
         self._grid[row][col] = piece
     
     def remove(self, coord: Tuple[int, int]) -> None:
@@ -207,7 +206,6 @@ class Board:
         piece = self.get(start)
         self.remove(start)
         self.set(end, piece)
-        raise NotImplementedError
 
     def board_to_str(self) -> List[List[str]]:
         """
@@ -279,6 +277,9 @@ class CheckersGame:
     # board of the game
     _board: Board
 
+    # number of rows of pieces
+    _rows: int
+
     # list of locations of pieces on the board
     _black_pieces: List[Tuple[int, int]]
     _red_pieces: List[Tuple[int, int]]
@@ -304,14 +305,15 @@ class CheckersGame:
             nrows (int): number of rows of pieces each player begins the game
             with
         """
-        self._board = Board(2 * nrows + 2, 2 * nrows * 2)
+        self._board = Board(2 * nrows + 2, 2 * nrows + 2)
+        self._rows = nrows
         self._black_pieces = []
         self._red_pieces = []
         self._jumping = None
         self._winner = None
         self._draw_offered = False
 
-        self._reset()
+        self.reset()
 
     def __str__(self) -> str:
         """
@@ -323,7 +325,12 @@ class CheckersGame:
         Returns:
             str: basic string representation fo the Game object's board
         """
-        raise NotImplementedError
+        board_string = ""
+        for row in self.board_to_str():
+            for cell in row:
+                board_string += cell
+            board_string += "\n"
+        return board_string
 
     def board_to_str(self) -> List[List[str]]:
         """
@@ -338,7 +345,7 @@ class CheckersGame:
             "B" (black king piece), "b" (black non-king piece), "R" (red kings
             piece), "r" (red non-king piece).
         """
-        raise NotImplementedError
+        return self._board.board_to_str()
 
     def reset(self) -> None:
         """
@@ -353,7 +360,17 @@ class CheckersGame:
         Returns:
             None
         """
-        raise NotImplementedError
+        height = self._board.get_num_rows()
+        width = self._board.get_num_cols()
+
+        for r in range(height):
+            for c in range(width):
+                if r < self._rows and r % 2 != c % 2:
+                    self._board.set((r, c), Piece(PieceColor.BLACK))
+                elif r >= height - self._rows and r % 2 != c % 2:
+                    self._board.set((r, c), Piece(PieceColor.RED))
+                else:
+                    self._board.set((r, c), None)
     
     def move(self, color: PieceColor, start: Tuple[int, int], 
             end: Tuple[int, int]) -> None:
@@ -511,7 +528,7 @@ class CheckersGame:
         Returns:
             None
         """
-        raise NotImplementedError
+        self._board.move(start, end)
     
     def _piece_jump_to(self, start: Tuple[int, int],
                        end: Tuple[int, int]) -> None:
@@ -544,7 +561,8 @@ class CheckersGame:
         Returns:
             list(list(tuple(int, int))): list of moves the piece can make
         """
-        raise NotImplementedError
+        piece = self._board.get(start)
+        return self._get_complete_jumps(start, piece.get_color(), piece.is_king(), set())
     
     def _get_all_non_jumps(self,
                         start: Tuple[int, int]) -> List[List[Tuple[int, int]]]:
@@ -561,7 +579,41 @@ class CheckersGame:
             list[list[tuple(int, int)]]: all possible places the given piece can
             non-jump move to
         """
-        raise NotImplementedError
+        valid_moves = []
+        row, col = start
+        piece = self._board.get(start)
+
+        if piece.get_color() == PieceColor.BLACK or piece.is_king():
+            try:
+                dest = (row + 1, col + 1)
+                if self._board.get(dest) is None:
+                    valid_moves.append([dest])
+            except ValueError:
+                pass
+
+            try:
+                dest = (row + 1, col - 1)
+                if self._board.get(dest) is None:
+                    valid_moves.append([dest])
+            except ValueError:
+                pass
+
+        if piece.get_color() == PieceColor.RED or piece.is_king():
+            try:
+                dest = (row - 1, col + 1)
+                if self._board.get(dest) is None:
+                    valid_moves.append([dest])
+            except ValueError:
+                pass
+
+            try:
+                dest = (row - 1, col - 1)
+                if self._board.get(dest) is None:
+                    valid_moves.append([dest])
+            except ValueError:
+                pass
+
+        return valid_moves
 
     def _get_complete_jumps(self, start: Tuple[int, int], color: PieceColor,
             king: bool,
@@ -584,7 +636,20 @@ class CheckersGame:
             list[list[tuple(int, int)]]: list of moves a piece with the given
             details can make
         """
-        raise NotImplementedError
+        if self._get_single_jumps(start, color, king, jumped) == {}:
+            return []
+        else:
+            paths = []
+            for pos, jumped_over in self._get_single_jumps(start, color, king,
+                                                           jumped).items():
+                sub_paths = self._get_complete_jumps(pos, color, king,
+                                                     jumped | {jumped_over})
+                if sub_paths == []:
+                    paths.append([pos])
+                else:
+                    for sub_path in sub_paths:
+                        paths.append([pos] + sub_path)
+            return paths
 
     def _get_single_jumps(self, start: Tuple[int, int], color: PieceColor,
             king: bool, jumped: Set[Tuple[int, int]]) -> Dict[Tuple[int, int],
@@ -608,7 +673,56 @@ class CheckersGame:
             dict{tuple(int, int): tuple(int, int)}: dictionary storing the
             possible end locations and the locations being jumped over
         """
-        raise NotImplementedError
+        row, col = start
+        valid = {}
+
+        if color == PieceColor.BLACK or king:
+            try:
+                dest = (row + 2, col + 2)
+                jump_over = (row + 1, col + 1)
+                if (self._board.get(dest) is None and
+                        self._board.get(jump_over) is not None and
+                        self._board.get(jump_over).get_color() != color and
+                        jump_over not in jumped):
+                    valid[dest] = jump_over
+            except ValueError:
+                pass
+
+            try:
+                dest = (row + 2, col - 2)
+                jump_over = (row + 1, col - 1)
+                if (self._board.get(dest) is None and
+                        self._board.get(jump_over) is not None and
+                        self._board.get(jump_over).get_color() != color and
+                        jump_over not in jumped):
+                    valid[dest] = jump_over
+            except ValueError:
+                pass
+            
+        if color == PieceColor.RED or king:
+            try:
+                dest = (row - 2, col + 2)
+                jump_over = (row - 1, col + 1)
+                if (self._board.get(dest) is None and
+                        self._board.get(jump_over) is not None and
+                        self._board.get(jump_over).get_color() != color and
+                        jump_over not in jumped):
+                    valid[dest] = jump_over
+            except ValueError:
+                pass
+                
+            try:
+                dest = (row - 2, col - 2)
+                jump_over = (row - 1, col - 1)
+                if (self._board.get(dest) is None and
+                        self._board.get(jump_over) is not None and
+                        self._board.get(jump_over).get_color() != color and
+                        jump_over not in jumped):
+                    valid[dest] = jump_over
+            except ValueError:
+                pass
+
+        return valid
 
     def _require_jump(self, color: PieceColor) -> bool:
         """
