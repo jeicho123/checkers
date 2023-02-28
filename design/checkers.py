@@ -413,6 +413,18 @@ class CheckersGame:
             bool: True if the turn is incomplete, otherwise returns False
         """
         raise NotImplementedError
+    
+    def is_draw_offered(self) -> bool:
+        """
+        Returns true if a draw has been offered. Otherwise, returns false/
+
+        Parameters:
+            None
+
+        Returns:
+            bool: True if a draw has been offered, otherwise returns False
+        """
+        raise NotImplementedError
 
     def end_turn(self, color: PieceColor, cmd: str) -> None:
         """
