@@ -25,7 +25,7 @@ Examples:
 """
 from typing import Optional, List, Tuple, Dict, Set
 from enum import Enum
-PieceColor = Enum("PieceColor", ["RED", "BLACK"])
+PieceColor = Enum("PieceColor", ["RED", "BLACK", "DRAW"])
 """
 Enum type for representing piece colors.
 """
@@ -281,11 +281,11 @@ class CheckersGame:
     _rows: int
 
     # list of locations of pieces on the board
-    _black_pieces: List[Tuple[int, int]]
-    _red_pieces: List[Tuple[int, int]]
+    _black_piece_coords: List[Tuple[int, int]]
+    _red_piece_coords: List[Tuple[int, int]]
 
-    # piece that is in the middle of a jump
-    _jumping: Optional[Piece]
+    # location of piece that is in the middle of a jump
+    _jumping: Optional[Tuple[int, int]]
 
     # winner of the game if there is one
     _winner: Optional[PieceColor]
@@ -307,13 +307,13 @@ class CheckersGame:
         """
         self._board = Board(2 * nrows + 2, 2 * nrows + 2)
         self._rows = nrows
-        self._black_pieces = []
-        self._red_pieces = []
+        self._black_piece_coords = []
+        self._red_piece_coords = []
         self._jumping = None
         self._winner = None
         self._draw_offered = False
 
-        self.reset()
+        self.setup()
 
     def __str__(self) -> str:
         """
@@ -347,7 +347,7 @@ class CheckersGame:
         """
         return self._board.board_to_str()
 
-    def reset(self) -> None:
+    def setup(self) -> None:
         """
         Creates the board of the correct size and places the pieces on the
         correct squares of the board. Black pieces will be placed on the first n
@@ -366,8 +366,10 @@ class CheckersGame:
         for r in range(height):
             for c in range(width):
                 if r < self._rows and r % 2 != c % 2:
+                    self._black_piece_coords.append((r, c))
                     self._board.set((r, c), Piece(PieceColor.BLACK))
                 elif r >= height - self._rows and r % 2 != c % 2:
+                    self._red_piece_coords.append((r, c))
                     self._board.set((r, c), Piece(PieceColor.RED))
                 else:
                     self._board.set((r, c), None)
@@ -391,7 +393,41 @@ class CheckersGame:
         Returns:
             None 
         """
-        raise NotImplementedError
+        if not self.is_valid_move(color, start, end):
+            raise ValueError("Invalid move")
+        
+        if self._require_jump(color):   # jump move
+            for move in self.piece_valid_moves(start):
+                if end in move:
+                    if end == move[-1]: # complete jump move
+                        self._jumping = None
+                    else:   # incomplete jump move
+                        self._jumping = start
+                    
+                    current = start
+                    for step in move[: move.index(end) + 1]:
+                        self._piece_jump_to(color, current, step)
+                        current = step
+                    break
+
+        else:   # non-jump move
+            self._piece_move_to(color, start, end)
+            self._jumping = None
+
+        # check for promotion
+        end_row, _ = end
+        if ((color == PieceColor.BLACK and
+                end_row == self._board.get_num_rows() - 1) or
+                (color == PieceColor.RED and end_row == 0)):
+            self._board.get(end).promote()
+
+        # update winner
+        if color == PieceColor.BLACK and self.player_valid_moves(
+                PieceColor.RED) == {}:
+            self._winner == PieceColor.BLACK
+        elif color == PieceColor.RED and self.player_valid_moves(
+                PieceColor.BLACK)  == {}:
+            self._winner = PieceColor.RED
 
     def player_valid_moves(self, color: PieceColor) -> Dict[Tuple[int, int],
                                                 List[List[Tuple[int, int]]]]:
@@ -409,7 +445,28 @@ class CheckersGame:
             the values are the list of complete valid moves the player can make
             with each piece.
         """
-        raise NotImplementedError
+        moves = {}
+        
+        if self.turn_incomplete() and self._jumping.get_color() == color:
+            moves[self._jumping] = self._get_all_jumps(self._jumping)
+
+        piece_coords = []
+        if color == PieceColor.BLACK:
+            piece_coords = self._black_piece_coords
+        elif color == PieceColor.RED:
+            piece_coords = self._red_piece_coords
+
+        if self._require_jump(color):
+            for coord in piece_coords:
+                if self._get_all_jumps(coord):
+                    moves[coord] = self._get_all_jumps(coord)
+
+        else:
+            for coord in piece_coords:
+                if self._get_all_non_jumps(coord):
+                    moves[coord] = self._get_all_non_jumps(coord)
+
+        return moves
 
     def piece_valid_moves(self, coord: Tuple[int, int]) -> List[List
                                                             [Tuple[int, int]]]:
@@ -423,7 +480,10 @@ class CheckersGame:
             list[list[tuple(int, int)]]: list of all the possible moves the
             given piece can move to
         """
-        raise NotImplementedError
+        if self._get_all_jumps(coord):
+            return self._get_all_jumps(coord)
+        else:
+            return self._get_all_non_jumps(coord)
 
     def is_valid_move(self, color: PieceColor, start: Tuple[int, int],
             end: Tuple[int, int]) -> bool:
@@ -440,7 +500,8 @@ class CheckersGame:
             bool: returns True if the given move is valid, otherwise, returns
             False
         """
-        raise NotImplementedError
+        return (start in self.player_valid_moves(color) and
+                self.is_valid_dest(start, end))
 
     def is_valid_dest(self, start: Tuple[int, int],
                       end: Tuple[int, int]) -> bool:
@@ -456,7 +517,10 @@ class CheckersGame:
         Returns:
             bool: returns True if the move is valid, otherwise, returns False
         """
-        raise NotImplementedError
+        for moves in self.piece_valid_moves(start):
+            if moves[-1] == end:
+                return True
+        return False
 
     def turn_incomplete(self) -> bool:
         """
@@ -469,7 +533,19 @@ class CheckersGame:
         Returns:
             bool: True if the turn is incomplete, otherwise returns False
         """
-        raise NotImplementedError
+        return self._jumping is not None
+    
+    def is_draw_offered(self) -> bool:
+        """
+        Returns true if a draw has been offered. Otherwise, returns false/
+
+        Parameters:
+            None
+
+        Returns:
+            bool: True if a draw has been offered, otherwise returns False
+        """
+        return self._draw_offered
 
     def end_turn(self, color: PieceColor, cmd: str) -> None:
         """
@@ -483,7 +559,15 @@ class CheckersGame:
         Returns:
             None
         """
-        raise NotImplementedError
+        if cmd == "End Turn":   
+            pass
+        elif cmd == "Resign":
+            if color == PieceColor.BLACK:
+                self._winner = PieceColor.RED
+            elif color == PieceColor.RED:
+                self._winner = PieceColor.BLACK
+        elif cmd == "Offer Draw":
+            self._draw_offered = True
     
     def accept_draw(self, cmd: str) -> None:
         """
@@ -496,7 +580,10 @@ class CheckersGame:
         Returns:
             None
         """
-        raise NotImplementedError
+        if cmd == "Accept":
+            self._winner = PieceColor.DRAW
+        else:
+            self._draw_offered = False
 
     def get_winner(self) -> Optional[PieceColor]:
         """
@@ -509,19 +596,20 @@ class CheckersGame:
             PieceColor or None: If there is a winner, return the color. If it is
             a tie, returns the string "DRAW". Otherwise, return None.
         """
-        raise NotImplementedError
+        return self._winner
 
     #
     # PRIVATE METHODS
     #
     
-    def _piece_move_to(self, start: Tuple[int, int],
+    def _piece_move_to(self, color: PieceColor, start: Tuple[int, int],
                        end: Tuple[int, int]) -> None:
         """
         Moves the piece at the given location and updates the piece's positon on
         the board.
 
         Parameters:
+            color (PieceColor): color of the piece being moved
             start (tuple(int, int)): the location of the piece to be moved
             end(tuple(int, int)): position the peice is moving to
 
@@ -529,14 +617,22 @@ class CheckersGame:
             None
         """
         self._board.move(start, end)
+        if color == PieceColor.BLACK:
+            self._black_piece_coords.remove(start)
+            self._black_piece_coords.append(end)
+        elif color == PieceColor.RED:
+            self._red_piece_coords.remove(start)
+            self._red_piece_coords.append(end)
     
-    def _piece_jump_to(self, start: Tuple[int, int],
+    
+    def _piece_jump_to(self, color: PieceColor, start: Tuple[int, int],
                        end: Tuple[int, int]) -> None:
         """
         Jumps with the piece at the given location and updates the piece's
         positon on the board.
 
         Parameters:
+            color (PieceColor): color of the piece being moved
             start (tuple (int, int)): the lcoation of the piece to be moved
             end(tuple(int, int)): position the peice is moving to
 
@@ -546,7 +642,22 @@ class CheckersGame:
         Returns:
             None
         """
-        raise NotImplementedError
+        start_row, start_col = start
+        end_row, end_col = end
+        jump_over = (int((start_row + end_row) / 2), 
+                int((start_col  + end_col) / 2))
+        
+        self._board.move(start, end)
+        self._board.remove(jump_over)
+
+        if color == PieceColor.BLACK:
+            self._black_piece_coords.remove(start)
+            self._black_piece_coords.append(end)
+            self._red_piece_coords.remove(jump_over)
+        elif color == PieceColor.RED:
+            self._red_piece_coords.remove(start)
+            self._red_piece_coords.append(end)
+            self._black_piece_coords.remove(jump_over)
 
     def _get_all_jumps(self,
                         start: Tuple[int, int]) -> List[List[Tuple[int, int]]]:
@@ -735,4 +846,15 @@ class CheckersGame:
         Returns:
             bool: if the player must make a jump with his or her turn
         """
-        raise NotImplementedError
+        if self.turn_incomplete() and self._jumping.get_color() == color:
+            return True
+
+        if color == PieceColor.BLACK:
+            pieces = self._black_piece_coords
+        else:
+            pieces = self._red_piece_coords
+
+        for coord in pieces:
+            if self._get_all_jumps(coord):
+                return True
+        return False

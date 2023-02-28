@@ -243,8 +243,8 @@ class CheckersGame:
     _black_pieces: List[Tuple[int, int]]
     _red_pieces: List[Tuple[int, int]]
 
-    # piece that is in the middle of a jump
-    _jumping: Optional[Piece]
+    # location of piece that is in the middle of a jump
+    _jumping: Optional[Tuple[int, int]]
 
     # winner of the game if there is one
     _winner: Optional[PieceColor]
@@ -271,7 +271,7 @@ class CheckersGame:
         self._winner = None
         self._draw_offered = False
 
-        self._reset()
+        self._setup()
 
     def __str__(self) -> str:
         """
@@ -300,7 +300,7 @@ class CheckersGame:
         """
         raise NotImplementedError
 
-    def reset(self) -> None:
+    def setup(self) -> None:
         """
         Creates the board of the correct size and places the pieces on the
         correct squares of the board. Black pieces will be placed on the first n
