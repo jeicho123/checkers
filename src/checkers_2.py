@@ -43,7 +43,7 @@ class Piece:
     _color: PieceColor
 
     # if the piece is a king
-    _king: PieceColor
+    _king: bool
 
     #
     # PUBLIC METHODS
@@ -146,7 +146,7 @@ class Board:
         
         return self._grid[row][col]
 
-    def set(self, coord: Tuple[int, int], piece: Piece) -> None:
+    def set(self, coord: Tuple[int, int], piece: Optional[Piece]) -> None:
         """
         Sets the location on the board to the given piece.
 
@@ -447,7 +447,8 @@ class CheckersGame:
         """
         moves = {}
         
-        if self.turn_incomplete() and self._jumping.get_color() == color:
+        if (self.turn_incomplete() and
+                self._board.get(self._jumping).get_color() == color):
             moves[self._jumping] = self._get_all_jumps(self._jumping)
 
         piece_coords = []
@@ -598,7 +599,7 @@ class CheckersGame:
         """
         return self._winner
     
-    def evaluate(self) -> int:
+    def evaluate(self) -> float:
         """
         Evaluates the value of the current position. The more positive the value
         the more favorable the position is for player with the black pieces. The
@@ -609,7 +610,7 @@ class CheckersGame:
             None
 
         Returns:
-            value (int): value of current position
+            value (float): value of current position
         """
         black_king, black_nonking, red_king, red_nonking = self._composition()
         value = ((black_nonking - red_nonking) +
@@ -687,10 +688,15 @@ class CheckersGame:
         Parameters:
             start_position: position of the peice
 
+        Raises:
+            ValueError: if there is no piece at the given starting position
+
         Returns:
             list(list(tuple(int, int))): list of moves the piece can make
         """
         piece = self._board.get(start)
+        if piece is None:
+            raise ValueError("No piece at starting position")
         return self._get_complete_jumps(start, piece.get_color(),
                                         piece.is_king(), set())
     
@@ -705,6 +711,9 @@ class CheckersGame:
         Parameters:
             start (tuple(int, int)): location of the piece
 
+        Raises:
+            ValueError: if there is no piece at the given starting position
+
         Returns:
             list[list[tuple(int, int)]]: all possible places the given piece can
             non-jump move to
@@ -712,6 +721,8 @@ class CheckersGame:
         valid_moves = []
         row, col = start
         piece = self._board.get(start)
+        if piece is None:
+            raise ValueError("No piece at starting position")
 
         if piece.get_color() == PieceColor.BLACK or piece.is_king():
             try:
