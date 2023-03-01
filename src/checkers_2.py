@@ -612,7 +612,8 @@ class CheckersGame:
             value (int): value of current position
         """
         black_king, black_nonking, red_king, red_nonking = self._composition()
-        value = (black_nonking - red_nonking) + (0.5 * black_king - 0.5 * red_king)
+        value = ((black_nonking - red_nonking) +
+                 (0.5 * black_king - 0.5 * red_king))
         return value
 
     #
@@ -690,7 +691,8 @@ class CheckersGame:
             list(list(tuple(int, int))): list of moves the piece can make
         """
         piece = self._board.get(start)
-        return self._get_complete_jumps(start, piece.get_color(), piece.is_king(), set())
+        return self._get_complete_jumps(start, piece.get_color(),
+                                        piece.is_king(), set())
     
     def _get_all_non_jumps(self,
                         start: Tuple[int, int]) -> List[List[Tuple[int, int]]]:
@@ -863,7 +865,8 @@ class CheckersGame:
         Returns:
             bool: if the player must make a jump with his or her turn
         """
-        if self.turn_incomplete() and self._jumping.get_color() == color:
+        if (self.turn_incomplete() and
+                self._board.get(self._jumping).get_color() == color):
             return True
 
         if color == PieceColor.BLACK:
@@ -878,16 +881,18 @@ class CheckersGame:
 
     def _composition(self):
         """
-        Given a player's color, returns the number of kings and nonking pieces
-        the player currently has on the board.
+        Returns the number of kings and nonking pieces each player currently has
+        on the board.
 
         Parameters:
-            color (PieceColor): given player color
+            None
 
         Returns:
-            tuple (int, int): tuple of two integers; the first integer is the
-            number of king pieces the player has, the second integer is the
-            number of nonking pieces the player has
+            tuple (int, int, int, int): tuple of four integers; the first
+            integer is the number of black king pieces on the board, the second
+            integer is the number of black nonking pieces on the board, the
+            third integer is the number of red king pieces on the board, and the
+            fourth integer is the number of red nonking pieces on the board. 
         """
         black_king, black_nonking = 0, 0
         red_king, red_nonking = 0, 0
