@@ -47,11 +47,19 @@ Like the TUI, you can play against a bot, or have two bots play against each oth
 The --bot delay <seconds> parameter is also supported.
 
 ## Bots  
-To simulate a random bot playing with a smart bot that uses minimax algorithm and display the win percentage of the smart bot, run:
+To simulate a random bot playing with a smart bot that uses minimax algorithm and display the live game move by move, run:
 
-> python3 src/bot.py
+> python3 src/bot.py playout
 
-If you like to change the depth (-d) of the minimax algorithm, the row (-r) of the board, the number (-n) of simulated games, you can run (as an example)
+To display the win percentage of the smart bot vs the random bot over the course of 10 games, run:
 
-> python3 src/bot.py -n 20 -d 4 -r 4
+> python3 src/bot.py simulate
+
+If you like to change the depth (-d) of the minimax algorithm, the row (-r) of the board, the number (-n) of simulated games for the above, you can run (as an example) 
+
+> python3 src/bot.py playout -n 20 -d 4 -r 4
+
+or
+
+> python3 src/bot.py simulate -n 20 -d 4 -r 4
 
