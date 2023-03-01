@@ -1,7 +1,8 @@
-from checkers import Game, PieceColor
+from checkers_2 import CheckersGame, PieceColor
 from copy import deepcopy
 import random
 import click
+
 
 class randomBot():
     """
@@ -66,6 +67,7 @@ class smartBot():
         move = self._minimax(self._board, self._depth, self._color)
         return move[:2]
 
+        
     def _minimax(self, board, depth, color):
         """
         Minimax algorithm that traverses a tree of paths given a starting 
@@ -133,7 +135,56 @@ class smartBot():
 
 # SIMULATION
 
-@click.command()
+@click.group()
+def main():
+    pass
+
+@main.command()
+@click.option('-n', '--n',  type=click.INT, default=1)
+@click.option('-d', '--depth',  type=click.INT, default=3)
+@click.option('-r', '--row',  type=click.INT, default=3)
+def playout(n, row, depth):
+    """
+        See real time game get played out with moves being listed out live.
+
+        Parameters:
+            n (int): number of games
+            row (int): row of pieces for board
+            depth (int): depth for smartBot
+
+        Returns:
+            (tuple, tuple), str: sequences of pair of tuple which represents a 
+            move (start coord --> end coord), result of the game (i.e. Red wins)
+    """
+    for _ in range(n):
+        board = CheckersGame(row)
+        bot1 = smartBot(board, PieceColor.BLACK, depth)
+        bot2 = randomBot(board, PieceColor.RED)
+    
+        # Flag alternates to decide the turn of the bots
+        flag = True
+        while True:
+            if flag:
+                # Game ends when bot has no more move to play
+                if not board.player_valid_moves(PieceColor.BLACK):
+                    print('Red win')
+                    break
+                else:
+                    start_move, end_move = bot1.suggest_move()
+                    print(start_move, end_move)
+                    board.move(PieceColor.BLACK, start_move, end_move)
+                    flag = False
+            else:
+                if not board.player_valid_moves(PieceColor.RED):
+                    print('Black win')
+                    break
+                else:
+                    start_move, end_move = bot2.suggest_move()
+                    print(start_move, end_move)
+                    board.move(PieceColor.RED, start_move, end_move)
+                    flag = True
+
+@main.command()
 @click.option('-n', '--n',  type=click.INT, default=10)
 @click.option('-d', '--depth',  type=click.INT, default=3)
 @click.option('-r', '--row',  type=click.INT, default=3)
@@ -148,10 +199,10 @@ def simulate(n, row, depth):
 
         Returns:
             str: win-rate percentage
-        """
+    """
     win = 0
     for _ in range(n):
-        board = Game(row)
+        board = CheckersGame(row)
         bot1 = smartBot(board, PieceColor.BLACK, depth)
         bot2 = randomBot(board, PieceColor.RED)
         # Flag alternates to decide the turn of the bots
@@ -177,4 +228,5 @@ def simulate(n, row, depth):
 
 
 if __name__ == "__main__":
-    simulate()
+    main()
+

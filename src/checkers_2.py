@@ -597,6 +597,23 @@ class CheckersGame:
             a tie, returns the string "DRAW". Otherwise, return None.
         """
         return self._winner
+    
+    def evaluate(self):
+        """
+        Evaluates the value of the current position. The more positive the value
+        the more favorable the position is for player with the black pieces. The
+        more negative the value, the more favorable the position is for player 
+        with the red pieces. 
+
+        Parameters:
+            None
+
+        Returns:
+            value (int): value of current position
+        """
+        black_king, black_nonking, red_king, red_nonking = self._composition()
+        value = (black_nonking - red_nonking) + (0.5 * black_king - 0.5 * red_king)
+        return value
 
     #
     # PRIVATE METHODS
@@ -858,3 +875,32 @@ class CheckersGame:
             if self._get_all_jumps(coord):
                 return True
         return False
+
+    def _composition(self):
+        """
+        Given a player's color, returns the number of kings and nonking pieces
+        the player currently has on the board.
+
+        Parameters:
+            color (PieceColor): given player color
+
+        Returns:
+            tuple (int, int): tuple of two integers; the first integer is the
+            number of king pieces the player has, the second integer is the
+            number of nonking pieces the player has
+        """
+        black_king, black_nonking = 0, 0
+        red_king, red_nonking = 0, 0
+
+        for row in self._board.board_to_str():
+            for piece in row:
+                if piece == "B":
+                    black_king += 1
+                elif piece == "b":
+                    black_nonking += 1
+                elif piece == "R":
+                    red_king += 1
+                elif piece == "r":
+                    red_nonking +=1 
+
+        return black_king, black_nonking, red_king, red_nonking
