@@ -595,7 +595,7 @@ class CheckersGame:
 
         Returns:
             PieceColor or None: If there is a winner, return the color. If it is
-            a tie, returns the string "DRAW". Otherwise, return None.
+            a tie, returns PieceColor.DRAW. Otherwise, return None.
         """
         return self._winner
     
