@@ -598,7 +598,7 @@ class CheckersGame:
         """
         return self._winner
     
-    def evaluate(self):
+    def evaluate(self) -> int:
         """
         Evaluates the value of the current position. The more positive the value
         the more favorable the position is for player with the black pieces. The
@@ -879,7 +879,7 @@ class CheckersGame:
                 return True
         return False
 
-    def _composition(self):
+    def _composition(self) -> Tuple[int, int, int, int]:
         """
         Returns the number of kings and nonking pieces each player currently has
         on the board.
