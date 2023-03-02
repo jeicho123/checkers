@@ -10,7 +10,7 @@ from typing import Union, Dict
 import pygame
 import click
 
-from checkers import Game, PieceColor
+from checkers_2 import CheckersGame, Board, PieceColor
 from bot import randomBot, smartBot
 
 WIDTH = 800
@@ -29,7 +29,7 @@ class GUIPlayer:
     """
     name: str
     bot: Union[None, randomBot, smartBot]
-    board: Game
+    board: CheckersGame
     color: PieceColor
 
     def __init__(self, n, player, board, color, opponent_color):
