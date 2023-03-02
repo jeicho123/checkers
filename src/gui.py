@@ -7,8 +7,6 @@ import os
 import sys
 from typing import Union, Dict
 
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-os.environ["SDL_VIDEODRIVER"] = "dummy"
 import pygame
 import click
 
@@ -136,9 +134,11 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
                 pygame.quit()
                 sys.exit()
 
-            if current_player.bot is None and event.type == pygame.KEYUP:
-                num = event.unicode
-                if num in range(size):
+            # if current_player.bot is None and event.type == pygame.KEYUP:
+            #     num = event.unicode
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for num in range(size):
                     if start_row is None:
                         start_row = num
                     elif start_col is None:
@@ -150,7 +150,7 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
                                 for y in x:
                                     for position in y:
                                         pygame.draw.rect(surface, WHITE,
-                                                         rect=position, width=2)
+                                                            rect=position, width=2)
                         else:
                             start_row = None
                             start_col = None
@@ -174,9 +174,9 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
                             end_row = None
                             end_col = None
 
-            if current_player.bot is not None:
-                pygame.time.wait(int(bot_delay * 1000))
-                end_col = current_player.bot.suggest_move()
+        if current_player.bot is not None:
+            pygame.time.wait(int(bot_delay * 1000))
+            end_col = current_player.bot.suggest_move()
 
         create_board(surface, board)
         pygame.display.update()
