@@ -1,7 +1,8 @@
 import click
 from colorama import Fore
 
-from checkers import Game, PieceColor, Piece
+#from checkers import Game, PieceColor, Piece
+from checkers_2 import CheckersGame, PieceColor, Piece
 from bot import randomBot, smartBot
 
 class TUIPlayer:
@@ -58,7 +59,7 @@ class TUIPlayer:
             coord = (row, col)
             if coord in self.board.player_valid_moves(self.color):
                 moves = []
-                for move in self.board.piece_all_valid(coord):
+                for move in self.board.piece_valid_moves(coord):
                     moves.append(move) 
                 print("Possible moves: " + str(moves))
                 return coord
@@ -81,7 +82,7 @@ class TUIPlayer:
             row = int(input_move.split(",")[0])
             col = int(input_move.split(",")[1])
             final_coord = (row, col)
-            if self.board.valid_move(self.color, coords, final_coord):
+            if self.board.is_valid_move(self.color, coords, final_coord):
                 return final_coord
     
 
@@ -207,21 +208,21 @@ type = click.Choice(["2", "3", "4", "5", "6", "7", "8", "9"]))
 
 def cmd(piece_rows, player1, player2):
     if piece_rows == "2":
-        board = Game(2)
+        board = CheckersGame(2)
     elif piece_rows == "3":
-        board = Game(3)
+        board = CheckersGame(3)
     elif piece_rows == "4":
-        board = Game(4)
+        board = CheckersGame(4)
     elif piece_rows == "5":
-        board = Game(5)
+        board = CheckersGame(5)
     elif piece_rows == "6":
-        board = Game(6)
+        board = CheckersGame(6)
     elif piece_rows == "7":
-        board = Game(7)
+        board = CheckersGame(7)
     elif piece_rows == "8":
-        board = Game(8)
+        board = CheckersGame(8)
     elif piece_rows == "9":
-        board = Game(9)
+        board = CheckersGame(9)
 
     player1 = TUIPlayer(1, player1, board, PieceColor.BLACK, 
     PieceColor.RED)
