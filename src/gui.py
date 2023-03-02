@@ -104,8 +104,9 @@ def highlight_moves(start, board, surface):
     Highlights all valid moves of a piece. 
 
     Args:
-        current: current coordinate position
-        moves: list of all possible moves that the piece can move to
+        start:
+        board:
+        surface:
 
     """
     board_grid = board.board_to_str()
