@@ -21,6 +21,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 DARK_BROWN = (139, 69, 19)
 LIGHT_BROWN = (210, 180, 140)
+CYAN = (0,255,255)
 
 class GUIPlayer:
     """
@@ -98,6 +99,30 @@ def create_board(surface: pygame.surface.Surface, board):
             pygame.draw.circle(surface, color,
             center, radius)
 
+def highlight_moves(start, board, surface):
+    """
+    Highlights all valid moves of a piece. 
+
+    Args:
+        current: current coordinate position
+        moves: list of all possible moves that the piece can move to
+
+    """
+    board_grid = board.board_to_str()
+    rows = len(board_grid)
+    cols = len(board_grid[0])
+
+    rh = HEIGHT // rows
+    cw = WIDTH // cols
+
+    for piece in board.player_valid_moves(start).values():
+        for moves in piece:
+            for coord in moves:
+                r = coord[0]
+                c = coord[1]
+                rect = (c * cw, r * rh, cw, rh)
+                pygame.draw.rect(surface, CYAN, rect=rect, width=5)
+
 def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
                   bot_delay):
     """
@@ -119,64 +144,51 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
     surface = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
 
-    size = len(board.board_to_str())
-
     while board.get_winner() is None:
         events = pygame.event.get()
-
-        start_row = None
-        start_col = None
-        end_row = None
-        end_col = None
 
         for event in events:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-            # if current_player.bot is None and event.type == pygame.KEYUP:
-            #     num = event.unicode
-
             if event.type == pygame.MOUSEBUTTONDOWN:
-                for num in range(size):
-                    if start_row is None:
-                        start_row = num
-                    elif start_col is None:
-                        start_col = num
+                board_grid = board.board_to_str()
+                rows = len(board_grid)
+                cols = len(board_grid[0])
 
-                        start_coord = start_row, start_col
-                        if start_coord in board.player_valid_moves(current_player):
-                            for x in board.piece_all_valid(current_player):
-                                for y in x:
-                                    for position in y:
-                                        pygame.draw.rect(surface, WHITE,
-                                                            rect=position, width=2)
-                        else:
-                            start_row = None
-                            start_col = None
-                    elif end_row is None:
-                        end_row = num
-                    elif end_col is None:
-                        end_col = num
-                        end_coord = end_row, end_col
-                        if board.valid_move(start_coord, end_coord):
-                            board.move(current_player, start_coord, end_coord)
-                            start_row = None
-                            start_col = None
-                            end_row = None
-                            end_col = None
-                            if not board.turn_incomplete():
-                                if current_player == PieceColor.RED:
-                                    current_player == PieceColor.BLACK
-                                elif current_player == PieceColor.BLACK:
-                                    current_player == PieceColor.RED
-                        else:
-                            end_row = None
-                            end_col = None
+                rh = HEIGHT // rows
+                cw = WIDTH // cols
+
+                x, y = pygame.mouse.get_pos()
+                
+                row = x // rh
+                col = y // cw
+                start_coord = row, col
+                for row in board_grid:
+                    for square in row:
+                        if square == 'B':
+                            start = PieceColor.BLACK
+                        elif square == 'b':
+                            start = PieceColor.BLACK
+                        elif square == 'R':
+                            start = PieceColor.RED
+                        elif square == 'r':
+                            start = PieceColor.RED
+        
+                highlight_moves(start, board, surface)
+
+                x, y = pygame.mouse.get_pos()
+                row = x // rh
+                col = y // cw
+                end_coord = row, col
+            
+                if end_coord in board.player_valid_moves(start).values():
+                    Board.move(start_coord, end_coord)
 
         if current_player.bot is not None:
-            pygame.time.wait(int(bot_delay * 1000))
-            end_col = current_player.bot.suggest_move()
+                pygame.time.wait(int(bot_delay * 1000))
+                end_col = current_player.bot.suggest_move()
 
         create_board(surface, board)
         pygame.display.update()
@@ -201,7 +213,7 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
 
 def command(mode, player1, player2, bot_delay):
     if mode == "real":
-        board = Game(3)
+        board = CheckersGame(3)
 
     player1 = GUIPlayer(1, player1, board, PieceColor.BLACK, PieceColor.RED)
     player2 = GUIPlayer(2, player2, board, PieceColor.RED, PieceColor.BLACK)
