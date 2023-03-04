@@ -122,7 +122,7 @@ def highlight_moves(start, board, surface):
                 r = coord[0]
                 c = coord[1]
                 rect = (c * cw, r * rh, cw, rh)
-                pygame.draw.rect(surface, CYAN, rect=rect, width=5)
+                pygame.draw.rect(surface, CYAN, rect=rect, width=2)
 
     for piece in board.player_valid_moves(start_color)[start_coord]:
         print(piece)
