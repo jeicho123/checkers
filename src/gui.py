@@ -124,6 +124,12 @@ def highlight_moves(start, board, surface):
                 rect = (c * cw, r * rh, cw, rh)
                 pygame.draw.rect(surface, CYAN, rect=rect, width=5)
 
+    for piece in board.player_valid_moves(start_color)[start_coord]:
+        print(piece)
+        r = start_coord[0]
+        c = start_coord[1]
+        board_grid[r][c].color = CYAN
+
 def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
                   bot_delay):
     """
@@ -143,7 +149,7 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
     current_player = players[PieceColor.BLACK]
 
     surface = pygame.display.set_mode((WIDTH, HEIGHT))
-    clock = pygame.time.Clock()
+    # clock = pygame.time.Clock()
 
     while board.get_winner() is None:
         events = pygame.event.get()
@@ -166,18 +172,17 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
                 row = x // rh
                 col = y // cw
                 start_coord = row, col
-                for row in board_grid:
-                    for square in row:
-                        if square == 'B':
-                            start = PieceColor.BLACK
-                        elif square == 'b':
-                            start = PieceColor.BLACK
-                        elif square == 'R':
-                            start = PieceColor.RED
-                        elif square == 'r':
-                            start = PieceColor.RED
+                
+                if board_grid[row][col] == 'B':
+                    start_color = PieceColor.BLACK
+                elif board_grid[row][col] == 'b':
+                    start_color == PieceColor.BLACK
+                elif board_grid[row][col] == 'R':
+                    start_color = PieceColor.RED
+                elif board_grid[row][col] == 'r':
+                    start_color = PieceColor.RED
         
-                highlight_moves(start, board, surface)
+                highlight_moves(start_color, board, surface, start_coord)
 
                 x, y = pygame.mouse.get_pos()
                 row = x // rh
@@ -193,7 +198,7 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
 
         create_board(surface, board)
         pygame.display.update()
-        clock.tick(24)
+        # clock.tick(24)
 
     winner = board.get_winner()
     if winner is not None:
