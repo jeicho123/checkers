@@ -10,7 +10,7 @@ from typing import Union, Dict
 import pygame
 import click
 
-from checkers_2 import CheckersGame, Board, PieceColor
+from checkers import CheckersGame, Board, PieceColor
 from bot import randomBot, smartBot
 
 WIDTH = 800
@@ -29,7 +29,7 @@ class GUIPlayer:
     """
     name: str
     bot: Union[None, randomBot, smartBot]
-    board: CheckersGame
+    board: Board
     color: PieceColor
 
     def __init__(self, n, player, board, color, opponent_color):
@@ -99,14 +99,36 @@ def create_board(surface: pygame.surface.Surface, board):
             pygame.draw.circle(surface, color,
             center, radius)
 
-def highlight_moves(start, board, surface):
+def highlight_moves(start_color, board, surface, start_coord):
     """
     Highlights all valid moves of a piece. 
 
     Args:
-        start:
+        start_color: 
         board:
         surface:
+        start_coord:
+
+    """
+    board_grid = board.board_to_str()
+    rows = len(board_grid)
+    cols = len(board_grid[0])
+
+    rh = HEIGHT // rows
+    cw = WIDTH // cols
+    
+    for moves in board.player_valid_moves(start_color)[start_coord]:
+        for coord in moves:
+            c, r = coord
+            rect = (r * rh, c * cw, cw, rh)
+            pygame.draw.rect(surface, CYAN, rect=rect, width=3)
+
+    # pygame.display.update()
+
+def remove_highlight(start_color, board, surface, start_coord):
+    """
+    Removes the highlight of all valid moves of a piece
+
 
     """
     board_grid = board.board_to_str()
@@ -116,19 +138,38 @@ def highlight_moves(start, board, surface):
     rh = HEIGHT // rows
     cw = WIDTH // cols
 
-    for piece in board.player_valid_moves(start).values():
-        for moves in piece:
-            for coord in moves:
-                r = coord[0]
-                c = coord[1]
-                rect = (c * cw, r * rh, cw, rh)
-                pygame.draw.rect(surface, CYAN, rect=rect, width=2)
+    x, y = pygame.mouse.get_pos()
+    row = x // rh
+    col = y // cw
+    start_coord = col, row
+    
+    for moves in board.player_valid_moves(start_color)[start_coord]:
+        for coord in moves:
+            c, r = coord
+            rect = (r * rh, c * cw, cw, rh)
+            pygame.draw.rect(surface, DARK_BROWN, rect=rect, width=3)
+    
+    # pygame.display.update()
 
-    for piece in board.player_valid_moves(start_color)[start_coord]:
-        print(piece)
-        r = start_coord[0]
-        c = start_coord[1]
-        board_grid[r][c].color = CYAN
+def get_coord(board, coord):
+    """
+    Returns the coordinate of a selected piece.
+
+
+    """
+    board_grid = board.board_to_str()
+    rows = len(board_grid)
+    cols = len(board_grid[0])
+
+    rh = HEIGHT // rows
+    cw = WIDTH // cols
+
+    x, y = coord 
+
+    row = x // rh
+    col = y // cw
+
+    return (col, row)
 
 def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
                   bot_delay):
@@ -151,6 +192,10 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
     surface = pygame.display.set_mode((WIDTH, HEIGHT))
     # clock = pygame.time.Clock()
 
+    piece1 = None
+    piece2 = None
+    board_grid = board.board_to_str()
+
     while board.get_winner() is None:
         events = pygame.event.get()
 
@@ -160,41 +205,53 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
                 sys.exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                board_grid = board.board_to_str()
-                rows = len(board_grid)
-                cols = len(board_grid[0])
-
-                rh = HEIGHT // rows
-                cw = WIDTH // cols
-
-                x, y = pygame.mouse.get_pos()
+                coord = pygame.mouse.get_pos()
                 
-                row = x // rh
-                col = y // cw
-                start_coord = row, col
-                
-                if board_grid[row][col] == 'B':
-                    start_color = PieceColor.BLACK
-                elif board_grid[row][col] == 'b':
-                    start_color == PieceColor.BLACK
-                elif board_grid[row][col] == 'R':
-                    start_color = PieceColor.RED
-                elif board_grid[row][col] == 'r':
-                    start_color = PieceColor.RED
-        
-                highlight_moves(start_color, board, surface, start_coord)
+                if piece1 != None:
+                    piece1 = get_coord(board)
+                    col = piece1[0]
+                    row = piece1[1]
 
-                x, y = pygame.mouse.get_pos()
-                row = x // rh
-                col = y // cw
-                end_coord = row, col
-            
-                if end_coord in board.player_valid_moves(start).values():
-                    Board.move(start_coord, end_coord)
+                    start_color = None
+                    if board_grid[col][row] == 'B':
+                        start_color = PieceColor.BLACK
+                    elif board_grid[col][row] == 'b':
+                        start_color == PieceColor.BLACK
+                    elif board_grid[col][row] == 'R':
+                        start_color = PieceColor.RED
+                    elif board_grid[col][row] == 'r':
+                        start_color = PieceColor.RED
 
-        if current_player.bot is not None:
-                pygame.time.wait(int(bot_delay * 1000))
-                end_col = current_player.bot.suggest_move()
+                    highlight_moves(start_color, piece1, board, surface)
+                elif piece2 != None:
+                    piece2 = get_coord(board)
+                    if piece2 is None:
+                        piece1 = None
+                        break
+
+                if piece1 and piece2:
+                    if piece1 == piece2:
+                        remove_highlight(piece1.color, surface, board, piece1)
+                        piece1 = None
+                        piece2 = None
+                        continue
+                    if not board.is_valid_move(piece1, piece2):
+                        print("Invalid move")
+                    else:
+                        board.move(piece1, piece2)
+                        remove_highlight(piece1.color, surface, board, piece1)
+
+                        if current_player == PieceColor.BLACK:
+                            current_player == GUIPlayer.player2
+                        else:
+                            current_player == GUIPlayer.player1
+
+                        piece1 = None
+                        piece2 = None
+                            
+        # if current_player.bot is not None:
+        #         pygame.time.wait(int(bot_delay * 1000))
+        #         coord, move = current_player.bot.suggest_move()
 
         create_board(surface, board)
         pygame.display.update()
