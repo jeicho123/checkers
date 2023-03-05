@@ -13,7 +13,19 @@ We recommend setting up a virtual environment to install the libraries required
 to run the code in this repository. To setup a virtual environment, run the
 following from the root of the repository.
 
-    python3 -m venv venv
+    python3 -m venv venv  
+
+To activate your virtual environment, run the following:
+
+    source venv/bin/activate  
+
+To install the required Python libraries run the following:  
+
+    pip3 install -r requirements.txt  
+
+To deactivate the virtual environment, run the following:
+
+    deactivate
 
 ## Running the TUI  
 To run the TUI, run the following from the root of the repository:
