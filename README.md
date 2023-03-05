@@ -13,7 +13,7 @@ We recommend setting up a virtual environment to install the libraries required
 to run the code in this repository. To setup a virtual environment, run the
 following from the root of the repository.
 
-> python3 -m venv venv
+    python3 -m venv venv
 
 ## Running the TUI  
 To run the TUI, run the following from the root of the repository:
