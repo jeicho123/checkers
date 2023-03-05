@@ -8,6 +8,13 @@ TUI:  Nathan Moonesinghe
 GUI: Tiffany Lee  
 Bot: Jei Ho  
 
+## Summary of Changes  
+### Design  
+### Game Logic  
+### TUI
+### GUI
+### Bot
+
 ## Setup  
 We recommend setting up a virtual environment to install the libraries required
 to run the code in this repository. To setup a virtual environment, run the
