@@ -145,24 +145,32 @@ def print_board(board):
                 if col == " ":
                     string += Fore.WHITE + Style.NORMAL + "[   ]"
                 elif col == "B":
-                    string += Fore.WHITE + "[" + Fore.BLACK + Style.BRIGHT + "K" + Fore.WHITE + " ]"
+                    string += (Fore.WHITE + "[" + Fore.BLACK + Style.BRIGHT + 
+                    "K" + Fore.WHITE + " ]")
                 elif col == "b":
-                    string += Fore.WHITE + "[ " + Fore.BLACK + Style.BRIGHT + "●" + Fore.WHITE + " ]"
+                    string += (Fore.WHITE + "[ " + Fore.BLACK + Style.BRIGHT + 
+                    "●" + Fore.WHITE + " ]")
                 elif col == "R":
-                    string += Fore.WHITE + "[" + Fore.RED + Style.BRIGHT + "K" + Fore.WHITE + " ]"
+                    string += (Fore.WHITE + "[" + Fore.RED + Style.BRIGHT + 
+                    "K" + Fore.WHITE + " ]")
                 elif col == "r":
-                    string += Fore.WHITE + "[ " + Fore.RED + Style.BRIGHT + "●" + Fore.WHITE + " ]"
+                    string += (Fore.WHITE + "[ " + Fore.RED + Style.BRIGHT + 
+                    "●" + Fore.WHITE + " ]")
             else:
                 if col == " ":
                     string += Fore.BLACK + Style.BRIGHT + "[   ]"
                 elif col == "B":
-                    string += Fore.BLACK + "[" + Fore.BLACK + Style.BRIGHT + "K" + Fore.BLACK + " ]"
+                    string += (Fore.BLACK + "[" + Fore.BLACK + Style.BRIGHT + 
+                    "K" + Fore.BLACK + " ]")
                 elif col == "b":
-                    string += Fore.BLACK + "[ " + Fore.BLACK + Style.BRIGHT + "●" + Fore.BLACK + " ]"
+                    string += (Fore.BLACK + "[ " + Fore.BLACK + Style.BRIGHT + 
+                    "●" + Fore.BLACK + " ]")
                 elif col == "R":
-                    string += Fore.BLACK + "[" + Fore.RED + Style.BRIGHT + "K" + Fore.BLACK + " ]"
+                    string += (Fore.BLACK + "[" + Fore.RED + Style.BRIGHT + 
+                    "K" + Fore.BLACK + " ]")
                 elif col == "r":
-                    string += Fore.BLACK + "[ " + Fore.RED + Style.BRIGHT + "●" + Fore.BLACK + " ]"
+                    string += (Fore.BLACK + "[ " + Fore.RED + Style.BRIGHT + 
+                    "●" + Fore.BLACK + " ]")
         final.append(string)
     print("\n".join(final))
     return "\n".join(final)

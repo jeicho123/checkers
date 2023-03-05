@@ -12,11 +12,11 @@ To run the TUI, run the following from the root of the repository:
 The TUI first asks for the number of rows of pieces in order to create the 
 correct board size. It then displays the state of the board. Starting with 
 black, it asks the player for a piece they want to move. You must specify the
-coordinates of the piece in row, col form. If the given piece is movable, 
-it will ask for the desired coordinates of the piece in row, col form. 
+coordinates of the piece in this form: row, col. If the given piece is movable, 
+it will ask for the desired coordinates of the piece in this form: row, col. 
 The board is 0 indexed, so the row and col numbers must be less than 
 2 * board_rows + 2. If the coordinates are not valid, you will be prompted
-again. 
+for a new set of coordinates. 
 
 You can also play against a bot like this:
 
@@ -29,6 +29,15 @@ You can even have two bots play against each other:
 > python3 src/tui.py --player1 <bot> --player2 <bot>
 
 There is no aftificial delay between each bot's move.  
+
+Milestone3 improvements:
+- board has row and col index on the side, making it easier to identify 
+ a given square on the board
+- bug for mis-inputs fixed to allow you to enter a new set of coordinates rather
+ than raise an error when invalid coordinates are entered as a move
+- pieces changed to be more representative of a Checkers game 
+    + ● represent regular pieces
+    + K represent Kings
 
 
 ## Running the GUI  
