@@ -1,4 +1,4 @@
-from checkers_2 import CheckersGame, PieceColor
+from checkers import CheckersGame, PieceColor
 from copy import deepcopy
 import random
 import click
