@@ -151,7 +151,7 @@ def remove_highlight(start_color, board, surface, start_coord):
     
     # pygame.display.update()
 
-def get_coord(board, coord):
+def get_coord(coord, board):
     """
     Returns the coordinate of a selected piece.
 
