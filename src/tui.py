@@ -1,8 +1,7 @@
 import click
-from colorama import Fore
+from colorama import Fore, Back, Style
 
-#from checkers import Game, PieceColor, Piece
-from checkers_2 import CheckersGame, PieceColor, Piece
+from checkers import CheckersGame, Board, PieceColor, Piece
 from bot import randomBot, smartBot
 
 class TUIPlayer:
@@ -54,15 +53,20 @@ class TUIPlayer:
         while True:
             user_input = input(self.name + 
             ": Insert coordinates of a piece: ")
-            row = int(user_input.split(",")[0])
-            col = int(user_input.split(",")[1])
-            coord = (row, col)
-            if coord in self.board.player_valid_moves(self.color):
-                moves = []
+            try:
+                row = int(user_input.split(",")[0])
+                col = int(user_input.split(",")[1])
+                coord = (row, col)
+                if coord in self.board.player_valid_moves(self.color):
+                    moves = []
                 for move in self.board.piece_valid_moves(coord):
                     moves.append(move) 
                 print("Possible moves: " + str(moves))
                 return coord
+            except:
+                continue
+            
+            
             
     def get_move(self, coords):
         """
@@ -79,11 +83,14 @@ class TUIPlayer:
         while True:
             input_move = input(self.name + 
             ": Insert desired coordinates: ")
-            row = int(input_move.split(",")[0])
-            col = int(input_move.split(",")[1])
-            final_coord = (row, col)
-            if self.board.is_valid_move(self.color, coords, final_coord):
-                return final_coord
+            try:
+                row = int(input_move.split(",")[0])
+                col = int(input_move.split(",")[1])
+                final_coord = (row, col)
+                if self.board.is_valid_move(self.color, coords, final_coord):
+                    return final_coord
+            except:
+                continue
     
 
     def get_bot_move(self):
@@ -113,33 +120,49 @@ def print_board(board):
 
     Returns: None
     """
-    final = []
     grid = board.board_to_str()
+    final = []
+    string = ""
+
+    #sets row coordinates on the top of the board
+    rows = board._board.get_num_rows()
+    for i in range(rows):
+        if i < 10:
+            string += "    " + Fore.WHITE + Style.NORMAL + str(i) + ""
+        else:
+            string += "   " + Fore.WHITE + Style.NORMAL + str(i) + ""
+    final.append(string)
+ 
     for r, row in enumerate(grid):
-        string = ""
+        #sets the col coordinates on the left side of the board
+        if r < 10:
+            string = "" + Fore.WHITE + Style.NORMAL + str(r) + " "
+        else:
+            string = "" + Fore.WHITE + Style.NORMAL + str(r) + ""
+    
         for c, col in enumerate(row):
             if r % 2 == c % 2:
                 if col == " ":
-                    string += Fore.WHITE + "[ ]"
+                    string += Fore.WHITE + Style.NORMAL + "[   ]"
                 elif col == "B":
-                    string += Fore.WHITE + "[B]"
+                    string += Fore.WHITE + "[" + Fore.BLACK + Style.BRIGHT + "K" + Fore.WHITE + " ]"
                 elif col == "b":
-                    string += Fore.WHITE + "[b]"
+                    string += Fore.WHITE + "[ " + Fore.BLACK + Style.BRIGHT + "●" + Fore.WHITE + " ]"
                 elif col == "R":
-                    string += Fore.WHITE + "[R]"
+                    string += Fore.WHITE + "[" + Fore.RED + Style.BRIGHT + "K" + Fore.WHITE + " ]"
                 elif col == "r":
-                    string += Fore.WHITE + "[r]"
+                    string += Fore.WHITE + "[ " + Fore.RED + Style.BRIGHT + "●" + Fore.WHITE + " ]"
             else:
                 if col == " ":
-                    string += Fore.BLACK + "[ ]"
+                    string += Fore.BLACK + Style.BRIGHT + "[   ]"
                 elif col == "B":
-                    string += Fore.BLACK + "[B]"
+                    string += Fore.BLACK + "[" + Fore.BLACK + Style.BRIGHT + "K" + Fore.BLACK + " ]"
                 elif col == "b":
-                    string += Fore.BLACK + "[b]"
+                    string += Fore.BLACK + "[ " + Fore.BLACK + Style.BRIGHT + "●" + Fore.BLACK + " ]"
                 elif col == "R":
-                    string += Fore.BLACK + "[R]"
+                    string += Fore.BLACK + "[" + Fore.RED + Style.BRIGHT + "K" + Fore.BLACK + " ]"
                 elif col == "r":
-                    string += Fore.BLACK + "[r]"
+                    string += Fore.BLACK + "[ " + Fore.RED + Style.BRIGHT + "●" + Fore.BLACK + " ]"
         final.append(string)
     print("\n".join(final))
     return "\n".join(final)
