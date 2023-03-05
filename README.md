@@ -1,8 +1,19 @@
 # Checkers  
+This repository contains a design and implementation for a resizable game of
+checkers that supports board sizes from 6x6 to 20x20.  
+
+## Division of Work
 Game Logic: Patrick Lin  
 TUI:  Nathan Moonesinghe  
 GUI: Tiffany Lee  
-Bot: Jei Ho
+Bot: Jei Ho  
+
+## Setup  
+We recommend setting up a virtual environment to install the libraries required
+to run the code in this repository. To setup a virtual environment, run the
+following from the root of the repository.
+
+> python3 -m venv venv
 
 ## Running the TUI  
 To run the TUI, run the following from the root of the repository:
