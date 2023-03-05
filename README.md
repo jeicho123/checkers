@@ -18,7 +18,7 @@ Bot: Jei Ho
 design
 - CheckersGame now stores lists of coordinates of player pieces rather than
 lists of instances of the Piece class
-+ CheckersGame methods have been updated to accommodate this change
+    + CheckersGame methods have been updated to accommodate this change
 - CheckersGame move method now accepts a color parameter so players cannot move
 opponent's pieces
 
