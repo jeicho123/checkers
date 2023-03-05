@@ -206,9 +206,9 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 coord = pygame.mouse.get_pos()
-                
+
                 if piece1 != None:
-                    piece1 = get_coord(board)
+                    piece1 = get_coord(coord, board)
                     col = piece1[0]
                     row = piece1[1]
 
@@ -224,7 +224,7 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
 
                     highlight_moves(start_color, piece1, board, surface)
                 elif piece2 != None:
-                    piece2 = get_coord(board)
+                    piece2 = get_coord(coord, board)
                     if piece2 is None:
                         piece1 = None
                         break
