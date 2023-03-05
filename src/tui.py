@@ -16,7 +16,7 @@ class TUIPlayer:
         Input:
             player_num (int): Player number (1 or 2)
             player (str): "human", "random-bot", or "smart-bot" 
-            boar (board): Checker's board
+            board (board): Checker's board
             color (PieceColor): player's color 
             opponent_color (PieceColor): opponent's color 
             depth (int): optional parameter that only applies to smart-bot 
@@ -109,6 +109,8 @@ class TUIPlayer:
             start = (start_row_int, start_col_int)
             end = (end_row_int, end_col_int)
             self.board.move(self.color, start, end)
+            print("Bot moved" + "\n" + "From:" + str(start) + "\n" + "To:" + 
+            str(end))
 
 
 def print_board(board):
