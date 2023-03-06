@@ -100,7 +100,6 @@ class TUIPlayer:
         """
         if self.bot is not None:
             loc = self.bot.suggest_move()
-            print(loc)
             start_str = (str(loc[0]))
             end_str = (str(loc[1]))
             start_row_int = int(start_str[1])
@@ -221,7 +220,7 @@ def play_checkers(board, players):
 
     #checks if there's a winner
     winner = board.get_winner()
-    if winner == "DRAW":
+    if winner == PieceColor.DRAW:
         print("It's a tie!")
     elif winner is not None:
         print("The winner is " + str(players[winner].name) + " !")
