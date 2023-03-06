@@ -10,17 +10,22 @@ Bot: Jei Ho
 
 ## Summary of Changes  
 ### Design  
+- As suggested by the TA's feedback, the Game class has been separated into
+a Board class, which is a generic rectangular board for board games, and a 
+CheckersGame class which utilizes the Borad class to implement a game of
+checkers
 
 ### Game Logic  
 - Piece class no longer has an instance variable for its position on the board
-- added DRAW to PieceColor enum type
-- separated Checkers-specific game logic from the Board following the updated
+- Added DRAW to PieceColor enum type
+- Separated Checkers-specific game logic from the Board following the updated
 design
 - CheckersGame now stores lists of coordinates of player pieces rather than
 lists of instances of the Piece class
     + CheckersGame methods have been updated to accommodate this change
 - CheckersGame move method now accepts a color parameter so players cannot move
 opponent's pieces
+- Edited method names for clarity
 
 ### TUI
 
