@@ -429,8 +429,9 @@ class CheckersGame:
                 PieceColor.BLACK)  == {}:
             self._winner = PieceColor.RED
 
-    def player_valid_moves(self, color: PieceColor) -> Dict[Tuple[int, int],
-                                                List[List[Tuple[int, int]]]]:
+    def player_valid_moves(self,
+                           color: PieceColor) -> Dict[Optional[Tuple[int, int]],
+                                                   List[List[Tuple[int, int]]]]:
         """
         Returns all the complete valid moves (jumps or non-jump moves) for all
         the available specified colored pieces.
