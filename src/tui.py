@@ -148,13 +148,13 @@ def print_board(board):
                     string += Fore.WHITE + Style.NORMAL + "[   ]"
                 elif col == "B":
                     string += (Fore.WHITE + "[ " + Fore.BLACK + Style.BRIGHT + 
-                    "K" + Fore.WHITE + " ]")
+                    "♔" + Fore.WHITE + " ]")
                 elif col == "b":
                     string += (Fore.WHITE + "[ " + Fore.BLACK + Style.BRIGHT + 
                     "●" + Fore.WHITE + " ]")
                 elif col == "R":
                     string += (Fore.WHITE + "[ " + Fore.RED + Style.BRIGHT + 
-                    "K" + Fore.WHITE + " ]")
+                    "♔" + Fore.WHITE + " ]")
                 elif col == "r":
                     string += (Fore.WHITE + "[ " + Fore.RED + Style.BRIGHT + 
                     "●" + Fore.WHITE + " ]")
@@ -163,13 +163,13 @@ def print_board(board):
                     string += Fore.BLACK + Style.BRIGHT + "[   ]"
                 elif col == "B":
                     string += (Fore.BLACK + "[ " + Fore.BLACK + Style.BRIGHT + 
-                    "K" + Fore.BLACK + " ]")
+                    "♔" + Fore.BLACK + " ]")
                 elif col == "b":
                     string += (Fore.BLACK + "[ " + Fore.BLACK + Style.BRIGHT + 
                     "●" + Fore.BLACK + " ]")
                 elif col == "R":
                     string += (Fore.BLACK + "[ " + Fore.RED + Style.BRIGHT + 
-                    "K" + Fore.BLACK + " ]")
+                    "♔" + Fore.BLACK + " ]")
                 elif col == "r":
                     string += (Fore.BLACK + "[ " + Fore.RED + Style.BRIGHT + 
                     "●" + Fore.BLACK + " ]")
@@ -183,7 +183,7 @@ def play_checkers(board, players):
     Plays a game of Checkers on the terminal
 
     Inputs:
-        board (Game): board to play on
+        board (CheckersGame): board to play on
         players (Dict[PieceColor, TUIPlayer]): A dictionary mapping 
         piece colors to TUIPlayer objects
 
