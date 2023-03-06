@@ -9,13 +9,13 @@ GUI: Tiffany Lee
 Bot: Jei Ho  
 
 ## Summary of Changes  
-### Design  
+### Design Changes
 - As suggested by the TA's feedback, the Game class has been separated into
 a Board class, which is a generic rectangular board for board games, and a 
 CheckersGame class which utilizes the Borad class to implement a game of
 checkers
 
-### Game Logic  
+### Game Logic Changes
 - Piece class no longer has an instance variable for its position on the board
 - Added DRAW to PieceColor enum type
 - Separated Checkers-specific game logic from the Board following the updated
@@ -27,11 +27,11 @@ lists of instances of the Piece class
 opponent's pieces
 - Edited method names for clarity
 
-### TUI
+### TUI Changes
 
-### GUI
+### GUI Changes
 
-### Bot
+### Bot Changes
 
 ## Setup  
 We recommend setting up a virtual environment to install the libraries required
