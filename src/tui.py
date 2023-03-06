@@ -11,7 +11,7 @@ class TUIPlayer:
     The TUI player can either be a human or bot
     """
     def __init__(self, player_num, player, board, color, opponent_color,
-    depth = 0):
+    depth = 2):
         """
         Input:
             player_num (int): Player number (1 or 2)
@@ -100,6 +100,7 @@ class TUIPlayer:
         """
         if self.bot is not None:
             loc = self.bot.suggest_move()
+            print(loc)
             start_str = (str(loc[0]))
             end_str = (str(loc[1]))
             start_row_int = int(start_str[1])
@@ -147,13 +148,13 @@ def print_board(board):
                 if col == " ":
                     string += Fore.WHITE + Style.NORMAL + "[   ]"
                 elif col == "B":
-                    string += (Fore.WHITE + "[" + Fore.BLACK + Style.BRIGHT + 
+                    string += (Fore.WHITE + "[ " + Fore.BLACK + Style.BRIGHT + 
                     "K" + Fore.WHITE + " ]")
                 elif col == "b":
                     string += (Fore.WHITE + "[ " + Fore.BLACK + Style.BRIGHT + 
                     "●" + Fore.WHITE + " ]")
                 elif col == "R":
-                    string += (Fore.WHITE + "[" + Fore.RED + Style.BRIGHT + 
+                    string += (Fore.WHITE + "[ " + Fore.RED + Style.BRIGHT + 
                     "K" + Fore.WHITE + " ]")
                 elif col == "r":
                     string += (Fore.WHITE + "[ " + Fore.RED + Style.BRIGHT + 
@@ -162,13 +163,13 @@ def print_board(board):
                 if col == " ":
                     string += Fore.BLACK + Style.BRIGHT + "[   ]"
                 elif col == "B":
-                    string += (Fore.BLACK + "[" + Fore.BLACK + Style.BRIGHT + 
+                    string += (Fore.BLACK + "[ " + Fore.BLACK + Style.BRIGHT + 
                     "K" + Fore.BLACK + " ]")
                 elif col == "b":
                     string += (Fore.BLACK + "[ " + Fore.BLACK + Style.BRIGHT + 
                     "●" + Fore.BLACK + " ]")
                 elif col == "R":
-                    string += (Fore.BLACK + "[" + Fore.RED + Style.BRIGHT + 
+                    string += (Fore.BLACK + "[ " + Fore.RED + Style.BRIGHT + 
                     "K" + Fore.BLACK + " ]")
                 elif col == "r":
                     string += (Fore.BLACK + "[ " + Fore.RED + Style.BRIGHT + 
