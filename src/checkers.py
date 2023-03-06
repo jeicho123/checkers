@@ -9,7 +9,7 @@ Examples:
 
     2. Check whether a given move is legal
 
-        game.is_valid_move(start, end)
+        game.is_valid_move(color, start, end)
 
     3. Obtain all valid moves of a piece:
 
@@ -422,11 +422,12 @@ class CheckersGame:
             self._board.get(end).promote()
 
         # update winner
-        if color == PieceColor.BLACK and self.player_valid_moves(
-                PieceColor.RED) == {}:
-            self._winner == PieceColor.BLACK
-        elif color == PieceColor.RED and self.player_valid_moves(
-                PieceColor.BLACK)  == {}:
+        if (color == PieceColor.BLACK and
+            self.player_valid_moves(PieceColor.RED) == {}):
+            self._winner = PieceColor.BLACK
+            print(self._winner)
+        elif (color == PieceColor.RED and
+              self.player_valid_moves(PieceColor.BLACK)  == {}):
             self._winner = PieceColor.RED
 
     def player_valid_moves(self,
