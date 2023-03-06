@@ -121,7 +121,7 @@ def print_board(board):
     string = ""
 
     #sets row coordinates on the top of the board
-    rows = board._board.get_num_rows()
+    rows = len(grid)
     for i in range(rows):
         if i < 10:
             string += "    " + Fore.WHITE + Style.NORMAL + str(i) + ""
