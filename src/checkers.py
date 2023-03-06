@@ -1,6 +1,6 @@
 """
-Classes for implementing a checkers game with varying board size (supports 6x6
-up to 20x20).
+Classes for implementing a checkers game with varying board size
+(supports 6x6 up to 20x20).
 
 Examples:
     1. Create new Checkers Board
