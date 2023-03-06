@@ -28,6 +28,13 @@ opponent's pieces
 - Edited method names for clarity
 
 ### TUI Changes
+- Board has row and col index on the side, making it easier to identify 
+ a given square on the board
+- Bug for mis-inputs fixed to allow you to enter a new set of coordinates rather
+ than raise an error when invalid coordinates are entered as a move
+- Pieces changed to be more representative of a Checkers game 
+    + ● represent regular pieces
+    + ♔ represent Kings
 
 ### GUI Changes
 
@@ -75,17 +82,9 @@ You can even have two bots play against each other:
 
     python3 src/tui.py --player1 <bot> --player2 <bot>
 
+Where <bot> is either random-bot or smart-bot
+
 There is no aftificial delay between each bot's move.  
-
-Milestone3 improvements:
-- board has row and col index on the side, making it easier to identify 
- a given square on the board
-- bug for mis-inputs fixed to allow you to enter a new set of coordinates rather
- than raise an error when invalid coordinates are entered as a move
-- pieces changed to be more representative of a Checkers game 
-    + ● represent regular pieces
-    + K represent Kings
-
 
 ## Running the GUI  
 To run the GUI, run the following from the root of the repository:

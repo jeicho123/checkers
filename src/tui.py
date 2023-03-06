@@ -223,7 +223,7 @@ def play_checkers(board, players):
     if winner == PieceColor.DRAW:
         print("It's a tie!")
     elif winner is not None:
-        print("The winner is " + str(players[winner].name) + " !")
+        print("The winner is " + str(players[winner].name) + "!")
 
 #
 #Command-line interface
