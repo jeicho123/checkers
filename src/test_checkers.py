@@ -1,5 +1,4 @@
-from checkers import CheckersGame
-from checkers import PieceColor
+from checkers import CheckersGame, PieceColor
 
 def test_create_board():
     g = CheckersGame(2)
