@@ -74,15 +74,15 @@ coordinates.
 
 You can also play against a bot like this:
 
-    python3 src/tui.py --player2 <bot>
+    python3 src/tui.py --player2 {bot}
 
-Where <bot> is either random-bot or smart-bot
+Where {bot} is either random-bot or smart-bot
 
 You can even have two bots play against each other:
 
-    python3 src/tui.py --player1 <bot> --player2 <bot>
+    python3 src/tui.py --player1 {bot} --player2 {bot}
 
-Where <bot> is either random-bot or smart-bot
+Where {bot} is either random-bot or smart-bot
 
 There is no aftificial delay between each bot's move.  
 
