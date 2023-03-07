@@ -448,9 +448,9 @@ class CheckersGame:
         """
         moves = {}
         
-        if self.turn_incomplete():
-            if self._board.get(self._jumping).get_color() == color:
-                moves[self._jumping] = self._get_all_jumps(self._jumping)
+        if self._jumping is not None and self._board.get(self._jumping).get_color() == color:
+            moves[self._jumping] = self._get_all_jumps(self._jumping)
+            return moves
 
         piece_coords = []
         if color == PieceColor.BLACK:
