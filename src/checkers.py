@@ -402,7 +402,7 @@ class CheckersGame:
                     if end == move[-1]: # complete jump move
                         self._jumping = None
                     else:   # incomplete jump move
-                        self._jumping = start
+                        self._jumping = end
                     
                     current = start
                     for step in move[: move.index(end) + 1]:
@@ -448,7 +448,7 @@ class CheckersGame:
         """
         moves = {}
         
-        if self._jumping is not None and self._board.get(self._jumping).get_color() == color:
+        if self.turn_incomplete and self._board.get(self._jumping).get_color() == color:
             moves[self._jumping] = self._get_all_jumps(self._jumping)
             return moves
 
