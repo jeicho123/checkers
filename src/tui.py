@@ -99,9 +99,7 @@ class TUIPlayer:
         moves the bot to the suggested place.
         """
         if self.bot is not None:
-            loc = self.bot.suggest_move()
-            start = loc[0]
-            end = loc[1]
+            start, end = self.bot.suggest_move()
             self.board.move(self.color, start, end)
             print(str(self.name) + " moved \n" + "From:" + str(start) + 
             "\n" + "To:" + str(end))
