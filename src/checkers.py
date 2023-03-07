@@ -503,8 +503,13 @@ class CheckersGame:
             bool: returns True if the given move is valid, otherwise, returns
             False
         """
-        return (start in self.player_valid_moves(color) and
-                self.is_valid_dest(start, end))
+        if start not in self.player_valid_moves(color):
+            return False
+        else:
+            for moves in self.piece_valid_moves(start):
+                if end in moves:
+                    return True
+            return False
 
     def is_valid_dest(self, start: Tuple[int, int],
                       end: Tuple[int, int]) -> bool:
