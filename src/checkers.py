@@ -425,7 +425,6 @@ class CheckersGame:
         if (color == PieceColor.BLACK and
                 self.player_valid_moves(PieceColor.RED) == {}):
             self._winner = PieceColor.BLACK
-            print(self._winner)
         elif (color == PieceColor.RED and
                 self.player_valid_moves(PieceColor.BLACK)  == {}):
             self._winner = PieceColor.RED
