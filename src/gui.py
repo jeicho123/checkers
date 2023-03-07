@@ -251,14 +251,14 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
 
                         piece1 = None
                         piece2 = None
+                        break
                             
-        # if current_player.bot is not None:
-        #         pygame.time.wait(int(bot_delay * 1000))
-        #         coord, move = current_player.bot.suggest_move()
+        if current_player.bot is not None:
+                pygame.time.wait(int(bot_delay * 1000))
+                coord = current_player.bot.suggest_move()
 
-        create_board(surface, board)
         pygame.display.update()
-        # clock.tick(24)
+        clock.tick(24)
 
     winner = board.get_winner()
     if winner is not None:
@@ -281,8 +281,8 @@ def command(mode, player1, player2, bot_delay):
     if mode == "real":
         board = CheckersGame(3)
 
-    player1 = GUIPlayer(1, player1, board, PieceColor.BLACK, PieceColor.RED)
-    player2 = GUIPlayer(2, player2, board, PieceColor.RED, PieceColor.BLACK)
+    player1 = GUIPlayer(1, player1, board, PieceColor.BLACK)
+    player2 = GUIPlayer(2, player2, board, PieceColor.RED)
     players = {PieceColor.BLACK: player1, PieceColor.RED: player2}
 
     play_checkers(board, players, bot_delay)
