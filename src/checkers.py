@@ -362,6 +362,10 @@ class CheckersGame:
         """
         height = self._board.get_num_rows()
         width = self._board.get_num_cols()
+        self._black_piece_coords = []
+        self._red_piece_coords = []
+        self._winner = None
+        self._jumping = None
 
         for r in range(height):
             for c in range(width):
