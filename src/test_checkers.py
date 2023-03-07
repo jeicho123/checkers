@@ -71,8 +71,11 @@ def test_multijump():
     g.move(PieceColor.BLACK, (4, 1), (5, 0))
     g.move(PieceColor.RED, (7, 2), (6, 1))
     g._board.remove((9, 0))
+    g._red_piece_coords.remove((9, 0))
+    g._board.remove((11, 2))
+    g._red_piece_coords.remove((11, 2))
     g.move(PieceColor.BLACK, (5, 0), (9, 0))
-
+    
     assert (g._board.get((9, 0)) is not None and
             g._board.get((9, 0)).get_color() == PieceColor.BLACK)
 
