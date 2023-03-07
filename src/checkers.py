@@ -402,7 +402,7 @@ class CheckersGame:
                     if end == move[-1]: # complete jump move
                         self._jumping = None
                     else:   # incomplete jump move
-                        self._jumping = start
+                        self._jumping = end
                     
                     current = start
                     for step in move[: move.index(end) + 1]:
@@ -451,6 +451,7 @@ class CheckersGame:
         if (self.turn_incomplete() and
                 self._board.get(self._jumping).get_color() == color):
             moves[self._jumping] = self._get_all_jumps(self._jumping)
+            return moves
 
         piece_coords = []
         if color == PieceColor.BLACK:
@@ -502,8 +503,13 @@ class CheckersGame:
             bool: returns True if the given move is valid, otherwise, returns
             False
         """
-        return (start in self.player_valid_moves(color) and
-                self.is_valid_dest(start, end))
+        if start not in self.player_valid_moves(color):
+            return False
+        else:
+            for moves in self.piece_valid_moves(start):
+                if end in moves:
+                    return True
+            return False
 
     def is_valid_dest(self, start: Tuple[int, int],
                       end: Tuple[int, int]) -> bool:
