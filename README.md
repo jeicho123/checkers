@@ -78,11 +78,6 @@ To deactivate the virtual environment, run the following:
     deactivate
 
 ## Running the TUI 
-Install the necessary python libraries by running the following:
-
-    pip install -U click
-    pip install colorama
-    
 To run the TUI, run the following from the root of the repository:
 
     python3 src/tui.py
