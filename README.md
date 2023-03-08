@@ -106,7 +106,7 @@ The --bot delay {seconds} parameter is also supported.
 The ``bots.py`` file includes two classes:
 
 - ``RandomBot``: A bot that will just choose a move at random
-- ``SmartBot``: A bot that uses the Minimax algorithm to make a move, which is given a depth that is the number of moves the algorithm will see ahead. The higher the depth, the more informed of a move the bot will make. It is recommended to set the depth to at least 4 to see its effect when playing against a random bot.
+- ``SmartBot``: A bot that uses the Minimax algorithm to make a move, which is given a depth that is the number of moves the algorithm will see ahead. The higher the depth, the more informed of a move the bot will make. It is recommended to set the depth to at least 4 to see its dominant effect when playing against a random bot.
 
 The two classes are used in the TUI and GUI, but you can also run ``bots.py`` to run 10,000 simulated games where two bots face each other, and see the percentage of wins and ties. For example:
 
