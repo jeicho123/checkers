@@ -183,20 +183,12 @@ def simulate(board, n, bots, playout_mode=False):
         board.setup()
         # i represents ith move of game
         i = 1
-        # Keep track to declare draw between bots
-        draw_tracker = 0
-        composition = None
-
+    
         # The starting player is Black
         current = bots[PieceColor.BLACK]
 
         # While the game doesn't recognize a winner, make a move
         while not board.get_winner():
-            # if 80 half-moves have exceeded and no pieces have been captured
-            # end game with a draw
-            if draw_tracker >= 80:
-                break
-
             start, end = current.bot.suggest_move()
             if playout_mode:
                 print(f"{i} {start} {end}")
@@ -208,13 +200,6 @@ def simulate(board, n, bots, playout_mode=False):
             elif current.color == PieceColor.RED:
                 current = bots[PieceColor.BLACK]
 
-            # If composition of board is same, add to draw_tracker. Else, update
-            # composition and reset draw_tracker
-            if board.evaluate() == composition:
-                draw_tracker += 1
-            elif board.evaluate() != composition:
-                draw_tracker = 0
-                composition = board.evaluate()
             i += 1
             
         winner = board.get_winner()
@@ -224,18 +209,17 @@ def simulate(board, n, bots, playout_mode=False):
                 if winner == PieceColor.BLACK:
                     print("Black wins")
                     print()
+                    bots[winner].wins += 1
                 if winner == PieceColor.RED:
                     print("Red wins")
                     print()
-            # Bot player's win record is tallied
-            bots[winner].wins += 1
-        elif winner is None:
-            if playout_mode:
-                print("Draw")
-                print()
-
+                    bots[winner].wins += 1
+                if winner == PieceColor.DRAW:
+                    print("Draw")
+                    print()
+     
 @click.command()
-@click.option('-n', '--n',  type=click.INT, default=1)
+@click.option('-n', '--n',  type=click.INT, default=10)
 @click.option('-d1', '--depth_1',  type=click.INT, default=0)
 @click.option('-d2', '--depth_2',  type=click.INT, default=0)
 @click.option('-r', '--row',  type=click.INT, default=3)
