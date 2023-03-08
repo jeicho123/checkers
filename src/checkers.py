@@ -293,6 +293,9 @@ class CheckersGame:
     # True if a draw has been offered, otherwise False
     _draw_offered: bool
 
+    # number of moves since the last capture
+    _moves_since_capture: int
+
     #
     # PUBLIC METHODS
     #
@@ -312,6 +315,7 @@ class CheckersGame:
         self._jumping = None
         self._winner = None
         self._draw_offered = False
+        self._moves_since_capture = 0
 
         self.setup()
 
@@ -366,6 +370,7 @@ class CheckersGame:
         self._red_piece_coords = []
         self._winner = None
         self._jumping = None
+        self._moves_since_capture = 0
 
         for r in range(height):
             for c in range(width):
@@ -401,6 +406,7 @@ class CheckersGame:
             raise ValueError("Invalid move")
         
         if self._require_jump(color):   # jump move
+            self._moves_since_capture = 0   # reset _moves_since_capture to 0
             for move in self.piece_valid_moves(start):
                 if end in move:
                     if end == move[-1]: # complete jump move
@@ -417,6 +423,7 @@ class CheckersGame:
         else:   # non-jump move
             self._piece_move_to(color, start, end)
             self._jumping = None
+            self._moves_since_capture += 1  # increment _moves_since_capture
 
         # check for promotion
         end_row, _ = end
@@ -432,6 +439,8 @@ class CheckersGame:
         elif (color == PieceColor.RED and
                 self.player_valid_moves(PieceColor.BLACK)  == {}):
             self._winner = PieceColor.RED
+        elif self._moves_since_capture >= 80:
+            self._winner = PieceColor.DRAW
 
     def player_valid_moves(self,
                            color: PieceColor) -> Dict[Optional[Tuple[int, int]],
