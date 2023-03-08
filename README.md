@@ -37,6 +37,14 @@ opponent's pieces
     + ♔ represent Kings
 
 ### GUI Changes
+- Pygame window displays properly
+- Added new methods to organize the logic in play_checkers:
+    + get_coord: Returns the coordinate of the piece 
+    + highlight_moves: Highlights the selected piece's valid moves
+    + remove_highlight: Removes the highlighted moves
+- MAROON piece represents a red piece's king
+- GRAY piece represents a black piece's king
+- 
 
 ### Bot Changes
 
