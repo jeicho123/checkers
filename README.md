@@ -47,7 +47,9 @@ opponent's pieces
 - MAROON piece represents a red piece's king
 - GRAY piece represents a black piece's king
 - Remove highlights and reset pieces if the same piece2 is selected as piece1, or if selected piece2 is an invalid move from piece1
-    + If the move is valid, the highlight from piece1 
+    + If the move is valid, the highlight from piece1 is removed
+    + Selected piece1 moves to piece2 location
+    + If the piece's turn is complete, the turn switches from the current player color to the opponent player color
 
 ### Bot Changes
 - Added sources for Minimax algorithm
@@ -109,7 +111,7 @@ To run the GUI, run the following from the root of the repository:
 
     python3 src/gui.py
 
-The GUI displays the current state of the board. To move a piece, the current and selected piece's valid moves will be highlighted, and the player can select where they want to move (out of the valid moves).
+The GUI will initially ask for the number of rows of pieces in order to create the board size of the accurate dimensions. The GUI will then display the current state of the board. To move a piece, the current and selected piece's valid moves will be highlighted, and the player can select where they want to move (out of the valid moves).
 
 Like the TUI, you can play against a bot, or have two bots play against each other:
 
