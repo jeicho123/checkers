@@ -205,18 +205,19 @@ def simulate(board, n, bots, playout_mode=False):
         winner = board.get_winner()
 
         if winner is not None:
-            if playout_mode:
-                if winner == PieceColor.BLACK:
+            if winner == PieceColor.BLACK:
+                if playout_mode:
                     print("Black wins")
                     print()
-                    bots[winner].wins += 1
-                if winner == PieceColor.RED:
+                bots[winner].wins += 1
+            if winner == PieceColor.RED:
+                if playout_mode:
                     print("Red wins")
                     print()
-                    bots[winner].wins += 1
-                if winner == PieceColor.DRAW:
-                    print("Draw")
-                    print()
+                bots[winner].wins += 1
+            if winner == PieceColor.DRAW:
+                print("Draw")
+                print()
      
 @click.command()
 @click.option('-n', '--n',  type=click.INT, default=10)
