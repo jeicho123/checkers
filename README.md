@@ -108,7 +108,17 @@ The ``bots.py`` file includes two classes:
 - ``RandomBot``: A bot that will just choose a move at random
 - ``SmartBot``: A bot that uses the Minimax algorithm to make a move, which is given a depth that is the number of moves the algorithm will see ahead. The higher the depth, the more informed of a move the bot will make. It is recommended to set the depth to at least 4 to see its dominant effect when playing against a random bot.
 
-The two classes are used in the TUI and GUI, but you can also run ``bots.py`` to run 10,000 simulated games where two bots face each other, and see the percentage of wins and ties. For example:
+The two classes are used in the TUI and GUI, but you can also run ``bots.py`` to run simulated games where two bots face each other, and see the percentage of wins and ties. For example:
+
+    $ python3 src/bot.py 
+        Bot 1 wins (Depth = 0): 40.00%
+        Bot 2 wins (Depth = 0): 50.00%
+        Ties: 10.00%
+        
+    $ python3 src/bot.py -d1 3
+        Bot 1 wins (Depth = 3): 90.00%
+        Bot 2 wins (Depth = 0): 0.00%
+        Ties: 10.00%
 
 You can control the identity of the bot through the depth value using the ``-d1 <depth value>`` or ``-d2 <depth value>`` parameter. A bot with depth of 0 will use the RandomBot class whereas a bot with depth greater than 0 will use the SmartBot. 
 
