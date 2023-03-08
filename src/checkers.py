@@ -444,7 +444,7 @@ class CheckersGame:
 
         # update winner after complete player turn
         if not self.turn_incomplete():
-            self._update_winner()
+            self._update_winner(color)
 
     def player_valid_moves(self,
                            color: PieceColor) -> Dict[Optional[Tuple[int, int]],
@@ -962,19 +962,22 @@ class CheckersGame:
                 (color == PieceColor.RED and row == 0)):
             self._board.get(coord).promote()
 
-    def _update_winner(self) -> None:
+    def _update_winner(self, color: PieceColor) -> None:
         """
-        Checks if a player has won the game or the game has reached a draw.
+        Checks if the given player has won the game or the game has reached a
+        draw.
 
         Parameters:
-            None
+            color (PieceColor): player color
 
         Returns:
             None
         """
-        if self.player_valid_moves(PieceColor.RED) == {}:
+        if (color == PieceColor.BLACK and
+                self.player_valid_moves(PieceColor.RED) == {}):
             self._winner = PieceColor.BLACK
-        elif self.player_valid_moves(PieceColor.BLACK)  == {}:
+        elif (color == PieceColor.RED and
+                self.player_valid_moves(PieceColor.BLACK)  == {}):
             self._winner = PieceColor.RED
         # check for draw
         elif (self._black_moves_since_capture >= 40 or
