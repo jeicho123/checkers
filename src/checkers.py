@@ -9,7 +9,7 @@ Examples:
 
     2. Check whether a given move is legal
 
-        game.is_valid_move(color, start, end)
+        game.is_valid_dest(color, start, end)
 
     3. Obtain all valid moves of a piece:
 
