@@ -45,7 +45,7 @@ opponent's pieces
   play with each other by assigning the bot's depth value (depth = 0 --> random, depth > 0 --> smart)
 - Added option to view live simulation of games between bots
 - Took into account draw matches between bots 
-- Added ``test_bot.py`` file to tests different methods in ``bots.py``
+- Added ``test_bot.py`` file to test different methods in ``bots.py``
 
 ## Setup  
 We recommend setting up a virtual environment to install the libraries required
