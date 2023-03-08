@@ -42,7 +42,7 @@ opponent's pieces
 - Added sources for Minimax algorithm
 - Created Botplayer class to store info about bots under Simulation phase 
 - Added flexibility to bot matches, user can choose the kind of bot (random/smart) to
-  play with each other by assigning the bot's depth value (depth = 0 -> random, depth > 0 -> smart)
+  play with each other by assigning the bot's depth value (depth = 0 --> random, depth > 0 --> smart)
 - Took into account draw matches between bots 
 - Added ``test_bot.py`` file to tests different methods in ``bots.py``
 
