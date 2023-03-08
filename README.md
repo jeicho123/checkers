@@ -41,10 +41,13 @@ opponent's pieces
 - Added new methods to organize the logic in play_checkers:
     + get_coord: Returns the coordinate of the piece 
     + highlight_moves: Highlights the selected piece's valid moves
+        - Checks if selected piece has valid moves
     + remove_highlight: Removes the highlighted moves
+        - Removes highlights after checking for selected piece's valid moves
 - MAROON piece represents a red piece's king
 - GRAY piece represents a black piece's king
-- 
+- Remove highlights and reset pieces if the same piece2 is selected as piece1, or if selected piece2 is an invalid move from piece1
+    + If the move is valid, the highlight from piece1 
 
 ### Bot Changes
 - Added sources for Minimax algorithm
@@ -110,9 +113,9 @@ The GUI displays the current state of the board. To move a piece, the current an
 
 Like the TUI, you can play against a bot, or have two bots play against each other:
 
-    python3 src/tui.py --player2 {bot}
+    python3 src/gui.py --player2 {bot}
 
-    python3 src/tui.py --player1 {bot} --player2 {bot}
+    python3 src/gui.py --player1 {bot} --player2 {bot}
 
 Where {bot} is either random-bot or smart-bot  
 The --bot delay {seconds} parameter is also supported.
