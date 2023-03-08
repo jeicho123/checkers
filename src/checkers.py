@@ -366,6 +366,7 @@ class CheckersGame:
         Returns:
             None
         """
+        # reset instance variables
         height = self._board.get_num_rows()
         width = self._board.get_num_cols()
         self._black_piece_coords = []
@@ -439,23 +440,11 @@ class CheckersGame:
                 self._red_moves_since_capture += 1
 
         # check for promotion
-        end_row, _ = end
-        if ((color == PieceColor.BLACK and
-                end_row == self._board.get_num_rows() - 1) or
-                (color == PieceColor.RED and end_row == 0)):
-            self._board.get(end).promote()
+        self._check_promote(color, end)
 
-        # update winner
-        if (color == PieceColor.BLACK and
-                self.player_valid_moves(PieceColor.RED) == {}):
-            self._winner = PieceColor.BLACK
-        elif (color == PieceColor.RED and
-                self.player_valid_moves(PieceColor.BLACK)  == {}):
-            self._winner = PieceColor.RED
-        # check for draw
-        elif (self._black_moves_since_capture >= 40 or
-                self._red_moves_since_capture >= 40):
-            self._winner = PieceColor.DRAW
+        # update winner after complete player turn
+        if not self.turn_incomplete():
+            self._update_winner()
 
     def player_valid_moves(self,
                            color: PieceColor) -> Dict[Optional[Tuple[int, int]],
@@ -955,3 +944,39 @@ class CheckersGame:
                     red_nonking +=1 
 
         return black_king, black_nonking, red_king, red_nonking
+    
+    def _check_promote(self, color: PieceColor, coord: Tuple[int, int]) -> None:
+        """
+        Checks if the piece at the given position should be promoted to a king.
+
+        Parameters:
+            color (PieceColor): color of the given piece
+            coord (Tuple[int, int]): position of the given piece
+
+        Returns:
+            None
+        """
+        row, _ = coord
+        if ((color == PieceColor.BLACK and
+                row == self._board.get_num_rows() - 1) or
+                (color == PieceColor.RED and row == 0)):
+            self._board.get(coord).promote()
+
+    def _update_winner(self):
+        """
+        Checks if a player has won the game or the game has reached a draw.
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
+        if self.player_valid_moves(PieceColor.RED) == {}:
+            self._winner = PieceColor.BLACK
+        elif self.player_valid_moves(PieceColor.BLACK)  == {}:
+            self._winner = PieceColor.RED
+        # check for draw
+        elif (self._black_moves_since_capture >= 40 or
+                self._red_moves_since_capture >= 40):
+            self._winner = PieceColor.DRAW
