@@ -61,9 +61,9 @@ class smartBot():
             None
 
         Returns:
-            tuple(tuple): first tuple represents starting coordinates of Minimax
-            chosen piece, second tuple represents end coordinates of Minimax 
-            chosen path
+            tuple(tuple, tuple): first tuple represents starting coordinates of 
+            Minimax chosen piece, second tuple represents end coordinates of 
+            Minimax chosen path
         """
         move = self._minimax(self._board, self._depth, self._color)
         start, end = move[0], move[1]
