@@ -247,7 +247,7 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer], bot_delay):
                         piece2 = None
                         continue
                     else:
-                        remove_highlight(piece1.color, surface, board, piece1)
+                        remove_highlight(current_player.color, surface, board, piece1)
                         board.move(piece1, piece2)
                         create_board(surface, board)
 
@@ -264,6 +264,7 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer], bot_delay):
             pygame.time.wait(int(bot_delay * 1000))
             start, end = current_player.bot.suggest_move()
             board.move(start, end)
+            create_board(surface, board)
             if current_player.color == PieceColor.BLACK:
                 current_player = players[PieceColor.RED]
             else:
