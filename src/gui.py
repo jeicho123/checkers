@@ -255,7 +255,7 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer], bot_delay):
                         board.move(current_player.color, piece1, piece2)
                         create_board(surface, board)
 
-                        if current_player == PieceColor.BLACK:
+                        if current_player.color == PieceColor.BLACK:
                             current_player = players[PieceColor.RED]
                         else:
                             current_player = players[PieceColor.BLACK]
