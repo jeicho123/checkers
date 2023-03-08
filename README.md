@@ -134,7 +134,7 @@ The two classes are used in the TUI and GUI, but you can also run ``bots.py`` to
         Ties: 4.90%
         
     $ python3 src/bot.py -n 1000 -d1 2
-        Bot 1 wins (Depth = 3): 83.70%
+        Bot 1 wins (Depth = 2): 83.70%
         Bot 2 wins (Depth = 0): 1.60%
         Ties: 14.70%
 
