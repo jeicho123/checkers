@@ -216,8 +216,9 @@ def simulate(board, n, bots, playout_mode=False):
                     print()
                 bots[winner].wins += 1
             if winner == PieceColor.DRAW:
-                print("Draw")
-                print()
+                if playout_mode:
+                    print("Draw")
+                    print()
      
 @click.command()
 @click.option('-n', '--n',  type=click.INT, default=10)
