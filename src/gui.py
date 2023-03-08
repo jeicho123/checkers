@@ -286,20 +286,33 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer], bot_delay):
 
 
 @click.command(name="checkers-gui")
-@click.option('--mode',
-              type=click.Choice(['real'], case_sensitive=False),
-              default="real")
 @click.option('--player1',
               type=click.Choice(['human', 'random-bot', 'smart-bot'], case_sensitive=False),
               default="human")
 @click.option('--player2',
               type=click.Choice(['human', 'random-bot', 'smart-bot'], case_sensitive=False),
               default="human")
+@click.option('--rows', required=True, prompt=True,
+              type = click.Choice(["2", "3", "4", "5", "6", "7", "8", "9"]))
 @click.option('--bot-delay', type=click.FLOAT, default=0.5)
 
-def command(mode, player1, player2, bot_delay):
-    if mode == "real":
+def command(rows, player1, player2, bot_delay):
+    if rows == "2":
+        board = CheckersGame(2)
+    elif rows == "3":
         board = CheckersGame(3)
+    elif rows == "4":
+        board = CheckersGame(4)
+    elif rows == "5":
+        board = CheckersGame(5)
+    elif rows == "6":
+        board = CheckersGame(6)
+    elif rows == "7":
+        board = CheckersGame(7)
+    elif rows == "8":
+        board = CheckersGame(8)
+    elif rows == "9":
+        board = CheckersGame(9)
 
     player1 = GUIPlayer(1, player1, board, PieceColor.BLACK)
     player2 = GUIPlayer(2, player2, board, PieceColor.RED)
