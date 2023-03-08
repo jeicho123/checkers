@@ -39,6 +39,13 @@ opponent's pieces
 ### GUI Changes
 
 ### Bot Changes
+- Added sources for Minimax algorithm
+- Created Botplayer class to store info about bots under Simulation phase 
+- Added flexibility to bot matches, user can choose the kind of bot (random/smart) to
+  play with each other by assigning the bot's depth value (depth = 0 --> random, depth > 0 --> smart)
+- Added option to view live simulation of games between bots
+- Took into account draw matches between bots 
+- Added ``test_bot.py`` file to test different methods in ``bots.py``
 
 ## Setup  
 We recommend setting up a virtual environment to install the libraries required
@@ -106,9 +113,19 @@ The --bot delay {seconds} parameter is also supported.
 The ``bots.py`` file includes two classes:
 
 - ``RandomBot``: A bot that will just choose a move at random
-- ``SmartBot``: A bot that uses the Minimax algorithm to make a move, which is given a depth that is the number of moves the algorithm will see ahead. The higher the depth, the more informed of a move the bot will make. It is recommended to set the depth to at least 4 to see its dominant effect when playing against a random bot.
+- ``SmartBot``: A bot that uses the Minimax algorithm to make a move, which is given a depth that is the number of moves the algorithm will see ahead. The higher the depth, the more informed of a move the bot will make. It is recommended to set the depth to at least 4 to see its dominant effect when playing against a random bot. Keep in mind that a high depth like 4 paired with a high number of simulated games will correspond to a slower runtime.
 
-The two classes are used in the TUI and GUI, but you can also run ``bots.py`` to run 10,000 simulated games where two bots face each other, and see the percentage of wins and ties. For example:
+The two classes are used in the TUI and GUI, but you can also run ``bots.py`` to run simulated games where two bots face each other, and see the percentage of wins and ties. For example:
+
+    $ python3 src/bot.py -n 1000
+        Bot 1 wins (Depth = 0): 43.80%
+        Bot 2 wins (Depth = 0): 51.30%
+        Ties: 4.90%
+        
+    $ python3 src/bot.py -n 1000 -d1 3
+        Bot 1 wins (Depth = 3): 83.70%
+        Bot 2 wins (Depth = 0): 1.60%
+        Ties: 14.70%
 
 You can control the identity of the bot through the depth value using the ``-d1 <depth value>`` or ``-d2 <depth value>`` parameter. A bot with depth of 0 will use the RandomBot class whereas a bot with depth greater than 0 will use the SmartBot. 
 
