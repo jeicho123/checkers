@@ -3,10 +3,9 @@ from copy import deepcopy
 import random
 import click
 
-
 class randomBot():
     """
-    Class for bot that suggests random moves
+    Class for bot that suggests random moves.
     """
     def __init__(self, board, color):
         """
@@ -31,13 +30,15 @@ class randomBot():
             the random piece, second tuple represents end coordinates of the 
             random path
         """
-        rand_piece = random.choice(list(self._board.player_valid_moves(self._color).items()))
+        valid_moves = list(self._board.player_valid_moves(self._color).items())
+        rand_piece = random.choice(valid_moves)
         rand_path = random.choice(rand_piece[1])
-        return rand_piece[0], rand_path[-1]
+        start, end = rand_piece[0], rand_path[-1]
+        return start, end
 
 class smartBot():
     """
-    Class for bot that uses Minimax algorithm to suggest moves
+    Class for bot that uses Minimax algorithm to suggest moves.
     """
     def __init__(self, board, color, depth):
         """
@@ -65,7 +66,8 @@ class smartBot():
             chosen path
         """
         move = self._minimax(self._board, self._depth, self._color)
-        return move[:2]
+        start, end = move[0], move[1]
+        return start, end
 
         
     def _minimax(self, board, depth, color):
@@ -75,6 +77,10 @@ class smartBot():
         the bot. At each node, depending on the color, the algorithm will
         maximize/minimize the values of the level of nodes below it and obtain
         the move needed to reach that minimal/maximal position. 
+        
+        I have consulted the following resource to gain a better understanding 
+        about the algorithm: https://www.youtube.com/watch?v=l-hh51ncgDI&t=73s,
+        https://www.youtube.com/watch?v=STjW3eH0Cik
 
         Parameters:
             board (Game obj): board that bot will play on
@@ -87,7 +93,7 @@ class smartBot():
             coordinates of Minimax chosen path, third tuple represents 
             evaluation of the board
         """
-        # Base case --> leaf of tree or game recognizes a winner
+        # Base case --> leaf of tree (depth has been fully explored)
         if depth == 0: 
             return None, None, board.evaluate()
         
@@ -133,100 +139,125 @@ class smartBot():
             return start_coord, best_move, min_val
 
 
+
 # SIMULATION
 
-@click.group()
-def main():
-    pass
-
-@main.command()
-@click.option('-n', '--n',  type=click.INT, default=1)
-@click.option('-d', '--depth',  type=click.INT, default=3)
-@click.option('-r', '--row',  type=click.INT, default=3)
-def playout(n, row, depth):
+class BotPlayer:
     """
-        See real time game get played out with moves being listed out live.
+    Class to store information about a bot player in a simulation.
+    """
+    def __init__(self, board, color, depth):
+        """ 
+            Constructor
+        
+            board (Game obj): board that bot player will play on
+            color (PieceColor obj): color of bot player
+            depth (int): depth decides identity of bot player (depth = 0 
+                signifies bot player is randomBot, depth > 0 signifies bot
+                player is smartBot)
+        """
+        self.depth = depth
 
-        Parameters:
-            n (int): number of games
-            row (int): row of pieces for board
-            depth (int): depth for smartBot
+        if self.depth == 0:
+            self.bot = randomBot(board, color)
+        elif self.depth > 0:
+            self.bot = smartBot(board, color, depth)
+        self.color = color
+        self.wins = 0
 
-        Returns:
-            (tuple, tuple), str: sequences of pair of tuple which represents a 
-            move (start coord --> end coord), result of the game (i.e. Red wins)
+def simulate(board, n, bots, playout_mode=False):
+    """ 
+    Simulates multiple games between two bots.
+
+    Parameters:
+        board (Game obj): board that bot players will play on
+        n (int): number of simulated games
+        bots (dict): dictionary that maps PieceColor obj to BotPlayer obj
+        playout_mode (bool): 'True' shows live playout of game
+
+    Returns:
+        None
     """
     for _ in range(n):
-        board = CheckersGame(row)
-        bot1 = smartBot(board, PieceColor.BLACK, depth)
-        bot2 = randomBot(board, PieceColor.RED)
+        # Reset the board
+        board.setup()
+        # i represents ith move of game
+        i = 1
     
-        # Flag alternates to decide the turn of the bots
-        flag = True
-        while True:
-            if flag:
-                # Game ends when bot has no more move to play
-                if not board.player_valid_moves(PieceColor.BLACK):
-                    print('Red win')
-                    break
-                else:
-                    start_move, end_move = bot1.suggest_move()
-                    print(start_move, end_move)
-                    board.move(PieceColor.BLACK, start_move, end_move)
-                    flag = False
-            else:
-                if not board.player_valid_moves(PieceColor.RED):
-                    print('Black win')
-                    break
-                else:
-                    start_move, end_move = bot2.suggest_move()
-                    print(start_move, end_move)
-                    board.move(PieceColor.RED, start_move, end_move)
-                    flag = True
+        # The starting player is Black
+        current = bots[PieceColor.BLACK]
 
-@main.command()
+        # While the game doesn't recognize a winner, make a move
+        while not board.get_winner():
+            start, end = current.bot.suggest_move()
+            if playout_mode:
+                print(f"{i} {start} {end}")
+            board.move(current.color, start, end)
+            
+            # Update the player
+            if current.color == PieceColor.BLACK:
+                current = bots[PieceColor.RED]
+            elif current.color == PieceColor.RED:
+                current = bots[PieceColor.BLACK]
+
+            i += 1
+            
+        winner = board.get_winner()
+
+        if winner is not None:
+            if winner == PieceColor.BLACK:
+                if playout_mode:
+                    print("Black wins")
+                    print()
+                bots[winner].wins += 1
+            if winner == PieceColor.RED:
+                if playout_mode:
+                    print("Red wins")
+                    print()
+                bots[winner].wins += 1
+            if winner == PieceColor.DRAW:
+                if playout_mode:
+                    print("Draw")
+                    print()
+     
+@click.command()
 @click.option('-n', '--n',  type=click.INT, default=10)
-@click.option('-d', '--depth',  type=click.INT, default=3)
+@click.option('-d1', '--depth_1',  type=click.INT, default=0)
+@click.option('-d2', '--depth_2',  type=click.INT, default=0)
 @click.option('-r', '--row',  type=click.INT, default=3)
-def simulate(n, row, depth):
+@click.option('-p', '--playout_mode', type=click.BOOL, default=False)
+def cmd(n, row, depth_1, depth_2, playout_mode):
     """
-        Test win rate of smartBot vs randomBot over the course of n games.
+        Shows win-rate between bot players and if playout_mode is 'True' shows 
+        live game.
 
         Parameters:
             n (int): number of games
             row (int): row of pieces for board
-            depth (int): depth for smartBot
+            depth_1 (int): depth for smartBot (depth is 0 --> use randomBot)
+            depth_2 (int): depth for smartBot (depth is 0 --> use randomBot)
+            playout_mode (bool): 'True' shows live playout of game
 
         Returns:
-            str: win-rate percentage
+            None
     """
-    win = 0
-    for _ in range(n):
-        board = CheckersGame(row)
-        bot1 = smartBot(board, PieceColor.BLACK, depth)
-        bot2 = randomBot(board, PieceColor.RED)
-        # Flag alternates to decide the turn of the bots
-        flag = True
-        while True:
-            if flag:
-                # Game ends when bot has no more move to play
-                if not board.player_valid_moves(PieceColor.BLACK):
-                    break
-                else:
-                    start_move, end_move = bot1.suggest_move()
-                    board.move(PieceColor.BLACK, start_move, end_move)
-                    flag = False
-            else:
-                if not board.player_valid_moves(PieceColor.RED):
-                    win += 1
-                    break
-                else:
-                    start_move, end_move = bot2.suggest_move()
-                    board.move(PieceColor.RED, start_move, end_move)
-                    flag = True
-    print (f"Win rate of smart bot: {win // n * 100}%")
+    board = CheckersGame(row)
 
+    bot1 = BotPlayer(board, PieceColor.BLACK, depth_1)
+    bot2 = BotPlayer(board, PieceColor.RED, depth_2)
+
+    bots = {PieceColor.BLACK: bot1, PieceColor.RED: bot2}
+
+    simulate(board, n, bots, playout_mode)
+
+    bot1_wins = bots[PieceColor.BLACK].wins
+    bot2_wins = bots[PieceColor.RED].wins
+    ties = n - (bot1_wins + bot2_wins)
+    
+    print(f"Bot 1 wins (Depth = {depth_1}): {100 * bot1_wins / n:.2f}%")
+    print(f"Bot 2 wins (Depth = {depth_2}): {100 * bot2_wins / n:.2f}%")
+    print(f"Ties: {100 * ties / n:.2f}%")
 
 if __name__ == "__main__":
-    main()
+    cmd()
 
