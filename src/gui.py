@@ -4,7 +4,7 @@ GUI for Checkers!
 #took inspiration from connectm! 
 
 import sys
-from typing import Union, Dict, Optional
+from typing import Union, Dict
 
 import pygame
 import click
@@ -33,7 +33,7 @@ class GUIPlayer:
     board: Board
     color: PieceColor
 
-    def __init__(self, n, player, board, color, depth: Optional[int]=3):
+    def __init__(self, n, player, board, color, depth=3):
         """
         Args:
             n: The player's number (1 or 2)
@@ -255,10 +255,12 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer], bot_delay):
                         board.move(current_player.color, piece1, piece2)
                         create_board(surface, board)
 
-                        if current_player.color == PieceColor.BLACK:
-                            current_player = players[PieceColor.RED]
-                        else:
-                            current_player = players[PieceColor.BLACK]
+                        if not board.turn_incomplete():
+                            board.end_turn(current_player.color, "End turn")
+                            if current_player.color == PieceColor.BLACK:
+                                current_player = players[PieceColor.RED]
+                            else:
+                                current_player = players[PieceColor.BLACK]
 
                         piece1 = None
                         piece2 = None
