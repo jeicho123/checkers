@@ -55,9 +55,9 @@ def test_smart_1():
 
 def test_smart_2():
     """
-    Checks that the smart bot makes the best possible move and seizes an
-    opportunity when presented. Using the same earlier puzzle, the smart bot 
-    with its depth set to a minimum of 5 is able to find the best move.
+    Checks that the smart bot makes an informed move based on the minimax algo. 
+    Using the same earlier puzzle, the smart bot with its depth set to a minimum 
+    of 5 is able to find the best move.
     """
     board = CheckersGame(3)
     bot = smartBot(board, PieceColor.BLACK, 5)
