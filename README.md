@@ -44,7 +44,7 @@ opponent's pieces
 - Added flexibility to bot matches, user can choose the kind of bot (random/smart) to
   play with each other by assigning the bot's depth value (depth = 0 -> random, depth > 0 -> smart)
 - Took into account draw matches between bots 
-- Added ``bot_test.py`` file to tests different methods in ``bots.py``
+- Added ``test_bot.py`` file to tests different methods in ``bots.py``
 
 ## Setup  
 We recommend setting up a virtual environment to install the libraries required
