@@ -366,9 +366,10 @@ class CheckersGame:
         Returns:
             None
         """
-        # reset instance variables
         height = self._board.get_num_rows()
         width = self._board.get_num_cols()
+
+        # reset instance variables
         self._black_piece_coords = []
         self._red_piece_coords = []
         self._winner = None
