@@ -421,7 +421,8 @@ class CheckersGame:
                         self._piece_jump_to(color, current, step)
                         current = step
                     break
-            
+
+            # reset moves since last capture counter
             if color == PieceColor.BLACK:
                 self._black_moves_since_capture = 0
             elif color == PieceColor.RED:
@@ -430,7 +431,8 @@ class CheckersGame:
         else:   # non-jump move
             self._piece_move_to(color, start, end)
             self._jumping = None
-            
+
+            # increment moves since last capture counter by 1
             if color == PieceColor.BLACK:
                 self._black_moves_since_capture += 1
             elif color == PieceColor.RED:
