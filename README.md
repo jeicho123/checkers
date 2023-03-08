@@ -43,6 +43,7 @@ opponent's pieces
 - Created Botplayer class to store info about bots under Simulation phase 
 - Added flexibility to bot matches, user can choose the kind of bot (random/smart) to
   play with each other by assigning the bot's depth value (depth = 0 --> random, depth > 0 --> smart)
+- Added option to view live simulation of games between bots
 - Took into account draw matches between bots 
 - Added ``test_bot.py`` file to tests different methods in ``bots.py``
 
