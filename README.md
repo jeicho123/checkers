@@ -37,8 +37,23 @@ opponent's pieces
     + ♔ represent Kings
 
 ### GUI Changes
+- Pygame window displays properly
+- Added new methods to organize the logic in play_checkers:
+    + get_coord: Returns the coordinate of the piece 
+    + highlight_moves: Highlights the selected piece's valid moves
+    + remove_highlight: Removes the highlighted moves
+- MAROON piece represents a red piece's king
+- GRAY piece represents a black piece's king
+- 
 
 ### Bot Changes
+- Added sources for Minimax algorithm
+- Created Botplayer class to store info about bots under Simulation phase 
+- Added flexibility to bot matches, user can choose the kind of bot (random/smart) to
+  play with each other by assigning the bot's depth value (depth = 0 --> random, depth > 0 --> smart)
+- Added option to view live simulation of games between bots
+- Took into account draw matches between bots 
+- Added ``test_bot.py`` file to test for the methods of each bot
 
 ## Setup  
 We recommend setting up a virtual environment to install the libraries required
@@ -100,26 +115,34 @@ The GUI displays the current state of the board. To move a piece, the current an
 
 Like the TUI, you can play against a bot, or have two bots play against each other:
 
-    python3 src./tui.py --player2 <bot>
+    python3 src/tui.py --player2 {bot}
 
-    python3 src./tui.py --player1 <bot> --player2 <bot>
+    python3 src/tui.py --player1 {bot} --player2 {bot}
 
-The --bot delay <seconds> parameter is also supported.
+Where {bot} is either random-bot or smart-bot  
+The --bot delay {seconds} parameter is also supported.
 
 ## Bots  
-To simulate a random bot playing with a smart bot that uses minimax algorithm and display the live game move by move, run:
+The ``bots.py`` file includes two classes:
 
-    python3 src/bot.py playout
+- ``RandomBot``: A bot that will just choose a move at random
+- ``SmartBot``: A bot that uses the Minimax algorithm to make a move, which is given a depth that is the number of moves the algorithm will see ahead. The higher the depth, the more informed of a move the bot will make. It is recommended to set the depth to at least 4 to see its dominant effect when playing against a random bot. Keep in mind that a high depth like 4 paired with a high number of simulated games will correspond to a slower runtime.
 
-To display the win percentage of the smart bot vs the random bot over the course of 10 games, run:
+The two classes are used in the TUI and GUI, but you can also run ``bots.py`` to run simulated games where two bots face each other, and see the percentage of wins and ties. For example:
 
-    python3 src/bot.py simulate
+    $ python3 src/bot.py -n 1000
+        Bot 1 wins (Depth = 0): 43.80%
+        Bot 2 wins (Depth = 0): 51.30%
+        Ties: 4.90%
+        
+    $ python3 src/bot.py -n 1000 -d1 3
+        Bot 1 wins (Depth = 3): 83.70%
+        Bot 2 wins (Depth = 0): 1.60%
+        Ties: 14.70%
 
-If you like to change the depth (-d) of the minimax algorithm, the row (-r) of the board, the number (-n) of simulated games for the above, you can run (as an example) 
+You can control the identity of the bot through the depth value using the ``-d1 <depth value>`` or ``-d2 <depth value>`` parameter. A bot with depth of 0 will use the RandomBot class whereas a bot with depth greater than 0 will use the SmartBot. 
 
-    python3 src/bot.py playout -n 20 -d 4 -r 4
+You can also control the number of simulated games using the ``-n <number of games>`` parameter, the board's initial state using the ``-r <number of rows of pieces>`` parameter, and whether you would like to see a live playout of the simulated games using the ``-p <True/False>``.
 
-or
-
-    python3 src/bot.py simulate -n 20 -d 4 -r 4
+The default values are d1=0, d2=0, n=10, r=3, p=False.
 

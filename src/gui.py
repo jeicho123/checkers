@@ -3,9 +3,8 @@ GUI for Checkers!
 """
 #took inspiration from connectm! 
 
-import os
 import sys
-from typing import Union, Dict
+from typing import Union, Dict, Optional
 
 import pygame
 import click
@@ -22,6 +21,8 @@ WHITE = (255, 255, 255)
 DARK_BROWN = (139, 69, 19)
 LIGHT_BROWN = (210, 180, 140)
 CYAN = (0,255,255)
+MAROON = (139,0,0)
+GRAY = (128,128,128)
 
 class GUIPlayer:
     """
@@ -32,24 +33,23 @@ class GUIPlayer:
     board: Board
     color: PieceColor
 
-    def __init__(self, n, player, board, color, opponent_color):
+    def __init__(self, n, player, board, color, depth: Optional[int]=3):
         """
         Args:
             n: The player's number (1 or 2)
             player: "human", "random bot", or "smart bot"
             board: The checkers board
             player_color: The player's color
-            opponent_color: The opponent's color
         """
         if player == "human":
             self.name = f"Player {n}"
             self.bot = None
-        elif player == "random bot":
+        elif player == "random-bot":
             self.name = f"Random Bot {n}"
-            self.bot = randomBot(board, color, opponent_color)
-        elif player == "smart bot":
+            self.bot = randomBot(board, color)
+        elif player == "smart-bot":
             self.name = f"Smart Bot {n}"
-            self.bot = smartBot(board, color, opponent_color)
+            self.bot = smartBot(board, color, depth)
         self.board = board
         self.color = color
 
@@ -84,11 +84,11 @@ def create_board(surface: pygame.surface.Surface, board):
     for i, r in enumerate(board_grid):
         for j, piececolor in enumerate(r):
             if piececolor == "R":
-                color = (139,0,0)
+                color = MAROON
             elif piececolor == "r":
                 color = RED
             elif piececolor == "B":
-                color = (128,128,128)
+                color = GRAY
             elif piececolor == "b":
                 color = BLACK
             else:
@@ -96,19 +96,19 @@ def create_board(surface: pygame.surface.Surface, board):
 
             center = ((j * cw) + (cw // 2), (i * rh) + (rh // 2))
             radius = rh // 2 - 8
-            pygame.draw.circle(surface, color,
-            center, radius)
+            pygame.draw.circle(surface, color, center, radius)
 
 def highlight_moves(start_color, board, surface, start_coord):
     """
     Highlights all valid moves of a piece. 
 
     Args:
-        start_color: 
-        board:
-        surface:
-        start_coord:
+        start_color: The color of the current starting piece
+        board: The checkers board
+        surface: Pygame surface that the board is drawn on
+        start_coord (tuple (int, int)): The coordinate of the starting piece
 
+    Returns: None
     """
     board_grid = board.board_to_str()
     rows = len(board_grid)
@@ -116,20 +116,28 @@ def highlight_moves(start_color, board, surface, start_coord):
 
     rh = HEIGHT // rows
     cw = WIDTH // cols
-    
-    for moves in board.player_valid_moves(start_color)[start_coord]:
-        for coord in moves:
-            c, r = coord
-            rect = (r * rh, c * cw, cw, rh)
-            pygame.draw.rect(surface, CYAN, rect=rect, width=3)
 
-    # pygame.display.update()
+    # Checks if selected piece has valid moves, and highlights them
+    if start_coord in board.player_valid_moves(start_color).keys():
+        for moves in board.player_valid_moves(start_color)[start_coord]:
+            for coord in moves:
+                c, r = coord
+                rect = (r * rh, c * cw, cw, rh)
+                pygame.draw.rect(surface, CYAN, rect=rect, width=3)
+        return True
+    return False
 
 def remove_highlight(start_color, board, surface, start_coord):
     """
     Removes the highlight of all valid moves of a piece
 
-
+    Args:
+        start_color: The color of the current starting piece
+        board: The checkers board
+        surface: Pygame surface that the board is drawn on
+        start_coord (tuple (int, int)): The coordinate of the starting piece
+    
+    Returns: None
     """
     board_grid = board.board_to_str()
     rows = len(board_grid)
@@ -142,20 +150,26 @@ def remove_highlight(start_color, board, surface, start_coord):
     row = x // rh
     col = y // cw
     start_coord = col, row
-    
-    for moves in board.player_valid_moves(start_color)[start_coord]:
-        for coord in moves:
-            c, r = coord
-            rect = (r * rh, c * cw, cw, rh)
-            pygame.draw.rect(surface, DARK_BROWN, rect=rect, width=3)
-    
-    # pygame.display.update()
+
+    if start_coord in board.player_valid_moves(start_color).keys():
+        for moves in board.player_valid_moves(start_color)[start_coord]:
+            for coord in moves:
+                c, r = coord
+                rect = (r * rh, c * cw, cw, rh)
+                pygame.draw.rect(surface, DARK_BROWN, rect=rect, width=3)
+        return True
+    return False
 
 def get_coord(coord, board):
     """
     Returns the coordinate of a selected piece.
 
+    Args:
+        coord: Position of the mouse on the board
+        board: The checkers board
 
+    Returns:
+        tuple(int, int): The coordinate of selected piece
     """
     board_grid = board.board_to_str()
     rows = len(board_grid)
@@ -171,30 +185,29 @@ def get_coord(coord, board):
 
     return (col, row)
 
-def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
-                  bot_delay):
+def play_checkers(board, players: Dict[PieceColor, GUIPlayer], bot_delay):
     """
     Plays a game of Checkers in Pygame.
 
     Args:
         board: The checkers board
-        players (dict): A dictionary mapping piece colors to
-            GUIPlayer objects
+        players (dict): A dictionary mapping piece colors to GUIPlayer objects
 
     Returns: None
     """
     pygame.init()
     pygame.display.set_caption("Checkers")
 
-    #starting player is a black piece
+    # Starting player is a black piece
     current_player = players[PieceColor.BLACK]
 
     surface = pygame.display.set_mode((WIDTH, HEIGHT))
-    # clock = pygame.time.Clock()
+    create_board(surface, board)
+    clock = pygame.time.Clock()
 
+    # Initialize pieces
     piece1 = None
     piece2 = None
-    board_grid = board.board_to_str()
 
     while board.get_winner() is None:
         events = pygame.event.get()
@@ -204,26 +217,18 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and \
+                current_player.bot is None:
                 coord = pygame.mouse.get_pos()
 
-                if piece1 != None:
+                if piece1 is None:
                     piece1 = get_coord(coord, board)
-                    col = piece1[0]
-                    row = piece1[1]
-
-                    start_color = None
-                    if board_grid[col][row] == 'B':
-                        start_color = PieceColor.BLACK
-                    elif board_grid[col][row] == 'b':
-                        start_color == PieceColor.BLACK
-                    elif board_grid[col][row] == 'R':
-                        start_color = PieceColor.RED
-                    elif board_grid[col][row] == 'r':
-                        start_color = PieceColor.RED
-
-                    highlight_moves(start_color, piece1, board, surface)
-                elif piece2 != None:
+                    highlight = highlight_moves(current_player.color, board,
+                                                surface, piece1)
+                    if not highlight:
+                        piece1 = None
+                        break
+                elif piece2 is None:
                     piece2 = get_coord(coord, board)
                     if piece2 is None:
                         piece1 = None
@@ -231,31 +236,47 @@ def play_checkers(board, players: Dict[PieceColor, GUIPlayer],
 
                 if piece1 and piece2:
                     if piece1 == piece2:
-                        remove_highlight(piece1.color, surface, board, piece1)
+                        remove_highlight(current_player.color, board,
+                                         surface, piece1)
                         piece1 = None
                         piece2 = None
                         continue
-                    if not board.is_valid_move(piece1, piece2):
-                        print("Invalid move")
+                    if not board.is_valid_move(current_player.color,
+                                               piece1, piece2):
+                        remove_highlight(current_player.color, board,
+                                         surface, piece1)
+                        print("Invalid move!")
+                        piece1 = None
+                        piece2 = None
+                        continue
                     else:
-                        board.move(piece1, piece2)
-                        remove_highlight(piece1.color, surface, board, piece1)
+                        remove_highlight(current_player.color, board,
+                                         surface, piece1)
+                        board.move(current_player.color, piece1, piece2)
+                        create_board(surface, board)
 
-                        if current_player == PieceColor.BLACK:
-                            current_player == GUIPlayer.player2
+                        if current_player.color == PieceColor.BLACK:
+                            current_player = players[PieceColor.RED]
                         else:
-                            current_player == GUIPlayer.player1
+                            current_player = players[PieceColor.BLACK]
 
                         piece1 = None
                         piece2 = None
+                        break
                             
-        # if current_player.bot is not None:
-        #         pygame.time.wait(int(bot_delay * 1000))
-        #         coord, move = current_player.bot.suggest_move()
+        if current_player.bot is not None:
+            pygame.time.wait(int(bot_delay * 1000))
+            start, end = current_player.bot.suggest_move()
+            board.move(current_player.color, start, end)
+            create_board(surface, board)
 
-        create_board(surface, board)
+            if current_player.color == PieceColor.BLACK:
+                current_player = players[PieceColor.RED]
+            else:
+                current_player = players[PieceColor.BLACK]
+
         pygame.display.update()
-        # clock.tick(24)
+        clock.tick(24)
 
     winner = board.get_winner()
     if winner is not None:
@@ -278,8 +299,8 @@ def command(mode, player1, player2, bot_delay):
     if mode == "real":
         board = CheckersGame(3)
 
-    player1 = GUIPlayer(1, player1, board, PieceColor.BLACK, PieceColor.RED)
-    player2 = GUIPlayer(2, player2, board, PieceColor.RED, PieceColor.BLACK)
+    player1 = GUIPlayer(1, player1, board, PieceColor.BLACK)
+    player2 = GUIPlayer(2, player2, board, PieceColor.RED)
     players = {PieceColor.BLACK: player1, PieceColor.RED: player2}
 
     play_checkers(board, players, bot_delay)

@@ -465,6 +465,21 @@ class CheckersGame:
             a tie, returns the string "DRAW". Otherwise, return None.
         """
         raise NotImplementedError
+    
+    def evaluate(self) -> float:
+        """
+        Evaluates the value of the current position. The more positive the value
+        the more favorable the position is for player with the black pieces. The
+        more negative the value, the more favorable the position is for player 
+        with the red pieces. 
+
+        Parameters:
+            None
+
+        Returns:
+            value (float): value of current position
+        """
+        raise NotImplementedError
 
     #
     # PRIVATE METHODS
@@ -592,5 +607,47 @@ class CheckersGame:
 
         Returns:
             bool: if the player must make a jump with his or her turn
+        """
+        raise NotImplementedError
+    
+    def _composition(self) -> Tuple[int, int, int, int]:
+        """
+        Returns the number of kings and nonking pieces each player currently has
+        on the board.
+
+        Parameters:
+            None
+
+        Returns:
+            tuple (int, int, int, int): tuple of four integers; the first
+            integer is the number of black king pieces on the board, the second
+            integer is the number of black nonking pieces on the board, the
+            third integer is the number of red king pieces on the board, and the
+            fourth integer is the number of red nonking pieces on the board. 
+        """
+        raise NotImplementedError
+    
+    def _check_promote(self, color: PieceColor, coord: Tuple[int, int]) -> None:
+        """
+        Checks if the piece at the given position should be promoted to a king.
+
+        Parameters:
+            color (PieceColor): color of the given piece
+            coord (Tuple[int, int]): position of the given piece
+
+        Returns:
+            None
+        """
+        raise NotImplementedError
+
+    def _update_winner(self) -> None:
+        """
+        Checks if a player has won the game or the game has reached a draw.
+
+        Parameters:
+            None
+
+        Returns:
+            None
         """
         raise NotImplementedError
