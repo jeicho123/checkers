@@ -962,7 +962,7 @@ class CheckersGame:
                 (color == PieceColor.RED and row == 0)):
             self._board.get(coord).promote()
 
-    def _update_winner(self):
+    def _update_winner(self) -> None:
         """
         Checks if a player has won the game or the game has reached a draw.
 
