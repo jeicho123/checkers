@@ -103,19 +103,12 @@ Where {bot} is either random-bot or smart-bot
 The --bot delay {seconds} parameter is also supported.
 
 ## Bots  
-To simulate a random bot playing with a smart bot that uses minimax algorithm and display the live game move by move, run:
+The ``bots.py`` file includes two classes:
 
-    python3 src/bot.py playout
+- ``RandomBot``: A bot that will just choose a move at random
+- ``SmartBot``: A bot that uses the Minimax algorithm to make a move, which is given a depth that is the number of moves the algorithm will see ahead. The higher the depth, the more informed of a move the bot will make. It is recommended to set the depth to at least 4 to see its effect when playing against a random bot.
 
-To display the win percentage of the smart bot vs the random bot over the course of 10 games, run:
+The two classes are used in the TUI and GUI, but you can also run ``bots.py`` to run 10,000 simulated games where two bots face each other, and see the percentage of wins and ties. For example:
 
-    python3 src/bot.py simulate
-
-If you like to change the depth (-d) of the minimax algorithm, the row (-r) of the board, the number (-n) of simulated games for the above, you can run (as an example) 
-
-    python3 src/bot.py playout -n 20 -d 4 -r 4
-
-or
-
-    python3 src/bot.py simulate -n 20 -d 4 -r 4
+You can control the identity of the bot through the depth value. So a bot with depth of 0 will use the RandomBot class whereas a bot with depth greater than 0 will use the SmartBot. You can also control the number of simulated games using the ``-n <number of games>`` parameter, the board's initial state using the ``-r <number of rows of pieces>`` parameter, and whether you would like to see a live playout of the simulated games using the ``-p <True/False>``
 
